@@ -26,9 +26,9 @@ async function addemojis(message) {
 				name: pokeball.name,
 				attachment: './assets/emojis/' + pokeball.name + '.png',
 			});
-			message.channel.send(
-				`Emoji ${pokeball.name} ajouté! <:${pokeball.name}:${emoji.id}>`
-			);
+			// message.channel.send(
+			// 	`Emoji ${pokeball.name} ajouté! <:${pokeball.name}:${emoji.id}>`
+			// );
 		});
 	} catch (error) {
 		console.error(error);
@@ -37,8 +37,8 @@ async function addemojis(message) {
 
 function initServer(message) {
 	deleteAllChannels(message.guild);
-	addemojis(message);
 	createAllChannels(message);
+	addemojis(message);
 }
 
 export { addemojis, createAllChannels, deleteAllChannels, initServer };
