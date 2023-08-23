@@ -3,10 +3,48 @@ import axios from 'axios';
 async function createAllChannels(message) {
 	try {
 		const response = await axios.get('http://localhost:5000/zone');
+
+		const categoryZone = {};
+
+		for (let i = 0; i < 9; i++) {
+			let roleName = i + ' Badge' + (i > 1 ? 's' : '');
+
+			let role = message.guild.roles.cache.find((r) => r.name === roleName);
+
+			if (!role) {
+				console.error(`Rôle "${roleName}" introuvable`);
+				continue;
+			}
+
+			let permissionOverwrites = [];
+
+			for (let j = 0; j <= 8 - i; j++) {
+				console.log(j);
+				permissionOverwrites.push({
+					id: message.guild.roles.cache.find(
+						(r) => r.name === 8 - j + ' Badge' + (8 - j > 1 ? 's' : '')
+					).id,
+					allow: ['0x0000000000000400', '0x0000000000000800'],
+				});
+			}
+
+			permissionOverwrites.push({
+				id: message.guild.roles.everyone.id,
+				deny: ['0x0000000000000400'],
+			});
+
+			categoryZone[i] = await message.guild.channels.create({
+				name: roleName,
+				type: 4,
+				permissionOverwrites: permissionOverwrites,
+			});
+		}
+
 		response.data.forEach((zone) => {
 			message.guild.channels.create({
 				name: zone.name,
 				type: 0,
+				parent: categoryZone[zone.accesLevel].id,
 			});
 		});
 	} catch (error) {
