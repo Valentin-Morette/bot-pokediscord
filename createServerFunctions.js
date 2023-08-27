@@ -19,7 +19,6 @@ async function createAllChannels(message) {
 			let permissionOverwrites = [];
 
 			for (let j = 0; j <= 8 - i; j++) {
-				console.log(j);
 				permissionOverwrites.push({
 					id: message.guild.roles.cache.find(
 						(r) => r.name === 8 - j + ' Badge' + (8 - j > 1 ? 's' : '')
