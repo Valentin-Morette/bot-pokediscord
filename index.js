@@ -79,10 +79,13 @@ client.on('messageCreate', async (message) => {
 			await addRoles(message);
 		}
 	}
-	if (message.content === '!cherche') {
+	if (message.content === '!cherche' || message.content === '!search') {
 		const pokemon = await findRandomPokemon(message.channel.name);
+		console.log(pokemon);
 		message.channel.send(
-			`Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball pour le capturer !`
+			pokemon
+				? `Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
+				: `Il n'y a pas de pokémon sauvage dans cette zone !`
 		);
 	}
 });

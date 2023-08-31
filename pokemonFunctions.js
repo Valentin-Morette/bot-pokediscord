@@ -2,12 +2,16 @@ import axios from 'axios';
 
 async function findRandomPokemon(name) {
 	try {
-		const response = await axios.post('http://localhost:5000/pokemon/zone', {
-			nameZone: name,
-		});
-		const randomPokemon =
-			response.data[Math.floor(Math.random() * response.data.length)];
-		return randomPokemon;
+		const randomPokemon = await axios.post(
+			'http://localhost:5000/pokemon/wild',
+			{
+				nameZone: name,
+			}
+		);
+		if (randomPokemon.data.length === 0) {
+			return null;
+		}
+		return randomPokemon.data;
 	} catch (error) {
 		console.error(error);
 	}
