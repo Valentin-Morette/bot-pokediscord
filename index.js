@@ -7,7 +7,7 @@ import {
 	addRoles,
 	initServer,
 } from './createServerFunctions.js';
-import { addTrainer } from './trainerFunctions.js';
+import { addTrainer, getBallTrainer } from './trainerFunctions.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
 // import axios from 'axios';
 
@@ -87,6 +87,11 @@ client.on('messageCreate', async (message) => {
 				? `Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
 				: `Il n'y a pas de pokémon sauvage dans cette zone !`
 		);
+	}
+	if (message.content === '!ball') {
+		// message.channel.send(`<:pokeball:1142730942138552361> Test de l'emoji`);
+
+		message.reply(await getBallTrainer(message));
 	}
 });
 
