@@ -8,7 +8,7 @@ import {
 	initServer,
 } from './createServerFunctions.js';
 import { addTrainer, getBallTrainer } from './trainerFunctions.js';
-import { findRandomPokemon } from './pokemonFunctions.js';
+import { findRandomPokemon, catchPokemon } from './pokemonFunctions.js';
 // import axios from 'axios';
 
 dotenv.config();
@@ -24,29 +24,6 @@ const client = new Client({
 
 client.on('ready', () => {
 	console.log('Ready!');
-
-	// setInterval(() => {
-	// 	console.log('Sending message...');
-	// 	client.guilds.cache.forEach((guild) => {
-	// 		// Récupérer tous les salons textuels
-	// 		const textChannels = guild.channels.cache.filter(
-	// 			(channel) => channel.type === 0
-	// 		);
-
-	// 		// Convertir la collection en tableau et choisir un élément aléatoire
-	// 		const channelArray = Array.from(textChannels.values());
-	// 		const randomChannel =
-	// 			channelArray[Math.floor(Math.random() * channelArray.length)];
-
-	// 		// Envoyer le message
-	// 		if (randomChannel) {
-	// 			findRandomPokemon(randomChannel.name).then((pokemon) => {
-	// 				console.log(randomChannel.name);
-	// 				console.log(pokemon);
-	// 			});
-	// 		}
-	// 	});
-	// }, 5000); // intervalle de 5 secondes
 });
 
 client.on('guildMemberAdd', (member) => {
@@ -89,9 +66,48 @@ client.on('messageCreate', async (message) => {
 		);
 	}
 	if (message.content === '!ball') {
-		// message.channel.send(`<:pokeball:1142730942138552361> Test de l'emoji`);
-
 		message.reply(await getBallTrainer(message));
+	}
+	const balls = [
+		{ name: 'pokeball', id: 1 },
+		{ name: 'superball', id: 2 },
+		{ name: 'hyperball', id: 3 },
+		{ name: 'masterball', id: 4 },
+	];
+	if (
+		message.content.startsWith('!') &&
+		balls.some((ball) => message.content.includes(ball.name))
+	) {
+		const ball = balls.find((ball) => message.content.includes(ball.name));
+		const ballName = ball.name;
+		const idPokeball = ball.id;
+		const catchCode = message.content.split(' ')[1];
+		const idTrainer = message.author.id;
+		const response = await catchPokemon(catchCode, idTrainer, idPokeball);
+		if (response.status === 'noCatch') {
+			message.channel.send(
+				`Le ${response.pokemonName} est resortit !\nTapez !pokeball ${catchCode} pour retenter votre chance.`
+			);
+		} else if (response.status === 'catch') {
+			message.channel.send(
+				`Le ${response.pokemonName} ${catchCode} a été capturé par <@${message.author.id}>.`
+			);
+		} else if (response.status === 'escape') {
+			message.channel.send(
+				`Le ${response.pokemonName} ${catchCode} s'est échappé !`
+			);
+		} else if (response.status === 'alreadyCatch') {
+			message.reply(`Le Pokémon a déjà été capturé.`);
+		} else if (response.status === 'alreadyEscape') {
+			message.channel.send(`Le Pokémon c'est déjà échappé.`);
+		} else if (response.status === 'noBall') {
+			message.reply(`Vous n'avez pas de ${ballName}.`);
+		}
+	}
+	if (message.content === '!help') {
+		message.channel.send(
+			`Le Pokémon a été capturé par <@${message.author.id}>`
+		);
 	}
 });
 

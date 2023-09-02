@@ -17,4 +17,20 @@ async function findRandomPokemon(name) {
 	}
 }
 
-export { findRandomPokemon };
+async function catchPokemon(catchCode, idTrainer, idPokeball) {
+	try {
+		const catchPokemon = await axios.post(
+			'http://localhost:5000/pokemon/catch',
+			{
+				catchCode: catchCode,
+				idTrainer: idTrainer,
+				idBall: idPokeball,
+			}
+		);
+		return catchPokemon.data;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export { findRandomPokemon, catchPokemon };
