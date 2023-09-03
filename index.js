@@ -7,7 +7,7 @@ import {
 	addRoles,
 	initServer,
 } from './createServerFunctions.js';
-import { addTrainer, getBallTrainer } from './trainerFunctions.js';
+import { addTrainer, getBallTrainer, getPokedex } from './trainerFunctions.js';
 import { findRandomPokemon, catchPokemon } from './pokemonFunctions.js';
 // import axios from 'axios';
 
@@ -104,10 +104,13 @@ client.on('messageCreate', async (message) => {
 			message.reply(`Vous n'avez pas de ${ballName}.`);
 		}
 	}
-	if (message.content === '!help') {
-		message.channel.send(
-			`Le Pokémon a été capturé par <@${message.author.id}>`
-		);
+	if (message.content === '!pokedex') {
+		const pokedex = await getPokedex(message.author.id);
+		let strResponse = 'Vous avez : \n';
+		for (let i = 0; i < pokedex.length; i++) {
+			strResponse += `- ${pokedex[i].quantity} ${pokedex[i].name}\n`;
+		}
+		message.reply(strResponse);
 	}
 });
 

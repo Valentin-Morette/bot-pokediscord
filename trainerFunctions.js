@@ -62,4 +62,15 @@ async function getBallTrainer(message) {
 	}
 }
 
-export { addTrainer, getBallTrainer };
+async function getPokedex(idTrainer) {
+	try {
+		const response = await axios.get(
+			'http://localhost:5000/pokemon/trainer/' + idTrainer
+		);
+		return response.data;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export { addTrainer, getBallTrainer, getPokedex };
