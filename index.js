@@ -9,7 +9,6 @@ import {
 } from './createServerFunctions.js';
 import { addTrainer, getBallTrainer, getPokedex } from './trainerFunctions.js';
 import { findRandomPokemon, catchPokemon } from './pokemonFunctions.js';
-// import axios from 'axios';
 
 dotenv.config();
 
@@ -28,6 +27,14 @@ client.on('ready', () => {
 
 client.on('guildMemberAdd', (member) => {
 	addTrainer(member);
+	let badgeRole = member.guild.roles.cache.find(
+		(role) => role.name === '0 Badge'
+	);
+
+	if (badgeRole) {
+		member.roles.add(badgeRole).catch(console.error);
+	}
+
 	const welcomeChannel = member.guild.channels.cache.find(
 		(ch) => ch.name === 'welcome'
 	);
