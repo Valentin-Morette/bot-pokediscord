@@ -5,7 +5,12 @@ import {
 	addRoles,
 	initServer,
 } from './createServerFunctions.js';
-import { addTrainer, getBallTrainer, getPokedex } from './trainerFunctions.js';
+import {
+	addTrainer,
+	getBallTrainer,
+	getPokedex,
+	getMoney,
+} from './trainerFunctions.js';
 import { findRandomPokemon, catchPokemon } from './pokemonFunctions.js';
 
 function pokeChat(client) {
@@ -107,6 +112,10 @@ function pokeChat(client) {
 				strResponse += `- ${pokedex[i].quantity} ${pokedex[i].name}\n`;
 			}
 			message.reply(strResponse);
+		}
+		if (message.content === '!money') {
+			const money = await getMoney(message.author.id);
+			message.reply('Vous avez : ' + money + ' pokédollars.');
 		}
 	});
 

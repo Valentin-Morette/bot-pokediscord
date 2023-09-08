@@ -4,6 +4,10 @@ function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function formatNombreAvecSeparateur(n) {
+	return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
 async function addTrainer(member) {
 	try {
 		const response = await axios.get(
@@ -73,4 +77,15 @@ async function getPokedex(idTrainer) {
 	}
 }
 
-export { addTrainer, getBallTrainer, getPokedex };
+async function getMoney(idTrainer) {
+	try {
+		const response = await axios.get(
+			'http://localhost:5000/trainer/' + idTrainer
+		);
+		return formatNombreAvecSeparateur(response.data.money);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export { addTrainer, getBallTrainer, getPokedex, getMoney };
