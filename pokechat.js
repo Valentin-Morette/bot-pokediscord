@@ -11,7 +11,11 @@ import {
 	getPokedex,
 	getMoney,
 } from './trainerFunctions.js';
-import { findRandomPokemon, catchPokemon } from './pokemonFunctions.js';
+import {
+	findRandomPokemon,
+	catchPokemon,
+	sellPokemon,
+} from './pokemonFunctions.js';
 
 function pokeChat(client) {
 	client.on('ready', () => {
@@ -116,6 +120,19 @@ function pokeChat(client) {
 		if (message.content === '!money') {
 			const money = await getMoney(message.author.id);
 			message.reply('Vous avez : ' + money + ' pokédollars.');
+		}
+		if (message.content.startsWith('!vend')) {
+			const args = message.content.split(' ');
+			const quantity = args[1];
+			const namePokemon = args[2];
+			const response = await sellPokemon(
+				message.author.id,
+				namePokemon,
+				quantity
+			);
+			if (response) {
+				message.reply(response);
+			}
 		}
 	});
 

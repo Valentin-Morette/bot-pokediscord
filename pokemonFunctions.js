@@ -33,4 +33,35 @@ async function catchPokemon(catchCode, idTrainer, idPokeball) {
 	}
 }
 
-export { findRandomPokemon, catchPokemon };
+async function sellPokemon(idTrainer, namePokemon, quantity) {
+	try {
+		const sellPokemon = await axios.post('http://localhost:5000/pokemon/sell', {
+			namePokemon: namePokemon,
+			idTrainer: idTrainer,
+			quantity: quantity,
+		});
+		if (sellPokemon.data.status === 'noPokemon') {
+			return "Vous n'avez pas au minimum " + quantity + ' ' + namePokemon + '.';
+		} else if (sellPokemon.data.status === 'sell') {
+			return (
+				'Vous avez vendu ' +
+				quantity +
+				' ' +
+				namePokemon +
+				' pour ' +
+				sellPokemon.data.sellPrice +
+				' pokédollars.'
+			);
+		} else if (sellPokemon.data.status === 'noExistPokemon') {
+			return (
+				namePokemon +
+				" n'est pas un pokémon.\n" +
+				'Veuillez réessayer avec la commande :\n!vend [quantité] [nom du pokémon]'
+			);
+		}
+	} catch (error) {
+		console.error("Erreur lors de la vente d'un pokémon.");
+	}
+}
+
+export { findRandomPokemon, catchPokemon, sellPokemon };
