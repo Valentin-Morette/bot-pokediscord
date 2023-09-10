@@ -1,5 +1,6 @@
 import {
 	addemojis,
+	deleteEmojis,
 	createAllChannels,
 	deleteAllChannels,
 	addRoles,
@@ -10,6 +11,7 @@ import {
 	getBallTrainer,
 	getPokedex,
 	getMoney,
+	buyBall,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -17,9 +19,16 @@ import {
 	sellPokemon,
 } from './pokemonFunctions.js';
 
+const balls = [
+	{ name: 'pokeball', id: 1 },
+	{ name: 'superball', id: 2 },
+	{ name: 'hyperball', id: 3 },
+	{ name: 'masterball', id: 4 },
+];
+
 function pokeChat(client) {
 	client.on('ready', () => {
-		console.log('Ready!');
+		console.log('Pokéchat Ready!');
 	});
 
 	client.on('guildMemberAdd', (member) => {
@@ -45,20 +54,18 @@ function pokeChat(client) {
 		if (message.author.bot) return;
 		console.log(`Message received in channel: ${message.channel.name}`);
 		if (message.author.id === process.env.MYDISCORDID) {
-			if (message.content === '!addEmojis') {
-				await addemojis(message);
-			}
-			if (message.content === '!createAllChannels') {
-				await createAllChannels(message);
-			}
-			if (message.content === '!deleteAllChannels') {
-				await deleteAllChannels(message.guild);
-			}
 			if (message.content === '!initServer') {
 				await initServer(message);
-			}
-			if (message.content === '!createRoles') {
+			} else if (message.content === '!createAllChannels') {
+				await createAllChannels(message);
+			} else if (message.content === '!deleteAllChannels') {
+				await deleteAllChannels(message.guild);
+			} else if (message.content === '!addEmojis') {
+				await addemojis(message);
+			} else if (message.content === '!createRoles') {
 				await addRoles(message);
+			} else if (message.content === '!deleteEmojis') {
+				await deleteEmojis(message.guild);
 			}
 		}
 		if (message.content === '!cherche' || message.content === '!search') {
@@ -73,13 +80,22 @@ function pokeChat(client) {
 		if (message.content === '!ball') {
 			message.reply(await getBallTrainer(message));
 		}
-		const balls = [
-			{ name: 'pokeball', id: 1 },
-			{ name: 'superball', id: 2 },
-			{ name: 'hyperball', id: 3 },
-			{ name: 'masterball', id: 4 },
-		];
-		if (
+		if (message.content.startsWith('!buy')) {
+			const args = message.content.split(' ');
+			const quantity = args[1];
+			const nameBall = args[2];
+			const idBall = balls.find((ball) => ball.name === nameBall).id;
+			console.log(idBall);
+			const response = await buyBall(
+				message.author.id,
+				idBall,
+				quantity,
+				nameBall
+			);
+			if (response) {
+				message.reply(response);
+			}
+		} else if (
 			message.content.startsWith('!') &&
 			balls.some((ball) => message.content.includes(ball.name))
 		) {
@@ -110,16 +126,10 @@ function pokeChat(client) {
 			}
 		}
 		if (message.content === '!pokedex') {
-			const pokedex = await getPokedex(message.author.id);
-			let strResponse = 'Vous avez : \n';
-			for (let i = 0; i < pokedex.length; i++) {
-				strResponse += `- ${pokedex[i].quantity} ${pokedex[i].name}\n`;
-			}
-			message.reply(strResponse);
+			message.reply(await getPokedex(message.author.id));
 		}
 		if (message.content === '!money') {
-			const money = await getMoney(message.author.id);
-			message.reply('Vous avez : ' + money + ' pokédollars.');
+			message.reply(await getMoney(message.author.id));
 		}
 		if (message.content.startsWith('!vend')) {
 			const args = message.content.split(' ');

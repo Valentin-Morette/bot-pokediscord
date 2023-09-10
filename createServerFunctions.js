@@ -69,6 +69,20 @@ async function addemojis(message) {
 	}
 }
 
+async function deleteEmojis(message) {
+	try {
+		const response = await axios.get('http://localhost:5000/pokeball');
+		response.data.forEach(async (pokeball) => {
+			const emoji = await message.guild.emojis.cache.find(
+				(emoji) => emoji.name === pokeball.name
+			);
+			emoji.delete();
+		});
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function addRoles(message) {
 	try {
 		const response = await axios.get('http://localhost:5000/role');
@@ -113,5 +127,6 @@ export {
 	createAllChannels,
 	deleteAllChannels,
 	addRoles,
+	deleteEmojis,
 	initServer,
 };

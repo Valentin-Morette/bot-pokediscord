@@ -18,4 +18,42 @@ const clientPierre = new Client({
 	intents: commonIntents,
 });
 
-export { clientPokechat, clientPierre };
+const clientOndine = new Client({
+	intents: commonIntents,
+});
+
+const clientMajorBob = new Client({
+	intents: commonIntents,
+});
+
+const clientErika = new Client({
+	intents: commonIntents,
+});
+
+const clientKoga = new Client({
+	intents: commonIntents,
+});
+
+const clientMorgane = new Client({
+	intents: commonIntents,
+});
+
+const clientAuguste = new Client({
+	intents: commonIntents,
+});
+
+const clientGiovanni = new Client({
+	intents: commonIntents,
+});
+
+export {
+	clientPokechat,
+	clientPierre,
+	clientOndine,
+	clientMajorBob,
+	clientErika,
+	clientKoga,
+	clientMorgane,
+	clientAuguste,
+	clientGiovanni,
+};

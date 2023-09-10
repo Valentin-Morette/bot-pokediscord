@@ -71,7 +71,11 @@ async function getPokedex(idTrainer) {
 		const response = await axios.get(
 			'http://localhost:5000/pokemon/trainer/' + idTrainer
 		);
-		return response.data;
+		let strResponse = 'Vous avez : \n';
+		for (let i = 0; i < response.data.length; i++) {
+			strResponse += `- ${response.data[i].quantity} ${response.data[i].name}\n`;
+		}
+		return strResponse;
 	} catch (error) {
 		console.error(error);
 	}
@@ -82,10 +86,45 @@ async function getMoney(idTrainer) {
 		const response = await axios.get(
 			'http://localhost:5000/trainer/' + idTrainer
 		);
-		return formatNombreAvecSeparateur(response.data.money);
+		return (
+			'Vous avez : ' +
+			formatNombreAvecSeparateur(response.data.money) +
+			' pokédollars.'
+		);
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-export { addTrainer, getBallTrainer, getPokedex, getMoney };
+async function buyBall(idTrainer, idBall, quantity, nameBall) {
+	try {
+		const response = await axios.post('http://localhost:5000/pokeball/buy', {
+			idDiscord: idTrainer,
+			idBall: idBall,
+			quantity: quantity,
+		});
+		if (response.data.status === 'noMoney') {
+			return "Vous n'avez pas assez d'argent.";
+		} else if (response.data.status === 'buy') {
+			return (
+				'Vous avez acheté ' +
+				quantity +
+				' ' +
+				capitalizeFirstLetter(nameBall) +
+				' pour ' +
+				formatNombreAvecSeparateur(response.data.price) +
+				' pokédollars.'
+			);
+		} else if (response.data.status === 'noExistBall') {
+			return (
+				capitalizeFirstLetter(nameBall) +
+				" n'est pas une pokéball.\n" +
+				'Veuillez réessayer avec la commande :\n!buy [quantité] [nom de la pokéball]'
+			);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export { addTrainer, getBallTrainer, getPokedex, getMoney, buyBall };

@@ -1,10 +1,11 @@
 function botPierre(clientPierre) {
 	clientPierre.on('ready', () => {
-		console.log('Ready!');
+		console.log('Pierre Ready!');
 	});
 
 	clientPierre.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
+		if (message.channel.name !== 'argenta') return;
 		if (message.content === '!upgrade') {
 			let badgeRole = message.guild.roles.cache.find(
 				(role) => role.name === '1 Badge'
