@@ -1,6 +1,12 @@
 import axios from 'axios';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
 
 async function createAllChannels(message) {
+	message.guild.channels.create({
+		name: 'welcome',
+		type: 0,
+	});
 	try {
 		const response = await axios.get('http://localhost:5000/zone');
 
@@ -86,40 +92,90 @@ async function deleteEmojis(message) {
 async function addRoles(message) {
 	try {
 		const response = await axios.get('http://localhost:5000/role');
-		response.data.forEach((role) => {
-			message.guild.roles
-				.create({
-					name: role.name,
-					color: role.color,
-					hoist: true,
-					permissions: [
-						'0x0000000000200000',
-						'0x0000000000100000',
-						'0x0000000002000000',
-						'0x0000000000080000',
-						'0x0000000000010000',
-						'0x0000000000000040',
-						'0x0000000000000800',
-						'0x0000000000000001',
-						'0x0000000004000000',
-						'0x0000000080000000',
-					],
-				})
-				.then((role) => message.channel.send(`Le rôle ${role} a été créé!`))
-				.catch((error) =>
-					console.error(`Erreur lors de la création du rôle: ${error}`)
-				);
-		});
+
+		for (let roleData of response.data) {
+			const options = {
+				name: roleData.name,
+				color: roleData.color,
+				hoist: true,
+			};
+
+			if (roleData.name === "Champion d'arene") {
+				options.permissions = ['0x0000000000000008'];
+			} else {
+				options.permissions = [
+					'0x0000000000200000',
+					'0x0000000000100000',
+					'0x0000000002000000',
+					'0x0000000000080000',
+					'0x0000000000010000',
+					'0x0000000000000040',
+					'0x0000000000000800',
+					'0x0000000000000001',
+					'0x0000000004000000',
+					'0x0000000080000000',
+				];
+			}
+
+			try {
+				const role = await message.guild.roles.create(options);
+				console.log(`Le rôle ${role.name} a été créé!`);
+			} catch (error) {
+				console.error(`Erreur lors de la création du rôle: ${error}`);
+			}
+		}
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-function initServer(message) {
-	deleteAllChannels(message.guild);
-	createAllChannels(message);
-	addemojis(message);
-	addRoles(message);
+async function listBot(message) {
+	try {
+		const response = await axios.get('http://localhost:5000/champion');
+		let strResponse = 'Liste des bots : \n';
+		for (let i = 0; i < response.data.length; i++) {
+			strResponse += `- ${response.data[i].name} : ${response.data[i].link}\n`;
+		}
+		message.author.send(strResponse);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function initServer(message) {
+	await deleteAllChannels(message.guild);
+	await new Promise((resolve) => setTimeout(resolve, 5000));
+	await addRoles(message);
+	await new Promise((resolve) => setTimeout(resolve, 5000));
+	await addemojis(message);
+	await createAllChannels(message);
+	await listBot(message);
+}
+
+function slashCommande(commands) {
+	const rest = new REST({ version: '10' }).setToken(
+		'MTE0MjMyNTUxNTU3NTg4OTk3MQ.GcizeO.AFd8kXMpDG1fkV2QozPZEf6IwznpOOXgh1jkXI'
+	);
+
+	(async () => {
+		try {
+			console.log("Début de l'enregistrement des commandes slash.");
+
+			await rest.put(
+				Routes.applicationGuildCommands(
+					'1142325515575889971',
+					'1152580122323472466'
+				),
+				{
+					body: commands,
+				}
+			);
+
+			console.log('Commandes slash enregistrées avec succès!');
+		} catch (error) {
+			console.error(error);
+		}
+	})();
 }
 
 export {
@@ -129,4 +185,6 @@ export {
 	addRoles,
 	deleteEmojis,
 	initServer,
+	listBot,
+	slashCommande,
 };

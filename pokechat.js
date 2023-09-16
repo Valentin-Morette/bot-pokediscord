@@ -5,6 +5,7 @@ import {
 	deleteAllChannels,
 	addRoles,
 	initServer,
+	listBot,
 } from './createServerFunctions.js';
 import {
 	addTrainer,
@@ -18,6 +19,7 @@ import {
 	catchPokemon,
 	sellPokemon,
 } from './pokemonFunctions.js';
+import { slashCommande } from './createServerFunctions.js';
 
 const balls = [
 	{ name: 'pokeball', id: 1 },
@@ -26,13 +28,36 @@ const balls = [
 	{ name: 'masterball', id: 4 },
 ];
 
+const commandsPokechat = [
+	{
+		name: 'pokeball',
+		description: 'Achète des pokéballs!',
+		options: [
+			{
+				name: 'quantite',
+				type: 4,
+				description: 'Nombre de pokéballs à acheter',
+				required: true,
+			},
+		],
+	},
+];
+
 function pokeChat(client) {
+	slashCommande(commandsPokechat);
 	client.on('ready', () => {
 		console.log('Pokéchat Ready!');
 	});
 
 	client.on('guildMemberAdd', (member) => {
-		if (member.user.bot) return;
+		if (member.user.bot) {
+			member.roles.add(
+				member.guild.roles.cache.find(
+					(role) => role.name === "Champion d'arene"
+				)
+			);
+			return;
+		}
 		addTrainer(member);
 		let badgeRole = member.guild.roles.cache.find(
 			(role) => role.name === '0 Badge'
@@ -143,6 +168,21 @@ function pokeChat(client) {
 			if (response) {
 				message.reply(response);
 			}
+		}
+		if (message.content === '!listBot') {
+			await listBot(message);
+		}
+	});
+
+	client.on('interactionCreate', async (interaction) => {
+		if (!interaction.isCommand()) return;
+
+		const { commandName } = interaction;
+
+		if (commandName === 'pokeball') {
+			const quantite = interaction.options.getInteger('quantite');
+
+			// await interaction.reply(`Vous avez acheté ${quantite} pokéballs!`);
 		}
 	});
 

@@ -21,6 +21,7 @@
 	},
 	"homepage": "https://github.com/Valentin-Morette/template_bot_discord#readme",
 	"dependencies": {
+		"@discordjs/rest": "^2.0.1",
 		"axios": "^1.4.0",
 		"discord.js": "^14.7.1",
 		"dotenv": "^16.0.3",
