@@ -153,9 +153,7 @@ async function initServer(message) {
 }
 
 function slashCommande(commands) {
-	const rest = new REST({ version: '10' }).setToken(
-		'MTE0MjMyNTUxNTU3NTg4OTk3MQ.GcizeO.AFd8kXMpDG1fkV2QozPZEf6IwznpOOXgh1jkXI'
-	);
+	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 	(async () => {
 		try {

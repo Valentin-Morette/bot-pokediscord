@@ -28,20 +28,20 @@ const balls = [
 	{ name: 'masterball', id: 4 },
 ];
 
-const commandsPokechat = [
-	{
-		name: 'pokeball',
-		description: 'Achète des pokéballs!',
-		options: [
-			{
-				name: 'quantite',
-				type: 4,
-				description: 'Nombre de pokéballs à acheter',
-				required: true,
-			},
-		],
-	},
-];
+// const commandsPokechat = [
+// 	{
+// 		name: 'pokeball',
+// 		description: 'Achète des pokéballs!',
+// 		options: [
+// 			{
+// 				name: 'quantite',
+// 				type: 4,
+// 				description: 'Nombre de pokéballs à acheter',
+// 				required: true,
+// 			},
+// 		],
+// 	},
+// ];
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
