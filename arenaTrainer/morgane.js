@@ -6,15 +6,13 @@ function botMorgane(clientMorgane) {
 	clientMorgane.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'safrania') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '6 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Morgane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 6 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 99, 35, 'Marais', '6 Badges');
 		}
 	});
 

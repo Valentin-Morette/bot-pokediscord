@@ -6,15 +6,13 @@ function botAuguste(clientAuguste) {
 	clientAuguste.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'cramois-île') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '7 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Auguste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 45 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 7 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 115, 45, 'Volcan', '7 Badges');
 		}
 	});
 

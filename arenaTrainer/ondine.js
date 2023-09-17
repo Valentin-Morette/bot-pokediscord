@@ -6,15 +6,13 @@ function botOndine(clientOndine) {
 	clientOndine.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'azuria') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '2 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Ondine, le champion d'arène de type eau. Pour obtenir le badge cascade, il vous faudra au minimum 33 pokémons dont 12 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 2 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 33, 12, 'Cascade', '2 Badges');
 		}
 	});
 

@@ -6,19 +6,13 @@ function botGiovanni(clientGiovanni) {
 	clientGiovanni.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'jadielle') return;
-		if (!message.member.roles.cache.find((role) => role.name === '7 Badges')) {
-			message.reply("Vous n'avez même pas 7 Badges!");
-			return;
-		}
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '8 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Giovanni, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 50 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 8 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 150, 50, 'Terre', '8 Badges');
 		}
 	});
 

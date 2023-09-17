@@ -71,9 +71,10 @@ async function getPokedex(idTrainer) {
 		const response = await axios.get(
 			'http://localhost:5000/pokemon/trainer/' + idTrainer
 		);
-		let strResponse = 'Vous avez : \n';
-		for (let i = 0; i < response.data.length; i++) {
-			strResponse += `- ${response.data[i].quantity} ${response.data[i].name}\n`;
+		console.log(response.data);
+		let strResponse = `Vous avez ${response.data.sumPokemon} pokémon, dont ${response.data.countPokemon} différents.\nVotre pokedex : \n`;
+		for (let i = 0; i < response.data.pokemon.length; i++) {
+			strResponse += `- ${response.data.pokemon[i].quantity} ${response.data.pokemon[i].name}\n`;
 		}
 		return strResponse;
 	} catch (error) {
@@ -127,4 +128,42 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	}
 }
 
-export { addTrainer, getBallTrainer, getPokedex, getMoney, buyBall };
+async function getBadge(
+	message,
+	nbPokemon,
+	nbPokemonDiff,
+	nameBadge,
+	roleBadge
+) {
+	let idTrainer = message.member.id;
+	try {
+		const response = await axios.get(
+			'http://localhost:5000/pokemon/trainer/' + idTrainer
+		);
+		if (response.data.sumPokemon < nbPokemon) {
+			return message.reply(
+				`Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`
+			);
+		}
+		if (response.data.countPokemon < nbPokemonDiff) {
+			return message.reply(
+				`Vous n'avez pas assez de pokémon différents pour obtenir le badge ${nameBadge}.`
+			);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+	let badgeRole = message.guild.roles.cache.find(
+		(role) => role.name === roleBadge
+	);
+
+	if (badgeRole) {
+		if (message.member.roles.cache.has(badgeRole.id)) {
+			return message.reply(`Vous avez déjà le badge ${nameBadge}.`);
+		}
+		message.member.roles.add(badgeRole).catch(console.error);
+		return message.reply(`Vous avez reçu le badge ${nameBadge} !`);
+	}
+}
+
+export { addTrainer, getBallTrainer, getPokedex, getMoney, buyBall, getBadge };

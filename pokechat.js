@@ -44,7 +44,7 @@ const balls = [
 // ];
 
 function pokeChat(client) {
-	slashCommande(commandsPokechat);
+	// slashCommande(commandsPokechat);
 	client.on('ready', () => {
 		console.log('Pokéchat Ready!');
 	});
@@ -174,17 +174,17 @@ function pokeChat(client) {
 		}
 	});
 
-	client.on('interactionCreate', async (interaction) => {
-		if (!interaction.isCommand()) return;
+	// client.on('interactionCreate', async (interaction) => {
+	// 	if (!interaction.isCommand()) return;
 
-		const { commandName } = interaction;
+	// 	const { commandName } = interaction;
 
-		if (commandName === 'pokeball') {
-			const quantite = interaction.options.getInteger('quantite');
+	// 	if (commandName === 'pokeball') {
+	// 		const quantite = interaction.options.getInteger('quantite');
 
-			// await interaction.reply(`Vous avez acheté ${quantite} pokéballs!`);
-		}
-	});
+	// 		// await interaction.reply(`Vous avez acheté ${quantite} pokéballs!`);
+	// 	}
+	// });
 
 	client.login(process.env.TOKEN);
 }

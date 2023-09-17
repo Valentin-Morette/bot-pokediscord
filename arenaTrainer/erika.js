@@ -6,15 +6,13 @@ function botErika(clientErika) {
 	clientErika.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'céladopole') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '4 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Erika, le champion d'arène de type plante. Pour obtenir le badge prisme, il vous faudra au minimum 67 pokémons dont 23 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 4 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 67, 23, 'Prisme', '4 Badges');
 		}
 	});
 

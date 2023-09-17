@@ -1,3 +1,4 @@
+import { getBadge } from '../trainerFunctions.js';
 function botPierre(clientPierre) {
 	clientPierre.on('ready', () => {
 		console.log('Pierre Ready!');
@@ -6,15 +7,13 @@ function botPierre(clientPierre) {
 	clientPierre.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'argenta') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '1 Badge'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Pierre, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 1 Badge!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 10, 5, 'Roche', '1 Badge');
 		}
 	});
 

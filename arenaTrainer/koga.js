@@ -6,15 +6,13 @@ function botKoga(clientKoga) {
 	clientKoga.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 		if (message.channel.name !== 'parmanie') return;
-		if (message.content === '!upgrade') {
-			let badgeRole = message.guild.roles.cache.find(
-				(role) => role.name === '5 Badges'
+		if (message.content === '!info') {
+			return message.reply(
+				"Je suis Koga, le champion d'arène de type poison. Pour obtenir le badge Âme, il vous faudra au minimum 80 pokémons dont 30 différents."
 			);
-
-			if (badgeRole) {
-				message.member.roles.add(badgeRole).catch(console.error);
-				message.reply('Vous avez reçu le rôle 5 Badges!');
-			}
+		}
+		if (message.content === '!badge') {
+			await getBadge(message, 80, 30, 'Âme', '5 Badges');
 		}
 	});
 
