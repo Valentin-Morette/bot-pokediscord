@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-async function findRandomPokemon(name) {
+async function findRandomPokemon(name, type) {
 	try {
 		const randomPokemon = await axios.post(
 			'http://localhost:5000/pokemon/wild',
 			{
 				nameZone: name,
+				spawnType: type,
 			}
 		);
 		if (randomPokemon.data.length === 0) {
@@ -64,4 +65,37 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 	}
 }
 
-export { findRandomPokemon, catchPokemon, sellPokemon };
+async function evolvePokemon(idTrainer, namePokemon) {
+	try {
+		const evolvePokemon = await axios.post(
+			'http://localhost:5000/pokemon/evolve',
+			{
+				namePokemon: namePokemon,
+				idTrainer: idTrainer,
+			}
+		);
+		if (evolvePokemon.data.status === 'noPokemon') {
+			return (
+				'Il vous faut au minimum ' +
+				evolvePokemon.data.numberPokemon +
+				' ' +
+				namePokemon +
+				' pour le faire évoluer.'
+			);
+		} else if (evolvePokemon.data.status === 'evolve') {
+			return (
+				'Vous avez fait évoluer ' +
+				namePokemon +
+				' en ' +
+				evolvePokemon.data.pokemonName +
+				'.'
+			);
+		} else if (evolvePokemon.data.status === 'noEvolution') {
+			return namePokemon + " n'a pas d'évolution.";
+		}
+	} catch (error) {
+		console.error("Erreur lors de l'évolution d'un pokémon.");
+	}
+}
+
+export { findRandomPokemon, catchPokemon, sellPokemon, evolvePokemon };

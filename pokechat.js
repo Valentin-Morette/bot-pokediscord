@@ -18,6 +18,7 @@ import {
 	findRandomPokemon,
 	catchPokemon,
 	sellPokemon,
+	evolvePokemon,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
 
@@ -93,14 +94,24 @@ function pokeChat(client) {
 				await deleteEmojis(message.guild);
 			}
 		}
-		if (message.content === '!cherche' || message.content === '!search') {
-			const pokemon = await findRandomPokemon(message.channel.name);
+		if (
+			message.content === '!cherche' ||
+			message.content === '!canne' ||
+			message.content === '!superCanne' ||
+			message.content === '!megaCanne'
+		) {
+			let type = message.content.split('!')[1];
+			if (type === 'cherche') {
+				type = 'herbe';
+			}
+			const pokemon = await findRandomPokemon(message.channel.name, type);
 			console.log(pokemon);
 			message.channel.send(
 				pokemon
 					? `Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
 					: `Il n'y a pas de pokémon sauvage dans cette zone !`
 			);
+			return;
 		}
 		if (message.content === '!ball') {
 			message.reply(await getBallTrainer(message));
@@ -155,6 +166,14 @@ function pokeChat(client) {
 		}
 		if (message.content === '!money') {
 			message.reply(await getMoney(message.author.id));
+		}
+		if (message.content.startsWith('!evolution')) {
+			const args = message.content.split(' ');
+			const namePokemon = args[1];
+			const response = await evolvePokemon(message.author.id, namePokemon);
+			if (response) {
+				message.reply(response);
+			}
 		}
 		if (message.content.startsWith('!vend')) {
 			const args = message.content.split(' ');
