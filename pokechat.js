@@ -6,6 +6,7 @@ import {
 	addRoles,
 	initServer,
 	listBot,
+	allPinMessage,
 } from './createServerFunctions.js';
 import {
 	addTrainer,
@@ -13,6 +14,8 @@ import {
 	getPokedex,
 	getMoney,
 	buyBall,
+	priceBall,
+	pricePokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -69,7 +72,7 @@ function pokeChat(client) {
 		}
 
 		const welcomeChannel = member.guild.channels.cache.find(
-			(ch) => ch.name === 'welcome'
+			(ch) => ch.name === 'accueil'
 		);
 		if (welcomeChannel) {
 			welcomeChannel.send(`Bienvenue ${member} sur le serveur!`);
@@ -92,6 +95,10 @@ function pokeChat(client) {
 				await addRoles(message);
 			} else if (message.content === '!deleteEmojis') {
 				await deleteEmojis(message.guild);
+			} else if (message.content === '!listBot') {
+				await listBot(message);
+			} else if (message.content === '!allPinMessage') {
+				await allPinMessage(client);
 			}
 		}
 		if (
@@ -101,22 +108,20 @@ function pokeChat(client) {
 			message.content === '!megaCanne'
 		) {
 			let type = message.content.split('!')[1];
-			if (type === 'cherche') {
-				type = 'herbe';
-			}
-			const pokemon = await findRandomPokemon(message.channel.name, type);
-			console.log(pokemon);
-			message.channel.send(
-				pokemon
-					? `Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
-					: `Il n'y a pas de pokémon sauvage dans cette zone !`
-			);
+			type = type === 'cherche' ? 'herbe' : type;
+			await findRandomPokemon(message, type);
 			return;
 		}
 		if (message.content === '!ball') {
 			message.reply(await getBallTrainer(message));
 		}
-		if (message.content.startsWith('!buy')) {
+		if (message.content.startsWith('!achat')) {
+			if (message.channel.name !== 'boutique') {
+				message.reply(
+					'Vous devez être dans le salon boutique pour acheter des pokéballs.'
+				);
+				return;
+			}
 			const args = message.content.split(' ');
 			const quantity = args[1];
 			const nameBall = args[2];
@@ -131,14 +136,19 @@ function pokeChat(client) {
 			if (response) {
 				message.reply(response);
 			}
-		} else if (
-			message.content.startsWith('!') &&
-			balls.some((ball) => message.content.includes(ball.name))
-		) {
+			return;
+		}
+		if (balls.some((ball) => message.content.startsWith(`!${ball.name}`))) {
 			const ball = balls.find((ball) => message.content.includes(ball.name));
 			const ballName = ball.name;
 			const idPokeball = ball.id;
 			const catchCode = message.content.split(' ')[1];
+			if (!catchCode || isNaN(catchCode)) {
+				message.reply(
+					`La commande doit être de la forme : !${ballName} [code]`
+				);
+				return;
+			}
 			const idTrainer = message.author.id;
 			const response = await catchPokemon(catchCode, idTrainer, idPokeball);
 			if (response.status === 'noCatch') {
@@ -174,10 +184,17 @@ function pokeChat(client) {
 			if (response) {
 				message.reply(response);
 			}
+			return;
 		}
 		if (message.content.startsWith('!vend')) {
 			const args = message.content.split(' ');
 			const quantity = args[1];
+			if (isNaN(quantity)) {
+				message.reply(
+					'La commande doit être de la forme : !vend [quantité(nombre)] [nom du pokémon]'
+				);
+				return;
+			}
 			const namePokemon = args[2];
 			const response = await sellPokemon(
 				message.author.id,
@@ -190,6 +207,20 @@ function pokeChat(client) {
 		}
 		if (message.content === '!listBot') {
 			await listBot(message);
+		}
+		if (message.content.startsWith('!prix')) {
+			const args = message.content.split(' ');
+			console.log(args);
+
+			const isPokeball = balls.some((ball) => ball.name === args[1]);
+			if (isPokeball) {
+				const ball = balls.find((ball) => ball.name === args[1]);
+				await priceBall(message, ball.id);
+				return;
+			} else {
+				await pricePokemon(message, args[1]);
+				return;
+			}
 		}
 	});
 

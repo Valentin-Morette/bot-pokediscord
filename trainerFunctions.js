@@ -18,7 +18,7 @@ async function addTrainer(member) {
 				trainer: {
 					idDiscord: member.id,
 					name: member.user.username,
-					money: 0,
+					money: 1000,
 					point: 0,
 					level: 0,
 				},
@@ -72,6 +72,9 @@ async function getPokedex(idTrainer) {
 			'http://localhost:5000/pokemon/trainer/' + idTrainer
 		);
 		console.log(response.data);
+		if (response.data.pokemon.length === 0) {
+			return "Vous n'avez pas encore de pokémon.";
+		}
 		let strResponse = `Vous avez ${response.data.sumPokemon} pokémon, dont ${response.data.countPokemon} différents.\nVotre pokedex : \n`;
 		for (let i = 0; i < response.data.pokemon.length; i++) {
 			strResponse += `- ${response.data.pokemon[i].quantity} ${response.data.pokemon[i].name}\n`;
@@ -94,6 +97,50 @@ async function getMoney(idTrainer) {
 		);
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+async function priceBall(message, idBall) {
+	try {
+		const response = await axios.get(
+			'http://localhost:5000/pokeball/' + idBall
+		);
+		message.channel.send(
+			`Le prix d'une ${capitalizeFirstLetter(
+				response.data.name
+			)} est de ${formatNombreAvecSeparateur(
+				response.data.buyingPrice
+			)} pokédollars.`
+		);
+	} catch (error) {
+		console.error("La pokéball n'existe pas.");
+	}
+}
+
+async function pricePokemon(message, namePokemon) {
+	try {
+		const response = await axios.post('http://localhost:5000/pokemon/price', {
+			namePokemon: namePokemon,
+		});
+		let pokemon = response.data;
+		if (pokemon.status === 'noExistPokemon') {
+			message.reply(
+				`${capitalizeFirstLetter(
+					namePokemon
+				)} n'est ni un pokémon, ni une pokeball.`
+			);
+			return;
+		} else {
+			message.channel.send(
+				`Le prix de vente d'un ${capitalizeFirstLetter(
+					namePokemon
+				)} est de ${formatNombreAvecSeparateur(
+					response.data.price
+				)} pokédollars.`
+			);
+		}
+	} catch (error) {
+		console.error("Le pokémon n'existe pas.");
 	}
 }
 
@@ -166,4 +213,13 @@ async function getBadge(
 	}
 }
 
-export { addTrainer, getBallTrainer, getPokedex, getMoney, buyBall, getBadge };
+export {
+	addTrainer,
+	getBallTrainer,
+	getPokedex,
+	getMoney,
+	buyBall,
+	getBadge,
+	priceBall,
+	pricePokemon,
+};

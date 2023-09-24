@@ -1,18 +1,26 @@
 import axios from 'axios';
 
-async function findRandomPokemon(name, type) {
+async function findRandomPokemon(message, type) {
 	try {
 		const randomPokemon = await axios.post(
 			'http://localhost:5000/pokemon/wild',
 			{
-				nameZone: name,
+				nameZone: message.channel.name,
 				spawnType: type,
 			}
 		);
 		if (randomPokemon.data.length === 0) {
-			return null;
+			message.channel.send(
+				type === 'herbe'
+					? 'Il n y a pas de pokémon sauvage dans cette zone.'
+					: 'Il n y a pas de zone de pêche dans cette zone.'
+			);
+			return;
 		}
-		return randomPokemon.data;
+		let pokemon = randomPokemon.data;
+		message.channel.send(
+			`Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
+		);
 	} catch (error) {
 		console.error(error);
 	}
@@ -74,6 +82,7 @@ async function evolvePokemon(idTrainer, namePokemon) {
 				idTrainer: idTrainer,
 			}
 		);
+		console.log(evolvePokemon.data);
 		if (evolvePokemon.data.status === 'noPokemon') {
 			return (
 				'Il vous faut au minimum ' +
@@ -92,6 +101,12 @@ async function evolvePokemon(idTrainer, namePokemon) {
 			);
 		} else if (evolvePokemon.data.status === 'noEvolution') {
 			return namePokemon + " n'a pas d'évolution.";
+		} else if (evolvePokemon.data.status === 'noExistPokemon') {
+			return (
+				namePokemon +
+				" n'est pas un pokémon.\n" +
+				'Veuillez réessayer avec la commande :\n!evolution [nom du pokémon]'
+			);
 		}
 	} catch (error) {
 		console.error("Erreur lors de l'évolution d'un pokémon.");

@@ -4,7 +4,15 @@ import { Routes } from 'discord-api-types/v10';
 
 async function createAllChannels(message) {
 	message.guild.channels.create({
-		name: 'welcome',
+		name: 'accueil',
+		type: 0,
+	});
+	message.guild.channels.create({
+		name: 'commandes',
+		type: 0,
+	});
+	message.guild.channels.create({
+		name: 'boutique',
 		type: 0,
 	});
 	try {
@@ -17,7 +25,7 @@ async function createAllChannels(message) {
 
 			let role = message.guild.roles.cache.find((r) => r.name === roleName);
 
-			if (!role) {
+			if (-!role) {
 				console.error(`Rôle "${roleName}" introuvable`);
 				continue;
 			}
@@ -119,7 +127,7 @@ async function addRoles(message) {
 
 			try {
 				const role = await message.guild.roles.create(options);
-				console.log(`Le rôle ${role.name} a été créé!`);
+				console.log(`Le rôle ${role.name} a été créé- !`);
 			} catch (error) {
 				console.error(`Erreur lors de la création du rôle: ${error}`);
 			}
@@ -144,12 +152,46 @@ async function listBot(message) {
 
 async function initServer(message) {
 	await deleteAllChannels(message.guild);
-	await new Promise((resolve) => setTimeout(resolve, 5000));
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addRoles(message);
-	await new Promise((resolve) => setTimeout(resolve, 5000));
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addemojis(message);
 	await createAllChannels(message);
 	await listBot(message);
+}
+
+async function allPinMessage(client) {
+	let channelName = 'commandes';
+	let channel = client.channels.cache.find(
+		(channel) => channel.name === channelName
+	);
+	if (channel) {
+		channel
+			.send(
+				'Liste des commandes du serveur : \n' +
+					'- !cherche : pour chercher un pokémon.\n' +
+					'- !canne : pour pêcher un pokémon avec la canne.\n' +
+					'- !superCanne : pour pêcher un pokémon avec la super canne.\n' +
+					'- !megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
+					'- !pokeball [code] : pour capturer un pokémon avec une pokeball.\n' +
+					'- !superball [code] : pour capturer un pokémon avec une superball.\n' +
+					'- !hyperball [code] : pour capturer un pokémon avec une hyperball.\n' +
+					'- !masterball [code] : pour capturer un pokémon avec une masterball.\n' +
+					'- !vend [quantité] [nom du pokémon] : pour vendre un pokémon.\n' +
+					'- !evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
+					'- !money : pour voir votre argent.\n' +
+					'- !ball : pour voir toutes vos pokéballs.\n' +
+					'- !achat [quantité] [nom de la pokéball] : pour acheter des pokéballs.\n' +
+					"- !prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
+					"- !prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n"
+			)
+			.then((message) => {
+				message.pin().catch(console.error);
+			})
+			.catch(console.error);
+	} else {
+		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
+	}
 }
 
 function slashCommande(commands) {
@@ -169,7 +211,7 @@ function slashCommande(commands) {
 				}
 			);
 
-			console.log('Commandes slash enregistrées avec succès!');
+			console.log('Commandes slash enregistrées avec succès- !');
 		} catch (error) {
 			console.error(error);
 		}
@@ -185,4 +227,5 @@ export {
 	initServer,
 	listBot,
 	slashCommande,
+	allPinMessage,
 };
