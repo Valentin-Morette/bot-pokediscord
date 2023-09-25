@@ -82,7 +82,6 @@ async function evolvePokemon(idTrainer, namePokemon) {
 				idTrainer: idTrainer,
 			}
 		);
-		console.log(evolvePokemon.data);
 		if (evolvePokemon.data.status === 'noPokemon') {
 			return (
 				'Il vous faut au minimum ' +

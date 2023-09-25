@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { all } from 'axios';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
@@ -157,12 +157,14 @@ async function initServer(message) {
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addemojis(message);
 	await createAllChannels(message);
+	await new Promise((resolve) => setTimeout(resolve, 10000));
 	await listBot(message);
+	await allPinMessage(message.guild);
 }
 
-async function allPinMessage(client) {
+async function allPinMessage(guild) {
 	let channelName = 'commandes';
-	let channel = client.channels.cache.find(
+	let channel = guild.channels.cache.find(
 		(channel) => channel.name === channelName
 	);
 	if (channel) {
@@ -177,13 +179,16 @@ async function allPinMessage(client) {
 					'- !superball [code] : pour capturer un pokémon avec une superball.\n' +
 					'- !hyperball [code] : pour capturer un pokémon avec une hyperball.\n' +
 					'- !masterball [code] : pour capturer un pokémon avec une masterball.\n' +
-					'- !vend [quantité] [nom du pokémon] : pour vendre un pokémon.\n' +
+					'- !vend [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
+					'- !nbEvolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- !evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
 					'- !money : pour voir votre argent.\n' +
 					'- !ball : pour voir toutes vos pokéballs.\n' +
-					'- !achat [quantité] [nom de la pokéball] : pour acheter des pokéballs.\n' +
-					"- !prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
-					"- !prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n"
+					'- !achat [quantité] [nom de la pokéball] : pour acheter des pokéballs.(Uniquement dans le salon boutique)\n' +
+					"- !prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
+					"- !prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)\n" +
+					"- !info : pour connaitre des conditions d'obtention du badge.(Uniquement dans la ville du champion)\n" +
+					"- !badge : pour obtenir le badge de l'arene.(Uniquement dans la ville du champion)\n"
 			)
 			.then((message) => {
 				message.pin().catch(console.error);

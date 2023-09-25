@@ -16,6 +16,7 @@ import {
 	buyBall,
 	priceBall,
 	pricePokemon,
+	nbPokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -31,6 +32,16 @@ const balls = [
 	{ name: 'hyperball', id: 3 },
 	{ name: 'masterball', id: 4 },
 ];
+
+function ctrlBoutique(message) {
+	if (message.channel.name !== 'boutique') {
+		message.reply(
+			'Vous devez être dans le salon boutique pour acheter des pokéballs.'
+		);
+		return false;
+	}
+	return true;
+}
 
 // const commandsPokechat = [
 // 	{
@@ -81,26 +92,7 @@ function pokeChat(client) {
 
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
-		console.log(`Message received in channel: ${message.channel.name}`);
-		if (message.author.id === process.env.MYDISCORDID) {
-			if (message.content === '!initServer') {
-				await initServer(message);
-			} else if (message.content === '!createAllChannels') {
-				await createAllChannels(message);
-			} else if (message.content === '!deleteAllChannels') {
-				await deleteAllChannels(message.guild);
-			} else if (message.content === '!addEmojis') {
-				await addemojis(message);
-			} else if (message.content === '!createRoles') {
-				await addRoles(message);
-			} else if (message.content === '!deleteEmojis') {
-				await deleteEmojis(message.guild);
-			} else if (message.content === '!listBot') {
-				await listBot(message);
-			} else if (message.content === '!allPinMessage') {
-				await allPinMessage(client);
-			}
-		}
+
 		if (
 			message.content === '!cherche' ||
 			message.content === '!canne' ||
@@ -112,32 +104,7 @@ function pokeChat(client) {
 			await findRandomPokemon(message, type);
 			return;
 		}
-		if (message.content === '!ball') {
-			message.reply(await getBallTrainer(message));
-		}
-		if (message.content.startsWith('!achat')) {
-			if (message.channel.name !== 'boutique') {
-				message.reply(
-					'Vous devez être dans le salon boutique pour acheter des pokéballs.'
-				);
-				return;
-			}
-			const args = message.content.split(' ');
-			const quantity = args[1];
-			const nameBall = args[2];
-			const idBall = balls.find((ball) => ball.name === nameBall).id;
-			console.log(idBall);
-			const response = await buyBall(
-				message.author.id,
-				idBall,
-				quantity,
-				nameBall
-			);
-			if (response) {
-				message.reply(response);
-			}
-			return;
-		}
+
 		if (balls.some((ball) => message.content.startsWith(`!${ball.name}`))) {
 			const ball = balls.find((ball) => message.content.includes(ball.name));
 			const ballName = ball.name;
@@ -169,24 +136,75 @@ function pokeChat(client) {
 				message.channel.send(`Le Pokémon c'est déjà échappé.`);
 			} else if (response.status === 'noBall') {
 				message.reply(`Vous n'avez pas de ${ballName}.`);
+			} else if (response.status === 'noExistPokemon') {
+				message.reply(`Le code ${catchCode} ne correspond à aucun pokémon.`);
 			}
+			return;
 		}
+
+		if (message.content === '!ball') {
+			message.reply(await getBallTrainer(message));
+			return;
+		}
+
 		if (message.content === '!pokedex') {
 			message.reply(await getPokedex(message.author.id));
+			return;
 		}
-		if (message.content === '!money') {
-			message.reply(await getMoney(message.author.id));
-		}
-		if (message.content.startsWith('!evolution')) {
+
+		if (message.content.startsWith('!achat')) {
+			if (!ctrlBoutique(message)) return;
 			const args = message.content.split(' ');
-			const namePokemon = args[1];
-			const response = await evolvePokemon(message.author.id, namePokemon);
+			const quantity = args[1];
+			const nameBall = args[2];
+			const idBall = balls.find((ball) => ball.name === nameBall).id;
+			const response = await buyBall(
+				message.author.id,
+				idBall,
+				quantity,
+				nameBall
+			);
 			if (response) {
 				message.reply(response);
 			}
 			return;
 		}
+
+		if (message.content.startsWith('!nbEvolution')) {
+			const args = message.content.split(' ');
+			const namePokemon = args[1];
+			if (!namePokemon) {
+				message.reply(
+					'La commande doit être de la forme : !nbEvolution [nom du pokémon]'
+				);
+				return;
+			}
+			await nbPokemon(message, namePokemon);
+			return;
+		}
+
+		if (message.content.startsWith('!prix')) {
+			if (!ctrlBoutique(message)) return;
+			const args = message.content.split(' ');
+			console.log(args);
+
+			const isPokeball = balls.some((ball) => ball.name === args[1]);
+			if (isPokeball) {
+				const ball = balls.find((ball) => ball.name === args[1]);
+				await priceBall(message, ball.id);
+			} else {
+				await pricePokemon(message, args[1]);
+			}
+			return;
+		}
+
+		if (message.content === '!money') {
+			message.reply(await getMoney(message.author.id));
+			return;
+		}
+
 		if (message.content.startsWith('!vend')) {
+			if (!ctrlBoutique(message)) return;
 			const args = message.content.split(' ');
 			const quantity = args[1];
 			if (isNaN(quantity)) {
@@ -204,23 +222,40 @@ function pokeChat(client) {
 			if (response) {
 				message.reply(response);
 			}
+			return;
 		}
-		if (message.content === '!listBot') {
-			await listBot(message);
-		}
-		if (message.content.startsWith('!prix')) {
-			const args = message.content.split(' ');
-			console.log(args);
 
-			const isPokeball = balls.some((ball) => ball.name === args[1]);
-			if (isPokeball) {
-				const ball = balls.find((ball) => ball.name === args[1]);
-				await priceBall(message, ball.id);
-				return;
-			} else {
-				await pricePokemon(message, args[1]);
-				return;
+		if (message.content.startsWith('!evolution')) {
+			const args = message.content.split(' ');
+			const namePokemon = args[1];
+			const response = await evolvePokemon(message.author.id, namePokemon);
+			if (response) {
+				message.reply(response);
 			}
+			return;
+		}
+
+		if (message.author.id === process.env.MYDISCORDID) {
+			if (message.content === '!initServer') {
+				await initServer(message, client);
+			} else if (message.content === '!createAllChannels') {
+				await createAllChannels(message);
+			} else if (message.content === '!deleteAllChannels') {
+				await deleteAllChannels(message.guild);
+			} else if (message.content === '!addEmojis') {
+				await addemojis(message);
+			} else if (message.content === '!createRoles') {
+				await addRoles(message);
+			} else if (message.content === '!deleteEmojis') {
+				await deleteEmojis(message.guild);
+			} else if (message.content === '!listBot') {
+				await listBot(message);
+			} else if (message.content === '!allPinMessage') {
+				await allPinMessage(client);
+			} else if (message.content === '!listBot') {
+				await listBot(message);
+			}
+			return;
 		}
 	});
 
