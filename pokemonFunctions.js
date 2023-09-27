@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { EmbedBuilder } from 'discord.js';
+import { ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 async function findRandomPokemon(message, type) {
 	try {
@@ -18,9 +21,17 @@ async function findRandomPokemon(message, type) {
 			return;
 		}
 		let pokemon = randomPokemon.data;
-		message.channel.send(
-			`Un ${pokemon.name} sauvage apparaît !\nTapez !pokeball ${pokemon.catchCode} pour le capturer !`
-		);
+		const button = new ButtonBuilder()
+			.setCustomId('pokeball')
+			.setStyle(ButtonStyle.Secondary)
+			.setLabel('Pokeball');
+		const row = new ActionRowBuilder().addComponents(button);
+		const embed = new EmbedBuilder()
+			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
+			.setDescription(`Tapez !pokeball ${pokemon.catchCode} pour le capturer !`)
+			.setImage(pokemon.img)
+			.setColor('#FFFFFF');
+		message.channel.send({ embeds: [embed], components: [row] });
 	} catch (error) {
 		console.error(error);
 	}

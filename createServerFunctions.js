@@ -2,7 +2,7 @@ import axios, { all } from 'axios';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
-async function createAllChannels(message) {
+async function createAllChannels(message, client) {
 	message.guild.channels.create({
 		name: 'accueil',
 		type: 0,
@@ -10,6 +10,16 @@ async function createAllChannels(message) {
 	message.guild.channels.create({
 		name: 'commandes',
 		type: 0,
+		permissionOverwrites: [
+			{
+				id: message.guild.roles.everyone.id,
+				deny: ['0x0000000000000800'],
+			},
+			{
+				id: client.user.id,
+				allow: ['0x0000000000000800'],
+			},
+		],
 	});
 	message.guild.channels.create({
 		name: 'boutique',
@@ -150,13 +160,13 @@ async function listBot(message) {
 	}
 }
 
-async function initServer(message) {
+async function initServer(message, client) {
 	await deleteAllChannels(message.guild);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addRoles(message);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addemojis(message);
-	await createAllChannels(message);
+	await createAllChannels(message, client);
 	await new Promise((resolve) => setTimeout(resolve, 10000));
 	await listBot(message);
 	await allPinMessage(message.guild);

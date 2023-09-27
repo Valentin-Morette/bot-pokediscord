@@ -25,6 +25,8 @@ import {
 	evolvePokemon,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
+import { ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 const balls = [
 	{ name: 'pokeball', id: 1 },
@@ -93,6 +95,14 @@ function pokeChat(client) {
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 
+		if (message.content === '!button') {
+			const button = new ButtonBuilder()
+				.setCustomId('pokeball')
+				.setStyle(ButtonStyle.Secondary)
+				.setLabel('Pokeball');
+			const row = new ActionRowBuilder().addComponents(button);
+			message.channel.send({ components: [row] });
+		}
 		if (
 			message.content === '!cherche' ||
 			message.content === '!canne' ||
@@ -270,6 +280,40 @@ function pokeChat(client) {
 	// 		// await interaction.reply(`Vous avez acheté ${quantite} pokéballs!`);
 	// 	}
 	// });
+
+	client.on('interactionCreate', async (interaction) => {
+		if (interaction.isButton()) {
+			if (interaction.customId === 'pokeball') {
+				interaction.reply('pokeball');
+				console.log('test');
+				// const catchCode = interaction.message.embeds[0].description.split(' ')[2];
+				// const idTrainer = interaction.user.id;
+				// const idPokeball = 1;
+				// const response = await catchPokemon(catchCode, idTrainer, idPokeball);
+				// if (response.status === 'noCatch') {
+				// 	interaction.reply(
+				// 		`Le ${response.pokemonName} est resortit !\nTapez !pokeball ${catchCode} pour retenter votre chance.`
+				// 	);
+				// } else if (response.status === 'catch') {
+				// 	interaction.reply(
+				// 		`Le ${response.pokemonName} ${catchCode} a été capturé par <@${interaction.user.id}>.`
+				// 	);
+				// } else if (response.status === 'escape') {
+				// 	interaction.reply(
+				// 		`Le ${response.pokemonName} ${catchCode} s'est échappé !`
+				// 	);
+				// } else if (response.status === 'alreadyCatch') {
+				// 	interaction.reply(`Le Pokémon a déjà été capturé.`);
+				// } else if (response.status === 'alreadyEscape') {
+				// 	interaction.reply(`Le Pokémon c'est déjà échappé.`);
+				// } else if (response.status === 'noBall') {
+				// 	interaction.reply(`Vous n'avez pas de pokeball.`);
+				// } else if (response.status === 'noExistPokemon') {
+				// 	interaction.reply(`Le code ${catchCode} ne correspond à aucun pokémon.`);
+				// }
+			}
+		}
+	});
 
 	client.login(process.env.TOKEN);
 }
