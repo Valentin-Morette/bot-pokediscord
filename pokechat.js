@@ -14,8 +14,7 @@ import {
 	getPokedex,
 	getMoney,
 	buyBall,
-	priceBall,
-	pricePokemon,
+	getPrice,
 	nbPokemon,
 } from './trainerFunctions.js';
 import {
@@ -45,23 +44,136 @@ function ctrlBoutique(message) {
 	return true;
 }
 
-// const commandsPokechat = [
-// 	{
-// 		name: 'pokeball',
-// 		description: 'Achète des pokéballs!',
-// 		options: [
-// 			{
-// 				name: 'quantite',
-// 				type: 4,
-// 				description: 'Nombre de pokéballs à acheter',
-// 				required: true,
-// 			},
-// 		],
-// 	},
-// ];
+async function handleCatch(interaction, idPokeball) {
+	const catchCode = interaction.customId.split('|')[1];
+	const idTrainer = interaction.user.id;
+	const response = await catchPokemon(catchCode, idTrainer, idPokeball);
+	let replyMessage;
+	let components;
+
+	switch (response.status) {
+		case 'noCatch':
+			replyMessage = `Le ${response.pokemonName} est resorti, retentez votre chance !`;
+			components = [createButtons(interaction.message, catchCode)];
+			break;
+		case 'catch':
+			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
+			break;
+		case 'escape':
+			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
+			break;
+		case 'alreadyCatch':
+			replyMessage = `Le Pokémon a déjà été capturé.`;
+			break;
+		case 'alreadyEscape':
+			replyMessage = `Le Pokémon s'est déjà échappé.`;
+			break;
+		case 'noBall':
+			replyMessage = `Vous n'avez pas de ${
+				balls.find((ball) => ball.id === idPokeball).name
+			}.`;
+			break;
+		case 'noExistPokemon':
+			replyMessage = `Le code ${catchCode} ne correspond à aucun pokémon.`;
+			break;
+		default:
+			replyMessage = 'Une erreur inattendue s’est produite.';
+	}
+
+	interaction.reply({ content: replyMessage, components });
+}
+
+function createButtons(message, catchCode) {
+	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+	let row = new ActionRowBuilder();
+	balls.forEach((ball) => {
+		const customEmoji = message.guild.emojis.cache.find(
+			(emoji) => emoji.name === ball
+		);
+		const button = new ButtonBuilder()
+			.setCustomId(ball + '|' + catchCode)
+			.setStyle(ButtonStyle.Secondary);
+		button[customEmoji ? 'setEmoji' : 'setLabel'](
+			customEmoji ? customEmoji.id : ball
+		);
+
+		row.addComponents(button);
+	});
+
+	return row;
+}
+
+const commandsPokechat = [
+	{
+		name: 'argent',
+		description: 'Affiche votre argent',
+	},
+	{
+		name: 'pokedex',
+		description: 'Affiche votre pokedex',
+	},
+	{
+		name: 'ball',
+		description: 'Affiche vos pokéballs',
+	},
+	{
+		name: 'evolution',
+		description: 'Fait évoluer un pokémon',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
+		name: 'vendre',
+		description: 'Vendre un / des pokémon(s)',
+		options: [
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon',
+				required: true,
+			},
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
+		name: 'prix',
+		description: "Affiche le prix d'une pokéball ou d'un pokémon",
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom de la pokéball ou du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
+		name: 'nombre-evolution',
+		description: 'Affiche le nombre de pokémon necessaire pour une évolution',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon à faire évoluer',
+				required: true,
+			},
+		],
+	},
+];
 
 function pokeChat(client) {
-	// slashCommande(commandsPokechat);
+	slashCommande(commandsPokechat);
 	client.on('ready', () => {
 		console.log('Pokéchat Ready!');
 	});
@@ -95,14 +207,6 @@ function pokeChat(client) {
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 
-		if (message.content === '!button') {
-			const button = new ButtonBuilder()
-				.setCustomId('pokeball')
-				.setStyle(ButtonStyle.Secondary)
-				.setLabel('Pokeball');
-			const row = new ActionRowBuilder().addComponents(button);
-			message.channel.send({ components: [row] });
-		}
 		if (
 			message.content === '!cherche' ||
 			message.content === '!canne' ||
@@ -112,53 +216,6 @@ function pokeChat(client) {
 			let type = message.content.split('!')[1];
 			type = type === 'cherche' ? 'herbe' : type;
 			await findRandomPokemon(message, type);
-			return;
-		}
-
-		if (balls.some((ball) => message.content.startsWith(`!${ball.name}`))) {
-			const ball = balls.find((ball) => message.content.includes(ball.name));
-			const ballName = ball.name;
-			const idPokeball = ball.id;
-			const catchCode = message.content.split(' ')[1];
-			if (!catchCode || isNaN(catchCode)) {
-				message.reply(
-					`La commande doit être de la forme : !${ballName} [code]`
-				);
-				return;
-			}
-			const idTrainer = message.author.id;
-			const response = await catchPokemon(catchCode, idTrainer, idPokeball);
-			if (response.status === 'noCatch') {
-				message.channel.send(
-					`Le ${response.pokemonName} est resortit !\nTapez !pokeball ${catchCode} pour retenter votre chance.`
-				);
-			} else if (response.status === 'catch') {
-				message.channel.send(
-					`Le ${response.pokemonName} ${catchCode} a été capturé par <@${message.author.id}>.`
-				);
-			} else if (response.status === 'escape') {
-				message.channel.send(
-					`Le ${response.pokemonName} ${catchCode} s'est échappé !`
-				);
-			} else if (response.status === 'alreadyCatch') {
-				message.reply(`Le Pokémon a déjà été capturé.`);
-			} else if (response.status === 'alreadyEscape') {
-				message.channel.send(`Le Pokémon c'est déjà échappé.`);
-			} else if (response.status === 'noBall') {
-				message.reply(`Vous n'avez pas de ${ballName}.`);
-			} else if (response.status === 'noExistPokemon') {
-				message.reply(`Le code ${catchCode} ne correspond à aucun pokémon.`);
-			}
-			return;
-		}
-
-		if (message.content === '!ball') {
-			message.reply(await getBallTrainer(message));
-			return;
-		}
-
-		if (message.content === '!pokedex') {
-			message.reply(await getPokedex(message.author.id));
 			return;
 		}
 
@@ -174,71 +231,6 @@ function pokeChat(client) {
 				quantity,
 				nameBall
 			);
-			if (response) {
-				message.reply(response);
-			}
-			return;
-		}
-
-		if (message.content.startsWith('!nbEvolution')) {
-			const args = message.content.split(' ');
-			const namePokemon = args[1];
-			if (!namePokemon) {
-				message.reply(
-					'La commande doit être de la forme : !nbEvolution [nom du pokémon]'
-				);
-				return;
-			}
-			await nbPokemon(message, namePokemon);
-			return;
-		}
-
-		if (message.content.startsWith('!prix')) {
-			if (!ctrlBoutique(message)) return;
-			const args = message.content.split(' ');
-			console.log(args);
-
-			const isPokeball = balls.some((ball) => ball.name === args[1]);
-			if (isPokeball) {
-				const ball = balls.find((ball) => ball.name === args[1]);
-				await priceBall(message, ball.id);
-			} else {
-				await pricePokemon(message, args[1]);
-			}
-			return;
-		}
-
-		if (message.content === '!money') {
-			message.reply(await getMoney(message.author.id));
-			return;
-		}
-
-		if (message.content.startsWith('!vend')) {
-			if (!ctrlBoutique(message)) return;
-			const args = message.content.split(' ');
-			const quantity = args[1];
-			if (isNaN(quantity)) {
-				message.reply(
-					'La commande doit être de la forme : !vend [quantité(nombre)] [nom du pokémon]'
-				);
-				return;
-			}
-			const namePokemon = args[2];
-			const response = await sellPokemon(
-				message.author.id,
-				namePokemon,
-				quantity
-			);
-			if (response) {
-				message.reply(response);
-			}
-			return;
-		}
-
-		if (message.content.startsWith('!evolution')) {
-			const args = message.content.split(' ');
-			const namePokemon = args[1];
-			const response = await evolvePokemon(message.author.id, namePokemon);
 			if (response) {
 				message.reply(response);
 			}
@@ -269,48 +261,48 @@ function pokeChat(client) {
 		}
 	});
 
-	// client.on('interactionCreate', async (interaction) => {
-	// 	if (!interaction.isCommand()) return;
-
-	// 	const { commandName } = interaction;
-
-	// 	if (commandName === 'pokeball') {
-	// 		const quantite = interaction.options.getInteger('quantite');
-
-	// 		// await interaction.reply(`Vous avez acheté ${quantite} pokéballs!`);
-	// 	}
-	// });
-
 	client.on('interactionCreate', async (interaction) => {
 		if (interaction.isButton()) {
-			if (interaction.customId === 'pokeball') {
-				interaction.reply('pokeball');
-				console.log('test');
-				// const catchCode = interaction.message.embeds[0].description.split(' ')[2];
-				// const idTrainer = interaction.user.id;
-				// const idPokeball = 1;
-				// const response = await catchPokemon(catchCode, idTrainer, idPokeball);
-				// if (response.status === 'noCatch') {
-				// 	interaction.reply(
-				// 		`Le ${response.pokemonName} est resortit !\nTapez !pokeball ${catchCode} pour retenter votre chance.`
-				// 	);
-				// } else if (response.status === 'catch') {
-				// 	interaction.reply(
-				// 		`Le ${response.pokemonName} ${catchCode} a été capturé par <@${interaction.user.id}>.`
-				// 	);
-				// } else if (response.status === 'escape') {
-				// 	interaction.reply(
-				// 		`Le ${response.pokemonName} ${catchCode} s'est échappé !`
-				// 	);
-				// } else if (response.status === 'alreadyCatch') {
-				// 	interaction.reply(`Le Pokémon a déjà été capturé.`);
-				// } else if (response.status === 'alreadyEscape') {
-				// 	interaction.reply(`Le Pokémon c'est déjà échappé.`);
-				// } else if (response.status === 'noBall') {
-				// 	interaction.reply(`Vous n'avez pas de pokeball.`);
-				// } else if (response.status === 'noExistPokemon') {
-				// 	interaction.reply(`Le code ${catchCode} ne correspond à aucun pokémon.`);
-				// }
+			let customId = interaction.customId;
+			if (customId.startsWith('pokeball')) {
+				handleCatch(interaction, 1);
+			} else if (customId.startsWith('hyperball')) {
+				handleCatch(interaction, 3);
+			} else if (customId.startsWith('superball')) {
+				handleCatch(interaction, 2);
+			} else if (customId.startsWith('masterball')) {
+				handleCatch(interaction, 4);
+			}
+		}
+
+		if (interaction.isCommand()) {
+			if (interaction.commandName === 'argent') {
+				interaction.reply(await getMoney(interaction.user.id));
+			} else if (interaction.commandName === 'pokedex') {
+				interaction.reply(await getPokedex(interaction.user.id));
+			} else if (interaction.commandName === 'ball') {
+				interaction.reply(await getBallTrainer(interaction));
+			} else if (interaction.commandName === 'evolution') {
+				interaction.reply(
+					await evolvePokemon(
+						interaction.user.id,
+						interaction.options.getString('nom')
+					)
+				);
+			} else if (interaction.commandName === 'vendre') {
+				interaction.reply(
+					await sellPokemon(
+						interaction.user.id,
+						interaction.options.getString('nom'),
+						interaction.options.getInteger('quantité')
+					)
+				);
+			} else if (interaction.commandName === 'prix') {
+				interaction.reply(await getPrice(interaction.options.getString('nom')));
+			} else if (interaction.commandName === 'nombre-evolution') {
+				interaction.reply(
+					await nbPokemon(interaction.options.getString('nom'))
+				);
 			}
 		}
 	});

@@ -28,7 +28,7 @@ async function findRandomPokemon(message, type) {
 				(emoji) => emoji.name === ball
 			);
 			const button = new ButtonBuilder()
-				.setCustomId(ball)
+				.setCustomId(ball + '|' + pokemon.catchCode)
 				.setStyle(ButtonStyle.Secondary);
 			button[customEmoji ? 'setEmoji' : 'setLabel'](
 				customEmoji ? customEmoji.id : ball
@@ -39,7 +39,7 @@ async function findRandomPokemon(message, type) {
 
 		const embed = new EmbedBuilder()
 			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
-			.setDescription(`Tapez !pokeball ${pokemon.catchCode} pour le capturer !`)
+			// .setDescription(`Tapez !pokeball ${pokemon.catchCode} pour le capturer !`)
 			.setImage(pokemon.img)
 			.setColor('#FFFFFF');
 		message.channel.send({ embeds: [embed], components: [row] });
@@ -58,6 +58,7 @@ async function catchPokemon(catchCode, idTrainer, idPokeball) {
 				idBall: idPokeball,
 			}
 		);
+		console.log(catchPokemon.data);
 		return catchPokemon.data;
 	} catch (error) {
 		console.error(error);
@@ -72,7 +73,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 			quantity: quantity,
 		});
 		if (sellPokemon.data.status === 'noPokemon') {
-			return "Vous n'avez pas au minimum " + quantity + ' ' + namePokemon + '.';
+			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
 		} else if (sellPokemon.data.status === 'sell') {
 			return (
 				'Vous avez vendu ' +
@@ -84,11 +85,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 				' pokédollars.'
 			);
 		} else if (sellPokemon.data.status === 'noExistPokemon') {
-			return (
-				namePokemon +
-				" n'est pas un pokémon.\n" +
-				'Veuillez réessayer avec la commande :\n!vend [quantité] [nom du pokémon]'
-			);
+			return namePokemon + " n'est pas un pokémon.";
 		}
 	} catch (error) {
 		console.error("Erreur lors de la vente d'un pokémon.");
@@ -128,9 +125,11 @@ async function evolvePokemon(idTrainer, namePokemon) {
 				" n'est pas un pokémon.\n" +
 				'Veuillez réessayer avec la commande :\n!evolution [nom du pokémon]'
 			);
+		} else {
+			return "Erreur lors de l'évolution du pokémon.";
 		}
 	} catch (error) {
-		console.error("Erreur lors de l'évolution d'un pokémon.");
+		console.error("Erreur lors de l'évolution du pokémon.");
 	}
 }
 

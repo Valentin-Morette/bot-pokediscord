@@ -185,18 +185,14 @@ async function allPinMessage(guild) {
 					'- !canne : pour pêcher un pokémon avec la canne.\n' +
 					'- !superCanne : pour pêcher un pokémon avec la super canne.\n' +
 					'- !megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
-					'- !pokeball [code] : pour capturer un pokémon avec une pokeball.\n' +
-					'- !superball [code] : pour capturer un pokémon avec une superball.\n' +
-					'- !hyperball [code] : pour capturer un pokémon avec une hyperball.\n' +
-					'- !masterball [code] : pour capturer un pokémon avec une masterball.\n' +
-					'- !vend [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
-					'- !nbEvolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
-					'- !evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
-					'- !money : pour voir votre argent.\n' +
-					'- !ball : pour voir toutes vos pokéballs.\n' +
+					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
+					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
+					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
+					'- /money : pour voir votre argent.\n' +
+					'- /ball : pour voir toutes vos pokéballs.\n' +
 					'- !achat [quantité] [nom de la pokéball] : pour acheter des pokéballs.(Uniquement dans le salon boutique)\n' +
-					"- !prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
-					"- !prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)\n" +
+					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
+					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)\n" +
 					"- !info : pour connaitre des conditions d'obtention du badge.(Uniquement dans la ville du champion)\n" +
 					"- !badge : pour obtenir le badge de l'arene.(Uniquement dans la ville du champion)\n"
 			)
@@ -219,7 +215,7 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1152580122323472466'
+					'1156675880484081696'
 				),
 				{
 					body: commands,

@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+const balls = [
+	{ name: 'pokeball', id: 1 },
+	{ name: 'superball', id: 2 },
+	{ name: 'hyperball', id: 3 },
+	{ name: 'masterball', id: 4 },
+];
+
 function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -100,73 +107,69 @@ async function getMoney(idTrainer) {
 	}
 }
 
-async function priceBall(message, idBall) {
+async function priceBall(idBall) {
 	try {
 		const response = await axios.get(
 			'http://localhost:5000/pokeball/' + idBall
 		);
-		message.channel.send(
-			`Le prix d'une ${capitalizeFirstLetter(
-				response.data.name
-			)} est de ${formatNombreAvecSeparateur(
-				response.data.buyingPrice
-			)} pokédollars.`
-		);
+		return `Le prix d'une ${capitalizeFirstLetter(
+			response.data.name
+		)} est de ${formatNombreAvecSeparateur(
+			response.data.buyingPrice
+		)} pokédollars.`;
 	} catch (error) {
 		console.error("La pokéball n'existe pas.");
 	}
 }
 
-async function pricePokemon(message, namePokemon) {
+async function pricePokemon(namePokemon) {
 	try {
 		const response = await axios.post('http://localhost:5000/pokemon/info', {
 			namePokemon: namePokemon,
 		});
 		let pokemon = response.data;
-		console.log(pokemon);
 		if (pokemon.status === 'noExistPokemon') {
-			message.reply(
-				`${capitalizeFirstLetter(
-					namePokemon
-				)} n'est ni un pokémon, ni une pokeball.`
-			);
-			return;
+			return `${capitalizeFirstLetter(
+				namePokemon
+			)} n'est ni un pokémon, ni une pokeball.`;
 		} else {
-			message.channel.send(
-				`Le prix de vente d'un ${capitalizeFirstLetter(
-					namePokemon
-				)} est de ${formatNombreAvecSeparateur(
-					pokemon.infos.sellPrice
-				)} pokédollars.`
-			);
+			return `Le prix de vente d'un ${capitalizeFirstLetter(
+				namePokemon
+			)} est de ${formatNombreAvecSeparateur(
+				pokemon.infos.sellPrice
+			)} pokédollars.`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
 	}
 }
 
-async function nbPokemon(message, namePokemon) {
+async function getPrice(item) {
+	const isPokeball = balls.some((ball) => ball.name === item);
+	if (isPokeball) {
+		const ball = balls.find((ball) => ball.name === item);
+		return await priceBall(ball.id);
+	} else {
+		return await pricePokemon(item);
+	}
+}
+
+async function nbPokemon(namePokemon) {
 	try {
 		const response = await axios.post('http://localhost:5000/pokemon/info', {
 			namePokemon: namePokemon,
 		});
 		let pokemon = response.data;
-		console.log(pokemon);
 		if (pokemon.status === 'noExistPokemon') {
-			message.reply(
-				`${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`
-			);
-			return;
+			return `${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`;
 		} else if (pokemon.infos.numberEvolution === null) {
-			message.channel.send(
-				`${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`
-			);
+			return `${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`;
 		} else {
-			message.channel.send(
-				`Il vous faut ${pokemon.infos.numberEvolution} ${capitalizeFirstLetter(
-					namePokemon
-				)} pour faire évoluer votre pokémon.`
-			);
+			return `Il vous faut ${
+				pokemon.infos.numberEvolution
+			} ${capitalizeFirstLetter(
+				namePokemon
+			)} pour faire évoluer votre pokémon.`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
@@ -249,7 +252,6 @@ export {
 	getMoney,
 	buyBall,
 	getBadge,
-	priceBall,
-	pricePokemon,
+	getPrice,
 	nbPokemon,
 };
