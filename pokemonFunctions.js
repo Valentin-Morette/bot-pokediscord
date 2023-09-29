@@ -21,11 +21,22 @@ async function findRandomPokemon(message, type) {
 			return;
 		}
 		let pokemon = randomPokemon.data;
-		const button = new ButtonBuilder()
-			.setCustomId('pokeball')
-			.setStyle(ButtonStyle.Secondary)
-			.setLabel('Pokeball');
-		const row = new ActionRowBuilder().addComponents(button);
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		let row = new ActionRowBuilder();
+		balls.forEach((ball) => {
+			const customEmoji = message.guild.emojis.cache.find(
+				(emoji) => emoji.name === ball
+			);
+			const button = new ButtonBuilder()
+				.setCustomId(ball)
+				.setStyle(ButtonStyle.Secondary);
+			button[customEmoji ? 'setEmoji' : 'setLabel'](
+				customEmoji ? customEmoji.id : ball
+			);
+
+			row.addComponents(button);
+		});
+
 		const embed = new EmbedBuilder()
 			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
 			.setDescription(`Tapez !pokeball ${pokemon.catchCode} pour le capturer !`)
