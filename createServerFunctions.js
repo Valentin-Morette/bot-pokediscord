@@ -1,8 +1,22 @@
 import axios, { all } from 'axios';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
+import { EmbedBuilder } from 'discord.js';
+import { AttachmentBuilder } from 'discord.js';
+import { ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 async function createAllChannels(message, client) {
+	const permissionsCancel = [
+		{
+			id: message.guild.roles.everyone.id,
+			deny: ['0x0000000000000800'],
+		},
+		{
+			id: client.user.id,
+			allow: ['0x0000000000000800'],
+		},
+	];
 	message.guild.channels.create({
 		name: 'accueil',
 		type: 0,
@@ -10,20 +24,12 @@ async function createAllChannels(message, client) {
 	message.guild.channels.create({
 		name: 'commandes',
 		type: 0,
-		permissionOverwrites: [
-			{
-				id: message.guild.roles.everyone.id,
-				deny: ['0x0000000000000800'],
-			},
-			{
-				id: client.user.id,
-				allow: ['0x0000000000000800'],
-			},
-		],
+		permissionOverwrites: permissionsCancel,
 	});
 	message.guild.channels.create({
 		name: 'boutique',
 		type: 0,
+		permissionOverwrites: permissionsCancel,
 	});
 	try {
 		const response = await axios.get('http://localhost:5000/zone');
@@ -169,22 +175,23 @@ async function initServer(message, client) {
 	await createAllChannels(message, client);
 	await new Promise((resolve) => setTimeout(resolve, 10000));
 	await listBot(message);
-	await allPinMessage(message.guild);
+	await allPinMessage(message);
 }
 
-async function allPinMessage(guild) {
+async function allPinMessage(message) {
 	let channelName = 'commandes';
-	let channel = guild.channels.cache.find(
+	let channel = message.guild.channels.cache.find(
 		(channel) => channel.name === channelName
 	);
 	if (channel) {
-		channel
-			.send(
-				'Liste des commandes du serveur : \n' +
-					'- !cherche : pour chercher un pokémon.\n' +
-					'- !canne : pour pêcher un pokémon avec la canne.\n' +
-					'- !superCanne : pour pêcher un pokémon avec la super canne.\n' +
-					'- !megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
+		const commandEmbed = new EmbedBuilder()
+			.setColor('#3498db')
+			.setTitle('Liste des Commandes du Serveur')
+			.setDescription(
+				'- /cherche : pour chercher un pokémon.\n' +
+					'- /canne : pour pêcher un pokémon avec la canne.\n' +
+					'- /superCanne : pour pêcher un pokémon avec la super canne.\n' +
+					'- /megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
 					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
 					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
@@ -195,11 +202,72 @@ async function allPinMessage(guild) {
 					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)\n" +
 					"- !info : pour connaitre des conditions d'obtention du badge.(Uniquement dans la ville du champion)\n" +
 					"- !badge : pour obtenir le badge de l'arene.(Uniquement dans la ville du champion)\n"
+			);
+
+		channel.send({ embeds: [commandEmbed] });
+	} else {
+		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
+	}
+
+	channelName = 'boutique';
+	channel = message.guild.channels.cache.find(
+		(channel) => channel.name === channelName
+	);
+	if (channel) {
+		const priceEmbed = new EmbedBuilder()
+			.setColor('#3498db')
+			.setTitle('Prix des pokéballs')
+			.setDescription(
+				'- Pokéball : 50$\n' +
+					'- Superball : 80$\n' +
+					'- Hyperball : 150$\n' +
+					'- Masterball : 100 000$\n'
+			);
+
+		channel.send({ embeds: [priceEmbed] });
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		for (let i = 1; i <= 100; i *= 10) {
+			let row = new ActionRowBuilder();
+			balls.forEach((ball) => {
+				const customEmoji = message.guild.emojis.cache.find(
+					(emoji) => emoji.name === ball
+				);
+				const button = new ButtonBuilder()
+					.setCustomId('buy|' + i + '|' + ball)
+					.setStyle(ButtonStyle.Secondary)
+					.setLabel('' + i)
+					.setEmoji(customEmoji.id);
+
+				row.addComponents(button);
+			});
+			channel.send({ components: [row] });
+		}
+	} else {
+		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
+	}
+
+	channelName = 'argenta';
+	channel = message.guild.channels.cache.find(
+		(channel) => channel.name === channelName
+	);
+	if (channel) {
+		const attachment = new AttachmentBuilder(
+			'./assets/arenaTrainer/pierre.jpeg'
+		);
+		const embed = new EmbedBuilder()
+			.setColor('#3498db')
+			.setTitle('Pierre')
+			.setDescription(
+				"Je suis Pierre, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents."
 			)
-			.then((message) => {
-				message.pin().catch(console.error);
-			})
-			.catch(console.error);
+			.setThumbnail('attachment://pierre.jpeg');
+		let row = new ActionRowBuilder();
+		const button = new ButtonBuilder()
+			.setCustomId('badge|10|5')
+			.setStyle(ButtonStyle.Primary)
+			.setLabel('Badge Roche');
+		row.addComponents(button);
+		channel.send({ embeds: [embed], files: [attachment], components: [row] });
 	} else {
 		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
 	}
@@ -215,7 +283,7 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1156675880484081696'
+					'1157597501336080416'
 				),
 				{
 					body: commands,

@@ -170,6 +170,22 @@ const commandsPokechat = [
 			},
 		],
 	},
+	{
+		name: 'cherche',
+		description: 'Cherche un pokémon',
+	},
+	{
+		name: 'canne',
+		description: 'Pêche un pokémon avec la canne',
+	},
+	{
+		name: 'super-canne',
+		description: 'Pêche un pokémon avec la super canne',
+	},
+	{
+		name: 'mega-canne',
+		description: 'Pêche un pokémon avec la mega canne',
+	},
 ];
 
 function pokeChat(client) {
@@ -207,36 +223,6 @@ function pokeChat(client) {
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 
-		if (
-			message.content === '!cherche' ||
-			message.content === '!canne' ||
-			message.content === '!superCanne' ||
-			message.content === '!megaCanne'
-		) {
-			let type = message.content.split('!')[1];
-			type = type === 'cherche' ? 'herbe' : type;
-			await findRandomPokemon(message, type);
-			return;
-		}
-
-		if (message.content.startsWith('!achat')) {
-			if (!ctrlBoutique(message)) return;
-			const args = message.content.split(' ');
-			const quantity = args[1];
-			const nameBall = args[2];
-			const idBall = balls.find((ball) => ball.name === nameBall).id;
-			const response = await buyBall(
-				message.author.id,
-				idBall,
-				quantity,
-				nameBall
-			);
-			if (response) {
-				message.reply(response);
-			}
-			return;
-		}
-
 		if (message.author.id === process.env.MYDISCORDID) {
 			if (message.content === '!initServer') {
 				await initServer(message, client);
@@ -253,7 +239,7 @@ function pokeChat(client) {
 			} else if (message.content === '!listBot') {
 				await listBot(message);
 			} else if (message.content === '!allPinMessage') {
-				await allPinMessage(client);
+				await allPinMessage(message);
 			} else if (message.content === '!listBot') {
 				await listBot(message);
 			}
@@ -272,24 +258,58 @@ function pokeChat(client) {
 				handleCatch(interaction, 2);
 			} else if (customId.startsWith('masterball')) {
 				handleCatch(interaction, 4);
+			} else if (customId.startsWith('buy')) {
+				const args = customId.split('|');
+				let numberBall = args[1];
+				let nameBall = args[2];
+				interaction.user.send(
+					await buyBall(
+						interaction.user.id,
+						balls.find((ball) => ball.name === nameBall).id,
+						numberBall,
+						nameBall
+					)
+				);
 			}
 		}
 
 		if (interaction.isCommand()) {
+			if (interaction.commandName === 'cherche') {
+				interaction.reply(await findRandomPokemon(interaction, 'herbe'));
+				return;
+			}
+
+			if (interaction.commandName === 'mega-canne') {
+				interaction.reply(await findRandomPokemon(interaction, 'megaCanne'));
+				return;
+			}
+
 			if (interaction.commandName === 'argent') {
 				interaction.reply(await getMoney(interaction.user.id));
-			} else if (interaction.commandName === 'pokedex') {
+				return;
+			}
+
+			if (interaction.commandName === 'pokedex') {
 				interaction.reply(await getPokedex(interaction.user.id));
-			} else if (interaction.commandName === 'ball') {
+				return;
+			}
+
+			if (interaction.commandName === 'ball') {
 				interaction.reply(await getBallTrainer(interaction));
-			} else if (interaction.commandName === 'evolution') {
+				return;
+			}
+
+			if (interaction.commandName === 'evolution') {
 				interaction.reply(
 					await evolvePokemon(
 						interaction.user.id,
 						interaction.options.getString('nom')
 					)
 				);
-			} else if (interaction.commandName === 'vendre') {
+				return;
+			}
+
+			if (interaction.commandName === 'vendre') {
 				interaction.reply(
 					await sellPokemon(
 						interaction.user.id,
@@ -297,12 +317,28 @@ function pokeChat(client) {
 						interaction.options.getInteger('quantité')
 					)
 				);
-			} else if (interaction.commandName === 'prix') {
+				return;
+			}
+
+			if (interaction.commandName === 'prix') {
 				interaction.reply(await getPrice(interaction.options.getString('nom')));
-			} else if (interaction.commandName === 'nombre-evolution') {
+			}
+
+			if (interaction.commandName === 'nombre-evolution') {
 				interaction.reply(
 					await nbPokemon(interaction.options.getString('nom'))
 				);
+				return;
+			}
+
+			if (interaction.commandName === 'canne') {
+				interaction.reply(await findRandomPokemon(interaction, 'canne'));
+				return;
+			}
+
+			if (interaction.commandName === 'super-canne') {
+				interaction.reply(await findRandomPokemon(interaction, 'superCanne'));
+				return;
 			}
 		}
 	});
