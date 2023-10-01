@@ -7,6 +7,16 @@ import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 async function createAllChannels(message, client) {
+	const arenaCity = [
+		'argenta',
+		'azuria',
+		'carmin-sur-mer',
+		'céladopole',
+		'cramois-île',
+		'jadielle',
+		'parmanie',
+		'Safrania',
+	];
 	const permissionsCancel = [
 		{
 			id: message.guild.roles.everyone.id,
@@ -69,12 +79,35 @@ async function createAllChannels(message, client) {
 			});
 		}
 
-		response.data.forEach((zone) => {
-			message.guild.channels.create({
+		response.data.forEach(async (zone) => {
+			let channel = await message.guild.channels.create({
 				name: zone.name,
 				type: 0,
 				parent: categoryZone[zone.accesLevel].id,
 			});
+
+			if (arenaCity.includes(zone.name)) {
+				let permissions = [];
+
+				for (let i = zone.accesLevel; i <= 8; i++) {
+					let roleName = i + ' Badge' + (i > 1 ? 's' : '');
+					let role = message.guild.roles.cache.find((r) => r.name === roleName);
+
+					if (role) {
+						permissions.push({
+							id: role.id,
+							allow: ['0x0000000000000400'],
+						});
+					}
+				}
+
+				permissions.push({
+					id: message.guild.roles.everyone.id,
+					deny: ['0x0000000000000400', '0x0000000000000800'],
+				});
+
+				await channel.permissionOverwrites.set(permissions);
+			}
 		});
 	} catch (error) {
 		console.error(error);
@@ -283,7 +316,7 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1157597501336080416'
+					'1158045636533424178'
 				),
 				{
 					body: commands,
