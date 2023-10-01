@@ -121,11 +121,7 @@ async function evolvePokemon(idTrainer, namePokemon) {
 		} else if (evolvePokemon.data.status === 'noEvolution') {
 			return capitalizeFirstLetter(namePokemon) + " n'a pas d'évolution.";
 		} else if (evolvePokemon.data.status === 'noExistPokemon') {
-			return (
-				capitalizeFirstLetter(namePokemon) +
-				" n'est pas un pokémon.\n" +
-				'Veuillez réessayer avec la commande :\n!evolution [nom du pokémon]'
-			);
+			return capitalizeFirstLetter(namePokemon) + " n'est pas un pokémon.";
 		} else {
 			return "Erreur lors de l'évolution du pokémon.";
 		}

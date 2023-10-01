@@ -35,7 +35,9 @@ async function sendArenaMessage(
 				`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`
 			)
 			.setStyle(ButtonStyle.Primary)
-			.setLabel(`Badge ${badgeName}`);
+			.setLabel(
+				channelName == 'plateau-indigo' ? badgeName : `Badge ${badgeName}`
+			);
 		row.addComponents(button);
 		await channel.send({
 			embeds: [embed],
@@ -198,22 +200,18 @@ async function addRoles(message) {
 				hoist: true,
 			};
 
-			if (roleData.name === "Champion d'arene") {
-				options.permissions = ['0x0000000000000008'];
-			} else {
-				options.permissions = [
-					'0x0000000000200000',
-					'0x0000000000100000',
-					'0x0000000002000000',
-					'0x0000000000080000',
-					'0x0000000000010000',
-					'0x0000000000000040',
-					'0x0000000000000800',
-					'0x0000000000000001',
-					'0x0000000004000000',
-					'0x0000000080000000',
-				];
-			}
+			options.permissions = [
+				'0x0000000000200000',
+				'0x0000000000100000',
+				'0x0000000002000000',
+				'0x0000000000080000',
+				'0x0000000000010000',
+				'0x0000000000000040',
+				'0x0000000000000800',
+				'0x0000000000000001',
+				'0x0000000004000000',
+				'0x0000000080000000',
+			];
 
 			try {
 				const role = await message.guild.roles.create(options);
@@ -229,6 +227,7 @@ async function addRoles(message) {
 
 async function initServer(message, client) {
 	await deleteAllChannels(message.guild);
+	await deleteEmojis(message);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addRoles(message);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -255,7 +254,7 @@ async function allMessage(message) {
 					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
 					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
-					'- /money : pour voir votre argent.\n' +
+					'- /argent : pour voir votre argent.\n' +
 					'- /ball : pour voir toutes vos pokéballs.\n' +
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
 					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)"
@@ -361,7 +360,7 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'safrania',
-		'Auguste',
+		'Morgane',
 		'Marais',
 		"Je suis Morgane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents.",
 		99,
@@ -390,6 +389,17 @@ async function allMessage(message) {
 		50,
 		'8 Badges'
 	);
+
+	sendArenaMessage(
+		message,
+		'plateau-indigo',
+		'Regis',
+		'Maitre Pokémon',
+		'Je suis Regis, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
+		1200,
+		151,
+		'Maître Pokémon'
+	);
 }
 
 function slashCommande(commands) {
@@ -402,7 +412,7 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1158069439967793212'
+					'1158131616179302402'
 				),
 				{
 					body: commands,
