@@ -78,7 +78,6 @@ async function getPokedex(idTrainer) {
 		const response = await axios.get(
 			'http://localhost:5000/pokemon/trainer/' + idTrainer
 		);
-		console.log(response.data);
 		if (response.data.pokemon.length === 0) {
 			return "Vous n'avez pas encore de pokémon.";
 		}
@@ -220,14 +219,10 @@ async function getBadge(
 			'http://localhost:5000/pokemon/trainer/' + idTrainer
 		);
 		if (response.data.sumPokemon < nbPokemon) {
-			return message.reply(
-				`Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`
-			);
+			return `Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`;
 		}
 		if (response.data.countPokemon < nbPokemonDiff) {
-			return message.reply(
-				`Vous n'avez pas assez de pokémon différents pour obtenir le badge ${nameBadge}.`
-			);
+			return `Vous n'avez pas assez de pokémon différents pour obtenir le badge ${nameBadge}.`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -238,10 +233,10 @@ async function getBadge(
 
 	if (badgeRole) {
 		if (message.member.roles.cache.has(badgeRole.id)) {
-			return message.reply(`Vous avez déjà le badge ${nameBadge}.`);
+			return `Vous avez déjà le badge ${nameBadge}.`;
 		}
 		message.member.roles.add(badgeRole).catch(console.error);
-		return message.reply(`Vous avez reçu le badge ${nameBadge} !`);
+		return `Vous avez reçu le badge ${nameBadge} !`;
 	}
 }
 

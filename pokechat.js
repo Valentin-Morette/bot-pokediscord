@@ -5,8 +5,7 @@ import {
 	deleteAllChannels,
 	addRoles,
 	initServer,
-	listBot,
-	allPinMessage,
+	allMessage,
 } from './createServerFunctions.js';
 import {
 	addTrainer,
@@ -16,6 +15,7 @@ import {
 	buyBall,
 	getPrice,
 	nbPokemon,
+	getBadge,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -33,16 +33,6 @@ const balls = [
 	{ name: 'hyperball', id: 3 },
 	{ name: 'masterball', id: 4 },
 ];
-
-function ctrlBoutique(message) {
-	if (message.channel.name !== 'boutique') {
-		message.reply(
-			'Vous devez être dans le salon boutique pour acheter des pokéballs.'
-		);
-		return false;
-	}
-	return true;
-}
 
 async function handleCatch(interaction, idPokeball) {
 	const catchCode = interaction.customId.split('|')[1];
@@ -236,10 +226,8 @@ function pokeChat(client) {
 				await addRoles(message);
 			} else if (message.content === '!deleteEmojis') {
 				await deleteEmojis(message.guild);
-			} else if (message.content === '!listBot') {
-				await listBot(message);
-			} else if (message.content === '!allPinMessage') {
-				await allPinMessage(message);
+			} else if (message.content === '!allMessage') {
+				await allMessage(message);
 			} else if (message.content === '!listBot') {
 				await listBot(message);
 			}
@@ -262,12 +250,29 @@ function pokeChat(client) {
 				const args = customId.split('|');
 				let numberBall = args[1];
 				let nameBall = args[2];
+				await interaction.deferUpdate();
 				interaction.user.send(
 					await buyBall(
 						interaction.user.id,
 						balls.find((ball) => ball.name === nameBall).id,
 						numberBall,
 						nameBall
+					)
+				);
+			} else if (customId.startsWith('badge')) {
+				const args = customId.split('|');
+				let nbPokemon = args[1];
+				let nbPokemonDiff = args[2];
+				let badgeName = args[3];
+				let newRole = args[4];
+				await interaction.deferUpdate();
+				interaction.user.send(
+					await getBadge(
+						interaction,
+						nbPokemon,
+						nbPokemonDiff,
+						badgeName,
+						newRole
 					)
 				);
 			}

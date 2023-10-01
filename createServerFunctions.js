@@ -6,6 +6,47 @@ import { AttachmentBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
+async function sendArenaMessage(
+	message,
+	channelName,
+	arenaChampion,
+	badgeName,
+	arenaDescription,
+	nbPokemon,
+	nbPokemonDiff,
+	newRole
+) {
+	let channel = message.guild.channels.cache.find(
+		(channel) => channel.name === channelName
+	);
+
+	if (channel) {
+		const attachment = new AttachmentBuilder(
+			`./assets/arenaTrainer/${arenaChampion.toLowerCase()}.jpg`
+		);
+		const embed = new EmbedBuilder()
+			.setColor('#3498db')
+			.setTitle(arenaChampion)
+			.setDescription(arenaDescription)
+			.setThumbnail(`attachment://${arenaChampion.toLowerCase()}.jpg`);
+		let row = new ActionRowBuilder();
+		const button = new ButtonBuilder()
+			.setCustomId(
+				`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`
+			)
+			.setStyle(ButtonStyle.Primary)
+			.setLabel(`Badge ${badgeName}`);
+		row.addComponents(button);
+		await channel.send({
+			embeds: [embed],
+			files: [attachment],
+			components: [row],
+		});
+	} else {
+		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
+	}
+}
+
 async function createAllChannels(message, client) {
 	const arenaCity = [
 		'argenta',
@@ -186,19 +227,6 @@ async function addRoles(message) {
 	}
 }
 
-async function listBot(message) {
-	try {
-		const response = await axios.get('http://localhost:5000/champion');
-		let strResponse = 'Liste des bots : \n';
-		for (let i = 0; i < response.data.length; i++) {
-			strResponse += `- ${response.data[i].name} : ${response.data[i].link}\n`;
-		}
-		message.author.send(strResponse);
-	} catch (error) {
-		console.error(error);
-	}
-}
-
 async function initServer(message, client) {
 	await deleteAllChannels(message.guild);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -206,12 +234,11 @@ async function initServer(message, client) {
 	await new Promise((resolve) => setTimeout(resolve, 3000));
 	await addemojis(message);
 	await createAllChannels(message, client);
-	await new Promise((resolve) => setTimeout(resolve, 10000));
-	await listBot(message);
-	await allPinMessage(message);
+	await new Promise((resolve) => setTimeout(resolve, 18000));
+	await allMessage(message);
 }
 
-async function allPinMessage(message) {
+async function allMessage(message) {
 	let channelName = 'commandes';
 	let channel = message.guild.channels.cache.find(
 		(channel) => channel.name === channelName
@@ -230,11 +257,8 @@ async function allPinMessage(message) {
 					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
 					'- /money : pour voir votre argent.\n' +
 					'- /ball : pour voir toutes vos pokéballs.\n' +
-					'- !achat [quantité] [nom de la pokéball] : pour acheter des pokéballs.(Uniquement dans le salon boutique)\n' +
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
-					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)\n" +
-					"- !info : pour connaitre des conditions d'obtention du badge.(Uniquement dans la ville du champion)\n" +
-					"- !badge : pour obtenir le badge de l'arene.(Uniquement dans la ville du champion)\n"
+					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)"
 			);
 
 		channel.send({ embeds: [commandEmbed] });
@@ -279,31 +303,93 @@ async function allPinMessage(message) {
 		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
 	}
 
-	channelName = 'argenta';
-	channel = message.guild.channels.cache.find(
-		(channel) => channel.name === channelName
+	sendArenaMessage(
+		message,
+		'argenta',
+		'Pierre',
+		'Roche',
+		"Je suis Pierre, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents.",
+		10,
+		5,
+		'1 Badge'
 	);
-	if (channel) {
-		const attachment = new AttachmentBuilder(
-			'./assets/arenaTrainer/pierre.jpeg'
-		);
-		const embed = new EmbedBuilder()
-			.setColor('#3498db')
-			.setTitle('Pierre')
-			.setDescription(
-				"Je suis Pierre, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents."
-			)
-			.setThumbnail('attachment://pierre.jpeg');
-		let row = new ActionRowBuilder();
-		const button = new ButtonBuilder()
-			.setCustomId('badge|10|5')
-			.setStyle(ButtonStyle.Primary)
-			.setLabel('Badge Roche');
-		row.addComponents(button);
-		channel.send({ embeds: [embed], files: [attachment], components: [row] });
-	} else {
-		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
-	}
+
+	sendArenaMessage(
+		message,
+		'azuria',
+		'Ondine',
+		'Cascade',
+		"Je suis Ondine, le champion d'arène de type eau. Pour obtenir le badge cascade, il vous faudra au minimum 33 pokémons dont 12 différents.",
+		33,
+		12,
+		'2 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'carmin-sur-mer',
+		'MajorBob',
+		'Foudre',
+		"Je suis le Major Bob, le champion d'arène de type Electrik. Pour obtenir le badge Foudre, il vous faudra au minimum 50 pokémons dont 20 différents.",
+		50,
+		20,
+		'3 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'céladopole',
+		'Erika',
+		'Prisme',
+		"Je suis Erika, le champion d'arène de type plante. Pour obtenir le badge prisme, il vous faudra au minimum 67 pokémons dont 23 différents.",
+		67,
+		23,
+		'4 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'parmanie',
+		'Koga',
+		'Ame',
+		"Je suis Koga, le champion d'arène de type poison. Pour obtenir le badge Âme, il vous faudra au minimum 80 pokémons dont 30 différents.",
+		80,
+		30,
+		'5 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'safrania',
+		'Auguste',
+		'Marais',
+		"Je suis Morgane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents.",
+		99,
+		35,
+		'6 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'cramois-île',
+		'Auguste',
+		'Volcan',
+		"Je suis Auguste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 45 différents.",
+		115,
+		45,
+		'7 Badges'
+	);
+
+	sendArenaMessage(
+		message,
+		'jadielle',
+		'Giovanni',
+		'Terre',
+		"Je suis Giovanni, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 50 différents.",
+		150,
+		50,
+		'8 Badges'
+	);
 }
 
 function slashCommande(commands) {
@@ -316,14 +402,14 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1158045636533424178'
+					'1158069439967793212'
 				),
 				{
 					body: commands,
 				}
 			);
 
-			console.log('Commandes slash enregistrées avec succès- !');
+			console.log('Commandes slash enregistrées avec succès !');
 		} catch (error) {
 			console.error(error);
 		}
@@ -337,7 +423,6 @@ export {
 	addRoles,
 	deleteEmojis,
 	initServer,
-	listBot,
 	slashCommande,
-	allPinMessage,
+	allMessage,
 };
