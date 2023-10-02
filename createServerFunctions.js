@@ -85,7 +85,9 @@ async function createAllChannels(message, client) {
 		permissionOverwrites: permissionsCancel,
 	});
 	try {
-		const response = await axios.get('http://localhost:5000/zone');
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone`
+		);
 
 		const categoryZone = {};
 
@@ -163,7 +165,9 @@ async function deleteAllChannels(guild) {
 
 async function addemojis(message) {
 	try {
-		const response = await axios.get('http://localhost:5000/pokeball');
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball`
+		);
 		response.data.forEach(async (pokeball) => {
 			const emoji = await message.guild.emojis.create({
 				name: pokeball.name,
@@ -177,7 +181,9 @@ async function addemojis(message) {
 
 async function deleteEmojis(message) {
 	try {
-		const response = await axios.get('http://localhost:5000/pokeball');
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball`
+		);
 		response.data.forEach(async (pokeball) => {
 			const emoji = await message.guild.emojis.cache.find(
 				(emoji) => emoji.name === pokeball.name
@@ -191,7 +197,9 @@ async function deleteEmojis(message) {
 
 async function addRoles(message) {
 	try {
-		const response = await axios.get('http://localhost:5000/role');
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/role`
+		);
 
 		for (let roleData of response.data) {
 			const options = {

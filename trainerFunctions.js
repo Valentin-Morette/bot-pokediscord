@@ -18,32 +18,37 @@ function formatNombreAvecSeparateur(n) {
 async function addTrainer(member) {
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/trainer/verify/' + member.id
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/trainer/verify/` + member.id
 		);
 		if (!response.data.hasAccount) {
-			await axios.post('http://localhost:5000/trainer', {
-				trainer: {
-					idDiscord: member.id,
-					name: member.user.username,
-					money: 1000,
-					point: 0,
-					level: 0,
-				},
-				ball: [
-					{
-						id: 1,
-						quantity: 10,
+			await axios.post(
+				`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer`,
+				{
+					trainer: {
+						idDiscord: member.id,
+						name: member.user.username,
+						money: 1000,
+						point: 0,
+						level: 0,
 					},
-					{
-						id: 2,
-						quantity: 5,
-					},
-					{
-						id: 3,
-						quantity: 1,
-					},
-				],
-			});
+					ball: [
+						{
+							id: 1,
+							quantity: 10,
+						},
+						{
+							id: 2,
+							quantity: 5,
+						},
+						{
+							id: 3,
+							quantity: 1,
+						},
+					],
+				}
+			);
 		}
 	} catch (error) {
 		console.error(error);
@@ -53,7 +58,9 @@ async function addTrainer(member) {
 async function getBallTrainer(message) {
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/pokeball/trainer/' + message.member.id
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokeball/trainer/` + message.member.id
 		);
 		let strResponse = 'Vous avez : \n';
 		for (let i = 0; i < response.data.length; i++) {
@@ -76,7 +83,9 @@ async function getBallTrainer(message) {
 async function getPokedex(idTrainer) {
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/pokemon/trainer/' + idTrainer
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokemon/trainer/` + idTrainer
 		);
 		if (response.data.pokemon.length === 0) {
 			return "Vous n'avez pas encore de pokémon.";
@@ -94,7 +103,8 @@ async function getPokedex(idTrainer) {
 async function getMoney(idTrainer) {
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/trainer/' + idTrainer
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/` +
+				idTrainer
 		);
 		return (
 			'Vous avez : ' +
@@ -109,7 +119,8 @@ async function getMoney(idTrainer) {
 async function priceBall(idBall) {
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/pokeball/' + idBall
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/` +
+				idBall
 		);
 		return `Le prix d'une ${capitalizeFirstLetter(
 			response.data.name
@@ -123,9 +134,12 @@ async function priceBall(idBall) {
 
 async function pricePokemon(namePokemon) {
 	try {
-		const response = await axios.post('http://localhost:5000/pokemon/info', {
-			namePokemon: namePokemon,
-		});
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
+			{
+				namePokemon: namePokemon,
+			}
+		);
 		let pokemon = response.data;
 		if (pokemon.status === 'noExistPokemon') {
 			return `${capitalizeFirstLetter(
@@ -155,9 +169,12 @@ async function getPrice(item) {
 
 async function nbPokemon(namePokemon) {
 	try {
-		const response = await axios.post('http://localhost:5000/pokemon/info', {
-			namePokemon: namePokemon,
-		});
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
+			{
+				namePokemon: namePokemon,
+			}
+		);
 		let pokemon = response.data;
 		if (pokemon.status === 'noExistPokemon') {
 			return `${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`;
@@ -177,11 +194,14 @@ async function nbPokemon(namePokemon) {
 
 async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	try {
-		const response = await axios.post('http://localhost:5000/pokeball/buy', {
-			idDiscord: idTrainer,
-			idBall: idBall,
-			quantity: quantity,
-		});
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/buy`,
+			{
+				idDiscord: idTrainer,
+				idBall: idBall,
+				quantity: quantity,
+			}
+		);
 		if (response.data.status === 'noMoney') {
 			return "Vous n'avez pas assez d'argent.";
 		} else if (response.data.status === 'buy') {
@@ -216,7 +236,9 @@ async function getBadge(
 	let idTrainer = message.member.id;
 	try {
 		const response = await axios.get(
-			'http://localhost:5000/pokemon/trainer/' + idTrainer
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokemon/trainer/` + idTrainer
 		);
 		if (response.data.sumPokemon < nbPokemon) {
 			return `Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`;

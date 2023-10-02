@@ -10,7 +10,7 @@ function capitalizeFirstLetter(string) {
 async function findRandomPokemon(interaction, type) {
 	try {
 		const randomPokemon = await axios.post(
-			'http://localhost:5000/pokemon/wild',
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
 			{
 				nameZone: interaction.channel.name,
 				spawnType: type,
@@ -51,7 +51,9 @@ async function findRandomPokemon(interaction, type) {
 async function catchPokemon(catchCode, idTrainer, idPokeball) {
 	try {
 		const catchPokemon = await axios.post(
-			'http://localhost:5000/pokemon/catch',
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokemon/catch`,
 			{
 				catchCode: catchCode,
 				idTrainer: idTrainer,
@@ -66,11 +68,14 @@ async function catchPokemon(catchCode, idTrainer, idPokeball) {
 
 async function sellPokemon(idTrainer, namePokemon, quantity) {
 	try {
-		const sellPokemon = await axios.post('http://localhost:5000/pokemon/sell', {
-			namePokemon: namePokemon,
-			idTrainer: idTrainer,
-			quantity: quantity,
-		});
+		const sellPokemon = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/sell`,
+			{
+				namePokemon: namePokemon,
+				idTrainer: idTrainer,
+				quantity: quantity,
+			}
+		);
 		if (sellPokemon.data.status === 'noPokemon') {
 			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
 		} else if (sellPokemon.data.status === 'sell') {
@@ -94,7 +99,9 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 async function evolvePokemon(idTrainer, namePokemon) {
 	try {
 		const evolvePokemon = await axios.post(
-			'http://localhost:5000/pokemon/evolve',
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokemon/evolve`,
 			{
 				namePokemon: namePokemon,
 				idTrainer: idTrainer,
