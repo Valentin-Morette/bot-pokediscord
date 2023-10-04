@@ -1,19 +1,10 @@
 import axios from 'axios';
-
-const balls = [
-	{ name: 'pokeball', id: 1 },
-	{ name: 'superball', id: 2 },
-	{ name: 'hyperball', id: 3 },
-	{ name: 'masterball', id: 4 },
-];
-
-function capitalizeFirstLetter(string) {
-	return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function formatNombreAvecSeparateur(n) {
-	return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-}
+import {
+	capitalizeFirstLetter,
+	formatNombreAvecSeparateur,
+} from './globalFunctions.js';
+import { balls } from './variables.js';
+import { createButtons } from './globalFunctions.js';
 
 async function addTrainer(member) {
 	try {
@@ -52,6 +43,54 @@ async function addTrainer(member) {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+async function catchPokemon(catchCode, idTrainer, idPokeball) {
+	try {
+		const catchPokemon = await axios.post(
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/pokemon/catch`,
+			{
+				catchCode: catchCode,
+				idTrainer: idTrainer,
+				idBall: idPokeball,
+			}
+		);
+		return catchPokemon.data;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function sellPokemon(idTrainer, namePokemon, quantity) {
+	try {
+		const sellPokemon = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/sell`,
+			{
+				namePokemon: namePokemon,
+				idTrainer: idTrainer,
+				quantity: quantity,
+			}
+		);
+		if (sellPokemon.data.status === 'noPokemon') {
+			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
+		} else if (sellPokemon.data.status === 'sell') {
+			return (
+				'Vous avez vendu ' +
+				quantity +
+				' ' +
+				namePokemon +
+				' pour ' +
+				sellPokemon.data.sellPrice +
+				' pokédollars.'
+			);
+		} else if (sellPokemon.data.status === 'noExistPokemon') {
+			return namePokemon + " n'est pas un pokémon.";
+		}
+	} catch (error) {
+		console.error("Erreur lors de la vente d'un pokémon.");
 	}
 }
 
@@ -167,31 +206,6 @@ async function getPrice(item) {
 	}
 }
 
-async function nbPokemon(namePokemon) {
-	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
-			{
-				namePokemon: namePokemon,
-			}
-		);
-		let pokemon = response.data;
-		if (pokemon.status === 'noExistPokemon') {
-			return `${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`;
-		} else if (pokemon.infos.numberEvolution === null) {
-			return `${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`;
-		} else {
-			return `Il vous faut ${
-				pokemon.infos.numberEvolution
-			} ${capitalizeFirstLetter(
-				namePokemon
-			)} pour faire évoluer votre pokémon.`;
-		}
-	} catch (error) {
-		console.error("Le pokémon n'existe pas.");
-	}
-}
-
 async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	try {
 		const response = await axios.post(
@@ -262,6 +276,45 @@ async function getBadge(
 	}
 }
 
+async function handleCatch(interaction, idPokeball) {
+	const catchCode = interaction.customId.split('|')[1];
+	const idTrainer = interaction.user.id;
+	const response = await catchPokemon(catchCode, idTrainer, idPokeball);
+	let replyMessage;
+	let components;
+
+	switch (response.status) {
+		case 'noCatch':
+			replyMessage = `Le ${response.pokemonName} est resorti, retentez votre chance !`;
+			components = [createButtons(interaction.message, catchCode)];
+			break;
+		case 'catch':
+			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
+			break;
+		case 'escape':
+			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
+			break;
+		case 'alreadyCatch':
+			replyMessage = `Le Pokémon a déjà été capturé.`;
+			break;
+		case 'alreadyEscape':
+			replyMessage = `Le Pokémon s'est déjà échappé.`;
+			break;
+		case 'noBall':
+			replyMessage = `Vous n'avez pas de ${
+				balls.find((ball) => ball.id === idPokeball).name
+			}.`;
+			break;
+		case 'noExistPokemon':
+			replyMessage = `Le pokémon a disparu.`;
+			break;
+		default:
+			replyMessage = 'Une erreur inattendue s’est produite.';
+	}
+
+	interaction.reply({ content: replyMessage, components });
+}
+
 export {
 	addTrainer,
 	getBallTrainer,
@@ -270,5 +323,6 @@ export {
 	buyBall,
 	getBadge,
 	getPrice,
-	nbPokemon,
+	sellPokemon,
+	handleCatch,
 };

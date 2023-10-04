@@ -2,10 +2,7 @@ import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-
-function capitalizeFirstLetter(string) {
-	return string.charAt(0).toUpperCase() + string.slice(1);
-}
+import { capitalizeFirstLetter } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
 	try {
@@ -45,54 +42,6 @@ async function findRandomPokemon(interaction, type) {
 		return { embeds: [embed], components: [row] };
 	} catch (error) {
 		console.error(error);
-	}
-}
-
-async function catchPokemon(catchCode, idTrainer, idPokeball) {
-	try {
-		const catchPokemon = await axios.post(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokemon/catch`,
-			{
-				catchCode: catchCode,
-				idTrainer: idTrainer,
-				idBall: idPokeball,
-			}
-		);
-		return catchPokemon.data;
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-async function sellPokemon(idTrainer, namePokemon, quantity) {
-	try {
-		const sellPokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/sell`,
-			{
-				namePokemon: namePokemon,
-				idTrainer: idTrainer,
-				quantity: quantity,
-			}
-		);
-		if (sellPokemon.data.status === 'noPokemon') {
-			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
-		} else if (sellPokemon.data.status === 'sell') {
-			return (
-				'Vous avez vendu ' +
-				quantity +
-				' ' +
-				namePokemon +
-				' pour ' +
-				sellPokemon.data.sellPrice +
-				' pokédollars.'
-			);
-		} else if (sellPokemon.data.status === 'noExistPokemon') {
-			return namePokemon + " n'est pas un pokémon.";
-		}
-	} catch (error) {
-		console.error("Erreur lors de la vente d'un pokémon.");
 	}
 }
 
@@ -137,4 +86,39 @@ async function evolvePokemon(idTrainer, namePokemon) {
 	}
 }
 
-export { findRandomPokemon, catchPokemon, sellPokemon, evolvePokemon };
+async function clearOldWildPokemon() {
+	try {
+		await axios.delete(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`
+		);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function nbPokemon(namePokemon) {
+	try {
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
+			{
+				namePokemon: namePokemon,
+			}
+		);
+		let pokemon = response.data;
+		if (pokemon.status === 'noExistPokemon') {
+			return `${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`;
+		} else if (pokemon.infos.numberEvolution === null) {
+			return `${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`;
+		} else {
+			return `Il vous faut ${
+				pokemon.infos.numberEvolution
+			} ${capitalizeFirstLetter(
+				namePokemon
+			)} pour faire évoluer votre pokémon.`;
+		}
+	} catch (error) {
+		console.error("Le pokémon n'existe pas.");
+	}
+}
+
+export { findRandomPokemon, evolvePokemon, clearOldWildPokemon, nbPokemon };

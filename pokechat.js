@@ -7,181 +7,42 @@ import {
 	initServer,
 	allMessage,
 } from './createServerFunctions.js';
+import cron from 'node-cron';
 import {
 	addTrainer,
 	getBallTrainer,
+	sellPokemon,
 	getPokedex,
 	getMoney,
 	buyBall,
 	getPrice,
-	nbPokemon,
 	getBadge,
+	handleCatch,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
-	catchPokemon,
-	sellPokemon,
 	evolvePokemon,
+	clearOldWildPokemon,
+	nbPokemon,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
-import { ButtonBuilder } from 'discord.js';
-import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-
-const balls = [
-	{ name: 'pokeball', id: 1 },
-	{ name: 'superball', id: 2 },
-	{ name: 'hyperball', id: 3 },
-	{ name: 'masterball', id: 4 },
-];
-
-async function handleCatch(interaction, idPokeball) {
-	const catchCode = interaction.customId.split('|')[1];
-	const idTrainer = interaction.user.id;
-	const response = await catchPokemon(catchCode, idTrainer, idPokeball);
-	let replyMessage;
-	let components;
-
-	switch (response.status) {
-		case 'noCatch':
-			replyMessage = `Le ${response.pokemonName} est resorti, retentez votre chance !`;
-			components = [createButtons(interaction.message, catchCode)];
-			break;
-		case 'catch':
-			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
-			break;
-		case 'escape':
-			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
-			break;
-		case 'alreadyCatch':
-			replyMessage = `Le Pokémon a déjà été capturé.`;
-			break;
-		case 'alreadyEscape':
-			replyMessage = `Le Pokémon s'est déjà échappé.`;
-			break;
-		case 'noBall':
-			replyMessage = `Vous n'avez pas de ${
-				balls.find((ball) => ball.id === idPokeball).name
-			}.`;
-			break;
-		case 'noExistPokemon':
-			replyMessage = `Le code ${catchCode} ne correspond à aucun pokémon.`;
-			break;
-		default:
-			replyMessage = 'Une erreur inattendue s’est produite.';
-	}
-
-	interaction.reply({ content: replyMessage, components });
-}
-
-function createButtons(message, catchCode) {
-	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-	let row = new ActionRowBuilder();
-	balls.forEach((ball) => {
-		const customEmoji = message.guild.emojis.cache.find(
-			(emoji) => emoji.name === ball
-		);
-		const button = new ButtonBuilder()
-			.setCustomId(ball + '|' + catchCode)
-			.setStyle(ButtonStyle.Secondary);
-		button[customEmoji ? 'setEmoji' : 'setLabel'](
-			customEmoji ? customEmoji.id : ball
-		);
-
-		row.addComponents(button);
-	});
-
-	return row;
-}
-
-const commandsPokechat = [
-	{
-		name: 'argent',
-		description: 'Affiche votre argent',
-	},
-	{
-		name: 'pokedex',
-		description: 'Affiche votre pokedex',
-	},
-	{
-		name: 'ball',
-		description: 'Affiche vos pokéballs',
-	},
-	{
-		name: 'evolution',
-		description: 'Fait évoluer un pokémon',
-		options: [
-			{
-				name: 'nom',
-				type: 3,
-				description: 'Nom du pokémon',
-				required: true,
-			},
-		],
-	},
-	{
-		name: 'vendre',
-		description: 'Vendre un / des pokémon(s)',
-		options: [
-			{
-				name: 'quantité',
-				type: 4,
-				description: 'Quantité de pokémon',
-				required: true,
-			},
-			{
-				name: 'nom',
-				type: 3,
-				description: 'Nom du pokémon',
-				required: true,
-			},
-		],
-	},
-	{
-		name: 'prix',
-		description: "Affiche le prix d'une pokéball ou d'un pokémon",
-		options: [
-			{
-				name: 'nom',
-				type: 3,
-				description: 'Nom de la pokéball ou du pokémon',
-				required: true,
-			},
-		],
-	},
-	{
-		name: 'nombre-evolution',
-		description: 'Affiche le nombre de pokémon necessaire pour une évolution',
-		options: [
-			{
-				name: 'nom',
-				type: 3,
-				description: 'Nom du pokémon à faire évoluer',
-				required: true,
-			},
-		],
-	},
-	{
-		name: 'cherche',
-		description: 'Cherche un pokémon',
-	},
-	{
-		name: 'canne',
-		description: 'Pêche un pokémon avec la canne',
-	},
-	{
-		name: 'super-canne',
-		description: 'Pêche un pokémon avec la super canne',
-	},
-	{
-		name: 'mega-canne',
-		description: 'Pêche un pokémon avec la mega canne',
-	},
-];
+import { commandsPokechat, balls } from './variables.js';
+import { heartbeat } from './globalFunctions.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
+
 	client.on('ready', () => {
 		console.log('Pokéchat Ready!');
+		heartbeat(client);
+		cron.schedule('0 0 3 * * *', () => {
+			client.destroy();
+			clearOldWildPokemon();
+
+			setTimeout(() => {
+				client.login(process.env.TOKEN);
+			}, 5000);
+		});
 	});
 
 	client.on('guildMemberAdd', (member) => {
@@ -276,6 +137,7 @@ function pokeChat(client) {
 					)
 				);
 			}
+			return;
 		}
 
 		if (interaction.isCommand()) {
@@ -286,6 +148,16 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'mega-canne') {
 				interaction.reply(await findRandomPokemon(interaction, 'megaCanne'));
+				return;
+			}
+
+			if (interaction.commandName === 'canne') {
+				interaction.reply(await findRandomPokemon(interaction, 'canne'));
+				return;
+			}
+
+			if (interaction.commandName === 'super-canne') {
+				interaction.reply(await findRandomPokemon(interaction, 'superCanne'));
 				return;
 			}
 
@@ -333,16 +205,6 @@ function pokeChat(client) {
 				interaction.reply(
 					await nbPokemon(interaction.options.getString('nom'))
 				);
-				return;
-			}
-
-			if (interaction.commandName === 'canne') {
-				interaction.reply(await findRandomPokemon(interaction, 'canne'));
-				return;
-			}
-
-			if (interaction.commandName === 'super-canne') {
-				interaction.reply(await findRandomPokemon(interaction, 'superCanne'));
 				return;
 			}
 		}
