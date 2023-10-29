@@ -6,6 +6,7 @@ import {
 	addRoles,
 	initServer,
 	allMessage,
+	commandesMessage,
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -91,18 +92,10 @@ function pokeChat(client) {
 				await allMessage(message);
 			} else if (message.content === '!listBot') {
 				await listBot(message);
+			} else if (message.content === '!updateCmdMessage') {
+				await commandesMessage(message);
 			}
 			return;
-		}
-	});
-
-	client.on('guildMemberUpdate', (oldMember, newMember) => {
-		console.log('test');
-		// Vérifier si le pseudo a changé
-		if (oldMember.nickname !== newMember.nickname) {
-			console.log(
-				`L'utilisateur ${oldMember.user.tag} a changé son pseudo de ${oldMember.nickname} à ${newMember.nickname}`
-			);
 		}
 	});
 

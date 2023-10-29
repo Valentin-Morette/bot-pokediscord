@@ -254,12 +254,14 @@ async function initServer(message, client) {
 	await allMessage(message);
 }
 
-async function allMessage(message) {
+async function commandesMessage(message) {
 	let channelName = 'commandes';
 	let channel = message.guild.channels.cache.find(
 		(channel) => channel.name === channelName
 	);
 	if (channel) {
+		const messages = await channel.messages.fetch();
+		await channel.bulkDelete(messages);
 		const commandEmbed = new EmbedBuilder()
 			.setColor('#3498db')
 			.setTitle('Liste des Commandes du Serveur')
@@ -274,7 +276,8 @@ async function allMessage(message) {
 					'- /argent : pour voir votre argent.\n' +
 					'- /ball : pour voir toutes vos pokéballs.\n' +
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
-					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon."
+					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n" +
+					'- /disponible : pour voir les pokémons disponibles dans la zone.'
 			);
 
 		channel.send({ embeds: [commandEmbed] });
@@ -282,6 +285,14 @@ async function allMessage(message) {
 		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
 	}
 
+	channelName = 'boutique';
+	channel = message.guild.channels.cache.find(
+		(channel) => channel.name === channelName
+	);
+}
+
+async function allMessage(message) {
+	commandesMessage(message);
 	channelName = 'boutique';
 	channel = message.guild.channels.cache.find(
 		(channel) => channel.name === channelName
@@ -428,8 +439,8 @@ function slashCommande(commands) {
 
 			await rest.put(
 				Routes.applicationGuildCommands(
-					'1142325515575889971',
-					'1167801032366112768'
+					process.env.IDAPPLICATION,
+					process.env.IDSERVER
 				),
 				{
 					body: commands,
@@ -452,4 +463,5 @@ export {
 	initServer,
 	slashCommande,
 	allMessage,
+	commandesMessage,
 };
