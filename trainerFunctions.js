@@ -122,7 +122,7 @@ async function getBallTrainer(message) {
 	}
 }
 
-async function getPokedex(idTrainer) {
+async function getPokedex(idTrainer, otherTrainer = false) {
 	try {
 		const response = await axios.get(
 			`${
@@ -132,7 +132,11 @@ async function getPokedex(idTrainer) {
 		if (response.data.pokemon.length === 0) {
 			return "Vous n'avez pas encore de pokémon.";
 		}
-		let strResponse = `Vous avez ${response.data.sumPokemon} pokémon, dont ${response.data.countPokemon} différents.\nVotre pokedex : \n`;
+		let strResponse = `${otherTrainer ? 'Ce dresseur a' : 'Vous avez'} ${
+			response.data.sumPokemon
+		} pokémon, dont ${response.data.countPokemon} différents.\n${
+			otherTrainer ? 'Son' : 'Votre'
+		} pokedex : \n`;
 		for (let i = 0; i < response.data.pokemon.length; i++) {
 			strResponse += `- ${response.data.pokemon[i].quantity} ${response.data.pokemon[i].name}\n`;
 		}

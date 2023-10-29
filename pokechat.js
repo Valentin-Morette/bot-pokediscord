@@ -24,6 +24,7 @@ import {
 	evolvePokemon,
 	clearOldWildPokemon,
 	nbPokemon,
+	getAvailable,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
 import { commandsPokechat, balls } from './variables.js';
@@ -92,6 +93,16 @@ function pokeChat(client) {
 				await listBot(message);
 			}
 			return;
+		}
+	});
+
+	client.on('guildMemberUpdate', (oldMember, newMember) => {
+		console.log('test');
+		// Vérifier si le pseudo a changé
+		if (oldMember.nickname !== newMember.nickname) {
+			console.log(
+				`L'utilisateur ${oldMember.user.tag} a changé son pseudo de ${oldMember.nickname} à ${newMember.nickname}`
+			);
 		}
 	});
 
@@ -165,8 +176,22 @@ function pokeChat(client) {
 				return;
 			}
 
+			if (interaction.commandName === 'disponible') {
+				const channelName = client.channels.cache.get(
+					interaction.channelId
+				).name;
+				interaction.reply(await getAvailable(channelName));
+				return;
+			}
+
 			if (interaction.commandName === 'pokedex') {
-				interaction.reply(await getPokedex(interaction.user.id));
+				if (interaction.options.getUser('dresseur') !== null) {
+					interaction.reply(
+						await getPokedex(interaction.options.getUser('dresseur').id, true)
+					);
+				} else {
+					interaction.reply(await getPokedex(interaction.user.id));
+				}
 				return;
 			}
 

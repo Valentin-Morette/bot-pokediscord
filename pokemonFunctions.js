@@ -121,4 +121,61 @@ async function nbPokemon(namePokemon) {
 	}
 }
 
-export { findRandomPokemon, evolvePokemon, clearOldWildPokemon, nbPokemon };
+async function getAvailable(channelName) {
+	try {
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/zone`,
+			{
+				nameZone: channelName,
+			}
+		);
+
+		const pokemonsBySpawnType = response.data.reduce((acc, pokemon) => {
+			if (!acc[pokemon.spawnType]) {
+				acc[pokemon.spawnType] = [];
+			}
+			acc[pokemon.spawnType].push(pokemon.name);
+			return acc;
+		}, {});
+
+		const spawnOrder = ['herbe', 'canne', 'superCanne', 'megaCanne'];
+		const messages = [];
+
+		for (const spawnType of spawnOrder) {
+			if (pokemonsBySpawnType[spawnType]) {
+				messages.push(
+					`Les Pokémon suivants sont disponibles ${spawnTypeTranslation(
+						spawnType
+					)} :\n- ${pokemonsBySpawnType[spawnType].join('\n- ')}.`
+				);
+			}
+		}
+
+		return messages.join('\n\n');
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+function spawnTypeTranslation(type) {
+	switch (type) {
+		case 'herbe':
+			return "dans l'herbe";
+		case 'canne':
+			return 'à la canne';
+		case 'superCanne':
+			return 'à la super canne';
+		case 'megaCanne':
+			return 'à la méga canne';
+		default:
+			return type;
+	}
+}
+
+export {
+	findRandomPokemon,
+	evolvePokemon,
+	clearOldWildPokemon,
+	nbPokemon,
+	getAvailable,
+};

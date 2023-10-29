@@ -5,7 +5,15 @@ const commandsPokechat = [
 	},
 	{
 		name: 'pokedex',
-		description: 'Affiche votre pokedex',
+		description: "Affiche votre pokedex ou celui d'un dresseur",
+		options: [
+			{
+				name: 'dresseur',
+				type: 6,
+				description: 'Nom du dresseur',
+				required: false,
+			},
+		],
 	},
 	{
 		name: 'ball',
@@ -80,6 +88,10 @@ const commandsPokechat = [
 	{
 		name: 'mega-canne',
 		description: 'Pêche un pokémon avec la mega canne',
+	},
+	{
+		name: 'disponible',
+		description: 'Affiche les pokémons disponibles sur le salon',
 	},
 ];
 
