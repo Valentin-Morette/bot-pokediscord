@@ -66,6 +66,9 @@ async function catchPokemon(catchCode, idTrainer, idPokeball) {
 
 async function sellPokemon(idTrainer, namePokemon, quantity) {
 	try {
+		if (quantity <= 0) {
+			return "Vous ne pouvez pas vendre moins d'un pokémon.";
+		}
 		const sellPokemon = await axios.post(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/sell`,
 			{
@@ -227,12 +230,6 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 				' pour ' +
 				formatNombreAvecSeparateur(response.data.price) +
 				' pokédollars.'
-			);
-		} else if (response.data.status === 'noExistBall') {
-			return (
-				capitalizeFirstLetter(nameBall) +
-				" n'est pas une pokéball.\n" +
-				'Veuillez réessayer avec la commande :\n!buy [quantité] [nom de la pokéball]'
 			);
 		}
 	} catch (error) {

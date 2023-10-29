@@ -22,13 +22,13 @@ async function sendArenaMessage(
 
 	if (channel) {
 		const attachment = new AttachmentBuilder(
-			`./assets/arenaTrainer/${arenaChampion.toLowerCase()}.jpg`
+			`./assets/arenaTrainer/${arenaChampion.toLowerCase()}.png`
 		);
 		const embed = new EmbedBuilder()
 			.setColor('#3498db')
 			.setTitle(arenaChampion)
 			.setDescription(arenaDescription)
-			.setThumbnail(`attachment://${arenaChampion.toLowerCase()}.jpg`);
+			.setThumbnail(`attachment://${arenaChampion.toLowerCase()}.png`);
 		let row = new ActionRowBuilder();
 		const button = new ButtonBuilder()
 			.setCustomId(
@@ -233,7 +233,16 @@ async function addRoles(message) {
 	}
 }
 
+async function deleteAllRoles(message) {
+	try {
+		message.guild.roles.cache.map((role) => role.delete());
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function initServer(message, client) {
+	await deleteAllRoles(message);
 	await deleteAllChannels(message.guild);
 	await deleteEmojis(message);
 	await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -259,13 +268,13 @@ async function allMessage(message) {
 					'- /canne : pour pêcher un pokémon avec la canne.\n' +
 					'- /superCanne : pour pêcher un pokémon avec la super canne.\n' +
 					'- /megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
-					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.(Uniquement dans le salon boutique)\n' +
+					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.\n' +
 					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
 					'- /argent : pour voir votre argent.\n' +
 					'- /ball : pour voir toutes vos pokéballs.\n' +
-					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.(Uniquement dans le salon boutique)\n" +
-					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.(Uniquement dans le salon boutique)"
+					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
+					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon."
 			);
 
 		channel.send({ embeds: [commandEmbed] });
@@ -313,9 +322,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'argenta',
-		'Pierre',
+		'Caillou',
 		'Roche',
-		"Je suis Pierre, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents.",
+		"Je suis Caillou, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents.",
 		10,
 		5,
 		'1 Badge'
@@ -324,9 +333,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'azuria',
-		'Ondine',
+		'Flaquette',
 		'Cascade',
-		"Je suis Ondine, le champion d'arène de type eau. Pour obtenir le badge cascade, il vous faudra au minimum 33 pokémons dont 12 différents.",
+		"Je suis Flaquette, le champion d'arène de type eau. Pour obtenir le badge cascade, il vous faudra au minimum 33 pokémons dont 12 différents.",
 		33,
 		12,
 		'2 Badges'
@@ -335,9 +344,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'carmin-sur-mer',
-		'MajorBob',
+		'SergentPile',
 		'Foudre',
-		"Je suis le Major Bob, le champion d'arène de type Electrik. Pour obtenir le badge Foudre, il vous faudra au minimum 50 pokémons dont 20 différents.",
+		"Je suis le Sergent Pile, le champion d'arène de type Electrik. Pour obtenir le badge Foudre, il vous faudra au minimum 50 pokémons dont 20 différents.",
 		50,
 		20,
 		'3 Badges'
@@ -346,9 +355,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'céladopole',
-		'Erika',
+		'Fleurika',
 		'Prisme',
-		"Je suis Erika, le champion d'arène de type plante. Pour obtenir le badge prisme, il vous faudra au minimum 67 pokémons dont 23 différents.",
+		"Je suis Fleurika, le champion d'arène de type plante. Pour obtenir le badge prisme, il vous faudra au minimum 67 pokémons dont 23 différents.",
 		67,
 		23,
 		'4 Badges'
@@ -357,9 +366,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'parmanie',
-		'Koga',
+		'Kouga',
 		'Ame',
-		"Je suis Koga, le champion d'arène de type poison. Pour obtenir le badge Âme, il vous faudra au minimum 80 pokémons dont 30 différents.",
+		"Je suis Kouga, le champion d'arène de type poison. Pour obtenir le badge Âme, il vous faudra au minimum 80 pokémons dont 30 différents.",
 		80,
 		30,
 		'5 Badges'
@@ -368,9 +377,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'safrania',
-		'Morgane',
+		'Mordane',
 		'Marais',
-		"Je suis Morgane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents.",
+		"Je suis Mordane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents.",
 		99,
 		35,
 		'6 Badges'
@@ -379,9 +388,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'cramois-île',
-		'Auguste',
+		'Aoutiste',
 		'Volcan',
-		"Je suis Auguste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 45 différents.",
+		"Je suis Aoûtiste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 45 différents.",
 		115,
 		45,
 		'7 Badges'
@@ -390,9 +399,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'jadielle',
-		'Giovanni',
+		'Giavonnou',
 		'Terre',
-		"Je suis Giovanni, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 50 différents.",
+		"Je suis Giavonnou, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 50 différents.",
 		150,
 		50,
 		'8 Badges'
@@ -401,9 +410,9 @@ async function allMessage(message) {
 	sendArenaMessage(
 		message,
 		'plateau-indigo',
-		'Regis',
+		'Reglisse',
 		'Maitre Pokémon',
-		'Je suis Regis, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
+		'Je suis Reglisse, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
 		1200,
 		151,
 		'Maître Pokémon'
@@ -420,7 +429,7 @@ function slashCommande(commands) {
 			await rest.put(
 				Routes.applicationGuildCommands(
 					'1142325515575889971',
-					'1158131616179302402'
+					'1167801032366112768'
 				),
 				{
 					body: commands,

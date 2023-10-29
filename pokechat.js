@@ -38,7 +38,6 @@ function pokeChat(client) {
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();
 			clearOldWildPokemon();
-
 			setTimeout(() => {
 				client.login(process.env.TOKEN);
 			}, 5000);
