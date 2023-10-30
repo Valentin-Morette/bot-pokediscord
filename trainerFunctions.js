@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { EmbedBuilder } from 'discord.js';
+import { ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 import {
 	capitalizeFirstLetter,
 	formatNombreAvecSeparateur,
@@ -316,6 +319,56 @@ async function handleCatch(interaction, idPokeball) {
 	interaction.reply({ content: replyMessage, components });
 }
 
+async function purposeSwapPokemon(interaction) {
+	let row = new ActionRowBuilder();
+
+	const button = new ButtonBuilder()
+		.setCustomId('3')
+		.setStyle(ButtonStyle.Primary)
+		.setLabel('Accepter');
+
+	row.addComponents(button);
+
+	const embed1 = new EmbedBuilder()
+		.setURL('https://google.com')
+		.setImage(
+			'https://raw.githubusercontent.com/Yarkis01/PokeAPI/images/sprites/1/regular.png'
+		)
+		.setDescription(
+			`**${capitalizeFirstLetter(
+				interaction.user.username
+			)} propose d'échanger ${interaction.options.getInteger(
+				'quantité_pokemon_propose'
+			)} ${capitalizeFirstLetter(
+				interaction.options.getString('nom_pokemon_propose')
+			)} contre ${interaction.options.getInteger(
+				'quantité_pokemon_demande'
+			)} ${capitalizeFirstLetter(
+				interaction.options.getString('nom_pokemon_demande')
+			)}**`
+		);
+	const embed2 = new EmbedBuilder()
+		.setURL('https://google.com')
+		.setImage(
+			`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-right-to-bottom-outline-icon.png`
+		);
+	const embed3 = new EmbedBuilder()
+		.setURL('https://google.com')
+		.setImage(
+			`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-left-to-top-outline-icon.png`
+		);
+	const embed4 = new EmbedBuilder()
+		.setURL('https://google.com')
+		.setImage(
+			'https://raw.githubusercontent.com/Yarkis01/PokeAPI/images/sprites/6/regular.png'
+		);
+
+	return {
+		embeds: [embed1, embed2, embed3, embed4],
+		components: [row],
+	};
+}
+
 export {
 	addTrainer,
 	getBallTrainer,
@@ -326,4 +379,5 @@ export {
 	getPrice,
 	sellPokemon,
 	handleCatch,
+	purposeSwapPokemon,
 };

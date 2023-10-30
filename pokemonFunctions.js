@@ -39,7 +39,11 @@ async function findRandomPokemon(interaction, type) {
 			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
 			.setImage(pokemon.img)
 			.setColor('#FFFFFF');
-		return { embeds: [embed], components: [row] };
+
+		return {
+			embeds: [embed],
+			components: [row],
+		};
 	} catch (error) {
 		console.error(error);
 	}

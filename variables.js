@@ -93,6 +93,36 @@ const commandsPokechat = [
 		name: 'disponible',
 		description: 'Affiche les pokémons disponibles sur le salon',
 	},
+	{
+		name: 'echange',
+		description: 'Echange un pokémon avec un autre dresseur',
+		options: [
+			{
+				name: 'quantité_pokemon_propose',
+				type: 4,
+				description: 'Quantité de pokémon que vous voulez échanger',
+				required: true,
+			},
+			{
+				name: 'nom_pokemon_propose',
+				type: 3,
+				description: 'Nom du pokémon que vous voulez échanger',
+				required: true,
+			},
+			{
+				name: 'quantité_pokemon_demande',
+				type: 4,
+				description: 'Quantité de pokémon que vous voulez recevoir',
+				required: true,
+			},
+			{
+				name: 'nom_pokemon_demande',
+				type: 3,
+				description: 'Nom du pokémon que vous voulez recevoir',
+				required: true,
+			},
+		],
+	},
 ];
 
 const balls = [

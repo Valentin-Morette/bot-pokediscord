@@ -19,6 +19,7 @@ import {
 	getPrice,
 	getBadge,
 	handleCatch,
+	purposeSwapPokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -222,6 +223,11 @@ function pokeChat(client) {
 				interaction.reply(
 					await nbPokemon(interaction.options.getString('nom'))
 				);
+				return;
+			}
+
+			if (interaction.commandName === 'echange') {
+				interaction.reply(await purposeSwapPokemon(interaction));
 				return;
 			}
 		}
