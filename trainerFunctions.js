@@ -328,6 +328,9 @@ async function purposeSwapPokemon(interaction) {
 	const quantityPokemonRequest = interaction.options.getInteger(
 		'quantité_pokemon_demande'
 	);
+	if (quantityPokemonPropose <= 0 || quantityPokemonRequest <= 0) {
+		return 'Vous devez proposer/demander au moins un pokémon.';
+	}
 	try {
 		const response = await axios.post(
 			`${
@@ -342,7 +345,6 @@ async function purposeSwapPokemon(interaction) {
 				type: 'propose',
 			}
 		);
-		console.log(response.data);
 		if (response.data.status === 'not enough pokemon propose') {
 			return `Vous n'avez pas assez de ${capitalizeFirstLetter(
 				pokemonPropose
@@ -401,6 +403,33 @@ async function purposeSwapPokemon(interaction) {
 	}
 }
 
+async function acceptSwapPokemon(idTrainer, idTrade) {
+	try {
+		const response = await axios.post(
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/trainer/pokemon/trade`,
+			{
+				idTrade: idTrade,
+				idTrainer: idTrainer,
+				type: 'accept',
+			}
+		);
+		const status = response.data.status;
+		if (status === 'not enough pokemon propose') {
+			return `Le dresseur n'a plus assez de ce pokémon.`;
+		} else if (status === 'not enough pokemon request') {
+			return `Vous n'avez pas assez de ce pokémon.`;
+		} else if (status === 'already accepted') {
+			return `Cette échange a déjà été éffectué.`;
+		} else if (status === 'success') {
+			return `L'échange a été éffectué avec succès.`;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export {
 	addTrainer,
 	getBallTrainer,
@@ -412,4 +441,5 @@ export {
 	sellPokemon,
 	handleCatch,
 	purposeSwapPokemon,
+	acceptSwapPokemon,
 };

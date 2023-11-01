@@ -20,6 +20,7 @@ import {
 	getBadge,
 	handleCatch,
 	purposeSwapPokemon,
+	acceptSwapPokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -143,7 +144,8 @@ function pokeChat(client) {
 			} else if (customId.startsWith('trade')) {
 				const args = customId.split('|');
 				let idTrade = args[1];
-				interaction.user.send(await acceptSwapPokemon(idTrainer, idTrade));
+				let idTrainer = interaction.user.id;
+				interaction.reply(await acceptSwapPokemon(idTrainer, idTrade));
 			}
 			return;
 		}
