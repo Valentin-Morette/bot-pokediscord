@@ -320,53 +320,85 @@ async function handleCatch(interaction, idPokeball) {
 }
 
 async function purposeSwapPokemon(interaction) {
-	let row = new ActionRowBuilder();
-
-	const button = new ButtonBuilder()
-		.setCustomId('3')
-		.setStyle(ButtonStyle.Primary)
-		.setLabel('Accepter');
-
-	row.addComponents(button);
-
-	const embed1 = new EmbedBuilder()
-		.setURL('https://google.com')
-		.setImage(
-			'https://raw.githubusercontent.com/Yarkis01/PokeAPI/images/sprites/1/regular.png'
-		)
-		.setDescription(
-			`**${capitalizeFirstLetter(
-				interaction.user.username
-			)} propose d'échanger ${interaction.options.getInteger(
-				'quantité_pokemon_propose'
-			)} ${capitalizeFirstLetter(
-				interaction.options.getString('nom_pokemon_propose')
-			)} contre ${interaction.options.getInteger(
-				'quantité_pokemon_demande'
-			)} ${capitalizeFirstLetter(
-				interaction.options.getString('nom_pokemon_demande')
-			)}**`
+	const pokemonPropose = interaction.options.getString('nom_pokemon_propose');
+	const pokemonRequest = interaction.options.getString('nom_pokemon_demande');
+	const quantityPokemonPropose = interaction.options.getInteger(
+		'quantité_pokemon_propose'
+	);
+	const quantityPokemonRequest = interaction.options.getInteger(
+		'quantité_pokemon_demande'
+	);
+	try {
+		const response = await axios.post(
+			`${
+				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
+			}/trainer/pokemon/trade`,
+			{
+				idTrainer: interaction.user.id,
+				pokemonPropose: pokemonPropose,
+				pokemonRequest: pokemonRequest,
+				quantityPokemonPropose: quantityPokemonPropose,
+				quantityPokemonRequest: quantityPokemonRequest,
+				type: 'propose',
+			}
 		);
-	const embed2 = new EmbedBuilder()
-		.setURL('https://google.com')
-		.setImage(
-			`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-right-to-bottom-outline-icon.png`
-		);
-	const embed3 = new EmbedBuilder()
-		.setURL('https://google.com')
-		.setImage(
-			`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-left-to-top-outline-icon.png`
-		);
-	const embed4 = new EmbedBuilder()
-		.setURL('https://google.com')
-		.setImage(
-			'https://raw.githubusercontent.com/Yarkis01/PokeAPI/images/sprites/6/regular.png'
-		);
+		console.log(response.data);
+		if (response.data.status === 'not enough pokemon propose') {
+			return `Vous n'avez pas assez de ${capitalizeFirstLetter(
+				pokemonPropose
+			)}.`;
+		} else if (response.data.status === 'not found pokemon propose') {
+			return `${capitalizeFirstLetter(pokemonPropose)} n'est pas un pokémon.`;
+		} else if (response.data.status === 'not found pokemon request') {
+			return `${capitalizeFirstLetter(pokemonRequest)} n'est pas un pokémon.`;
+		}
 
-	return {
-		embeds: [embed1, embed2, embed3, embed4],
-		components: [row],
-	};
+		let row = new ActionRowBuilder();
+
+		const button = new ButtonBuilder()
+			.setCustomId('trade|' + response.data.idTrade)
+			.setStyle(ButtonStyle.Primary)
+			.setLabel('Accepter');
+
+		row.addComponents(button);
+
+		const embed1 = new EmbedBuilder()
+			.setURL('https://google.com')
+			.setImage(response.data.imgPokemonPropose)
+			.setDescription(
+				`**${capitalizeFirstLetter(
+					interaction.user.username
+				)} propose d'échanger ${interaction.options.getInteger(
+					'quantité_pokemon_propose'
+				)} ${capitalizeFirstLetter(
+					interaction.options.getString('nom_pokemon_propose')
+				)} contre ${interaction.options.getInteger(
+					'quantité_pokemon_demande'
+				)} ${capitalizeFirstLetter(
+					interaction.options.getString('nom_pokemon_demande')
+				)}**`
+			);
+		const embed2 = new EmbedBuilder()
+			.setURL('https://google.com')
+			.setImage(
+				`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-right-to-bottom-outline-icon.png`
+			);
+		const embed3 = new EmbedBuilder()
+			.setURL('https://google.com')
+			.setImage(
+				`https://uxwing.com/wp-content/themes/uxwing/download/arrow-direction/curved-arrow-left-to-top-outline-icon.png`
+			);
+		const embed4 = new EmbedBuilder()
+			.setURL('https://google.com')
+			.setImage(response.data.imgPokemonRequest);
+
+		return {
+			embeds: [embed1, embed2, embed3, embed4],
+			components: [row],
+		};
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export {

@@ -140,6 +140,10 @@ function pokeChat(client) {
 						newRole
 					)
 				);
+			} else if (customId.startsWith('trade')) {
+				const args = customId.split('|');
+				let idTrade = args[1];
+				interaction.user.send(await acceptSwapPokemon(idTrainer, idTrade));
 			}
 			return;
 		}
