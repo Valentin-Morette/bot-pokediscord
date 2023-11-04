@@ -109,23 +109,50 @@ async function getBallTrainer(message) {
 	}
 }
 
-async function getPokedex(idTrainer, otherTrainer = false) {
+async function getPokedex(interaction) {
+	let user = interaction.options.getUser('dresseur') ?? interaction.user;
+	let otherTrainer = user.id !== interaction.user.id;
 	try {
 		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + idTrainer
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + user.id
 		);
-		if (response.data.pokemon.length === 0) {
+		const pokemons = response.data.pokemon;
+
+		if (pokemons.length === 0) {
 			return "Vous n'avez pas encore de pokémon.";
 		}
-		let strResponse = `${otherTrainer ? 'Ce dresseur a' : 'Vous avez'} ${
-			response.data.sumPokemon
-		} pokémon, dont ${response.data.countPokemon} différents.\n${
-			otherTrainer ? 'Son' : 'Votre'
-		} pokedex : \n`;
-		for (let i = 0; i < response.data.pokemon.length; i++) {
-			strResponse += `- ${response.data.pokemon[i].quantity} ${response.data.pokemon[i].name}\n`;
+
+		let embed = new EmbedBuilder()
+			.setTitle(
+				`${otherTrainer ? `${user.globalName} a` : 'Vous avez'} ${
+					response.data.sumPokemon
+				} pokémon, dont ${response.data.countPokemon} différents.`
+			)
+			.setColor('#E31030')
+			.setThumbnail(user.displayAvatarURL({ format: 'png', dynamic: true }))
+			.setFooter({
+				text: 'Pokedex de ' + user.globalName + ' - ' + response.data.countPokemon + '/151',
+			})
+			.setTimestamp();
+
+		const columns = [[], [], []];
+		const [col1, col2, col3] = columns;
+		let tiers = Math.ceil(pokemons.length / 3);
+
+		for (let i = 0; i < pokemons.length; i++) {
+			const pokemon = pokemons[i];
+			const embedField = `- ${pokemon.quantity} ${pokemon.name}`;
+			const columnIndex = Math.floor(i / tiers);
+			columns[columnIndex].push(embedField);
 		}
-		return strResponse;
+
+		embed.addFields(
+			{ name: ' ', value: col1.join('\n'), inline: true },
+			{ name: ' ', value: col2.join('\n'), inline: true },
+			{ name: ' ', value: col3.join('\n'), inline: true }
+		);
+
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error(error);
 	}

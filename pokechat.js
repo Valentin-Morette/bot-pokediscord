@@ -167,11 +167,7 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'pokedex') {
-				if (interaction.options.getUser('dresseur') !== null) {
-					interaction.reply(await getPokedex(interaction.options.getUser('dresseur').id, true));
-				} else {
-					interaction.reply(await getPokedex(interaction.user.id));
-				}
+				interaction.reply(await getPokedex(interaction));
 				return;
 			}
 

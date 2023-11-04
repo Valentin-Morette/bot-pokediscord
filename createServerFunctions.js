@@ -1,4 +1,4 @@
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import { EmbedBuilder } from 'discord.js';
