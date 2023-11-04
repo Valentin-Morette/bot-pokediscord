@@ -21,6 +21,7 @@ import {
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
+	handleTradeButtonInteraction,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -50,25 +51,17 @@ function pokeChat(client) {
 
 	client.on('guildMemberAdd', (member) => {
 		if (member.user.bot) {
-			member.roles.add(
-				member.guild.roles.cache.find(
-					(role) => role.name === "Champion d'arene"
-				)
-			);
+			member.roles.add(member.guild.roles.cache.find((role) => role.name === "Champion d'arene"));
 			return;
 		}
 		addTrainer(member);
-		let badgeRole = member.guild.roles.cache.find(
-			(role) => role.name === '0 Badge'
-		);
+		let badgeRole = member.guild.roles.cache.find((role) => role.name === '0 Badge');
 
 		if (badgeRole) {
 			member.roles.add(badgeRole).catch(console.error);
 		}
 
-		const welcomeChannel = member.guild.channels.cache.find(
-			(ch) => ch.name === 'accueil'
-		);
+		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === 'accueil');
 		if (welcomeChannel) {
 			welcomeChannel.send(`Bienvenue ${member} sur le serveur!`);
 		}
@@ -92,8 +85,6 @@ function pokeChat(client) {
 				await deleteEmojis(message.guild);
 			} else if (message.content === '!allMessage') {
 				await allMessage(message);
-			} else if (message.content === '!listBot') {
-				await listBot(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			}
@@ -126,26 +117,14 @@ function pokeChat(client) {
 					)
 				);
 			} else if (customId.startsWith('badge')) {
-				const args = customId.split('|');
-				let nbPokemon = args[1];
-				let nbPokemonDiff = args[2];
-				let badgeName = args[3];
-				let newRole = args[4];
+				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole] = customId.split('|');
 				await interaction.deferUpdate();
-				interaction.user.send(
-					await getBadge(
-						interaction,
-						nbPokemon,
-						nbPokemonDiff,
-						badgeName,
-						newRole
-					)
-				);
+				interaction.user.send(await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole));
 			} else if (customId.startsWith('trade')) {
 				const args = customId.split('|');
-				let idTrade = args[1];
-				let idTrainer = interaction.user.id;
-				interaction.reply(await acceptSwapPokemon(idTrainer, idTrade));
+				const idTrade = args[1];
+				const responseMessage = await acceptSwapPokemon(idTrade, interaction);
+				interaction.followUp(responseMessage);
 			}
 			return;
 		}
@@ -177,18 +156,14 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'disponible') {
-				const channelName = client.channels.cache.get(
-					interaction.channelId
-				).name;
+				const channelName = client.channels.cache.get(interaction.channelId).name;
 				interaction.reply(await getAvailable(channelName));
 				return;
 			}
 
 			if (interaction.commandName === 'pokedex') {
 				if (interaction.options.getUser('dresseur') !== null) {
-					interaction.reply(
-						await getPokedex(interaction.options.getUser('dresseur').id, true)
-					);
+					interaction.reply(await getPokedex(interaction.options.getUser('dresseur').id, true));
 				} else {
 					interaction.reply(await getPokedex(interaction.user.id));
 				}
@@ -202,10 +177,7 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'evolution') {
 				interaction.reply(
-					await evolvePokemon(
-						interaction.user.id,
-						interaction.options.getString('nom')
-					)
+					await evolvePokemon(interaction.user.id, interaction.options.getString('nom'))
 				);
 				return;
 			}
@@ -226,9 +198,7 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'nombre-evolution') {
-				interaction.reply(
-					await nbPokemon(interaction.options.getString('nom'))
-				);
+				interaction.reply(await nbPokemon(interaction.options.getString('nom')));
 				return;
 			}
 

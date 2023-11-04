@@ -22,15 +22,11 @@ async function findRandomPokemon(interaction, type) {
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		let row = new ActionRowBuilder();
 		balls.forEach((ball) => {
-			const customEmoji = interaction.guild.emojis.cache.find(
-				(emoji) => emoji.name === ball
-			);
+			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
 				.setCustomId(ball + '|' + pokemon.catchCode)
 				.setStyle(ButtonStyle.Secondary);
-			button[customEmoji ? 'setEmoji' : 'setLabel'](
-				customEmoji ? customEmoji.id : ball
-			);
+			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 
 			row.addComponents(button);
 		});
@@ -52,9 +48,7 @@ async function findRandomPokemon(interaction, type) {
 async function evolvePokemon(idTrainer, namePokemon) {
 	try {
 		const evolvePokemon = await axios.post(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokemon/evolve`,
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/evolve`,
 			{
 				namePokemon: namePokemon,
 				idTrainer: idTrainer,
@@ -92,9 +86,7 @@ async function evolvePokemon(idTrainer, namePokemon) {
 
 async function clearOldWildPokemon() {
 	try {
-		await axios.delete(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`
-		);
+		await axios.delete(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`);
 	} catch (error) {
 		console.error(error);
 	}
@@ -114,9 +106,7 @@ async function nbPokemon(namePokemon) {
 		} else if (pokemon.infos.numberEvolution === null) {
 			return `${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`;
 		} else {
-			return `Il vous faut ${
-				pokemon.infos.numberEvolution
-			} ${capitalizeFirstLetter(
+			return `Il vous faut ${pokemon.infos.numberEvolution} ${capitalizeFirstLetter(
 				namePokemon
 			)} pour faire évoluer votre pokémon.`;
 		}
@@ -176,10 +166,4 @@ function spawnTypeTranslation(type) {
 	}
 }
 
-export {
-	findRandomPokemon,
-	evolvePokemon,
-	clearOldWildPokemon,
-	nbPokemon,
-	getAvailable,
-};
+export { findRandomPokemon, evolvePokemon, clearOldWildPokemon, nbPokemon, getAvailable };

@@ -13,15 +13,11 @@ function createButtons(message, catchCode) {
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 	let row = new ActionRowBuilder();
 	balls.forEach((ball) => {
-		const customEmoji = message.guild.emojis.cache.find(
-			(emoji) => emoji.name === ball
-		);
+		const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
 		const button = new ButtonBuilder()
 			.setCustomId(ball + '|' + catchCode)
 			.setStyle(ButtonStyle.Secondary);
-		button[customEmoji ? 'setEmoji' : 'setLabel'](
-			customEmoji ? customEmoji.id : ball
-		);
+		button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 
 		row.addComponents(button);
 	});
@@ -35,9 +31,4 @@ function heartbeat(client) {
 	}, 300000);
 }
 
-export {
-	capitalizeFirstLetter,
-	formatNombreAvecSeparateur,
-	createButtons,
-	heartbeat,
-};
+export { capitalizeFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat };

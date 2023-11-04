@@ -16,14 +16,10 @@ async function sendArenaMessage(
 	nbPokemonDiff,
 	newRole
 ) {
-	let channel = message.guild.channels.cache.find(
-		(channel) => channel.name === channelName
-	);
+	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 
 	if (channel) {
-		const attachment = new AttachmentBuilder(
-			`./assets/arenaTrainer/${arenaChampion.toLowerCase()}.png`
-		);
+		const attachment = new AttachmentBuilder(`./assets/arenaTrainer/${arenaChampion.toLowerCase()}.png`);
 		const embed = new EmbedBuilder()
 			.setColor('#3498db')
 			.setTitle(arenaChampion)
@@ -31,13 +27,9 @@ async function sendArenaMessage(
 			.setThumbnail(`attachment://${arenaChampion.toLowerCase()}.png`);
 		let row = new ActionRowBuilder();
 		const button = new ButtonBuilder()
-			.setCustomId(
-				`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`
-			)
+			.setCustomId(`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`)
 			.setStyle(ButtonStyle.Primary)
-			.setLabel(
-				channelName == 'plateau-indigo' ? badgeName : `Badge ${badgeName}`
-			);
+			.setLabel(channelName == 'plateau-indigo' ? badgeName : `Badge ${badgeName}`);
 		row.addComponents(button);
 		await channel.send({
 			embeds: [embed],
@@ -85,9 +77,7 @@ async function createAllChannels(message, client) {
 		permissionOverwrites: permissionsCancel,
 	});
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone`
-		);
+		const response = await axios.get(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone`);
 
 		const categoryZone = {};
 
@@ -105,9 +95,8 @@ async function createAllChannels(message, client) {
 
 			for (let j = 0; j <= 8 - i; j++) {
 				permissionOverwrites.push({
-					id: message.guild.roles.cache.find(
-						(r) => r.name === 8 - j + ' Badge' + (8 - j > 1 ? 's' : '')
-					).id,
+					id: message.guild.roles.cache.find((r) => r.name === 8 - j + ' Badge' + (8 - j > 1 ? 's' : ''))
+						.id,
 					allow: ['0x0000000000000400', '0x0000000000000800'],
 				});
 			}
@@ -185,9 +174,7 @@ async function deleteEmojis(message) {
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball`
 		);
 		response.data.forEach(async (pokeball) => {
-			const emoji = await message.guild.emojis.cache.find(
-				(emoji) => emoji.name === pokeball.name
-			);
+			const emoji = await message.guild.emojis.cache.find((emoji) => emoji.name === pokeball.name);
 			emoji.delete();
 		});
 	} catch (error) {
@@ -197,9 +184,7 @@ async function deleteEmojis(message) {
 
 async function addRoles(message) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/role`
-		);
+		const response = await axios.get(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/role`);
 
 		for (let roleData of response.data) {
 			const options = {
@@ -256,9 +241,7 @@ async function initServer(message, client) {
 
 async function commandesMessage(message) {
 	let channelName = 'commandes';
-	let channel = message.guild.channels.cache.find(
-		(channel) => channel.name === channelName
-	);
+	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const messages = await channel.messages.fetch();
 		await channel.bulkDelete(messages);
@@ -277,7 +260,8 @@ async function commandesMessage(message) {
 					'- /ball : pour voir toutes vos pokéballs.\n' +
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
 					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n" +
-					'- /disponible : pour voir les pokémons disponibles dans la zone.'
+					'- /disponible : pour voir les pokémons disponibles dans la zone.\n' +
+					'- /echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé] : pour échanger des pokémons avec un autre joueur.'
 			);
 
 		channel.send({ embeds: [commandEmbed] });
@@ -286,17 +270,13 @@ async function commandesMessage(message) {
 	}
 
 	channelName = 'boutique';
-	channel = message.guild.channels.cache.find(
-		(channel) => channel.name === channelName
-	);
+	channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 }
 
 async function allMessage(message) {
 	commandesMessage(message);
 	channelName = 'boutique';
-	channel = message.guild.channels.cache.find(
-		(channel) => channel.name === channelName
-	);
+	channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const priceEmbed = new EmbedBuilder()
 			.setColor('#3498db')
@@ -313,9 +293,7 @@ async function allMessage(message) {
 		for (let i = 1; i <= 100; i *= 10) {
 			let row = new ActionRowBuilder();
 			balls.forEach((ball) => {
-				const customEmoji = message.guild.emojis.cache.find(
-					(emoji) => emoji.name === ball
-				);
+				const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
 				const button = new ButtonBuilder()
 					.setCustomId('buy|' + i + '|' + ball)
 					.setStyle(ButtonStyle.Secondary)
@@ -437,15 +415,9 @@ function slashCommande(commands) {
 		try {
 			console.log("Début de l'enregistrement des commandes slash.");
 
-			await rest.put(
-				Routes.applicationGuildCommands(
-					process.env.IDAPPLICATION,
-					process.env.IDSERVER
-				),
-				{
-					body: commands,
-				}
-			);
+			await rest.put(Routes.applicationGuildCommands(process.env.IDAPPLICATION, process.env.IDSERVER), {
+				body: commands,
+			});
 
 			console.log('Commandes slash enregistrées avec succès !');
 		} catch (error) {

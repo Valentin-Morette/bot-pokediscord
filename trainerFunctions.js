@@ -2,47 +2,39 @@ import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import {
-	capitalizeFirstLetter,
-	formatNombreAvecSeparateur,
-} from './globalFunctions.js';
+import { capitalizeFirstLetter, formatNombreAvecSeparateur } from './globalFunctions.js';
 import { balls } from './variables.js';
 import { createButtons } from './globalFunctions.js';
 
 async function addTrainer(member) {
 	try {
 		const response = await axios.get(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/trainer/verify/` + member.id
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/verify/` + member.id
 		);
 		if (!response.data.hasAccount) {
-			await axios.post(
-				`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer`,
-				{
-					trainer: {
-						idDiscord: member.id,
-						name: member.user.username,
-						money: 1000,
-						point: 0,
-						level: 0,
+			await axios.post(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer`, {
+				trainer: {
+					idDiscord: member.id,
+					name: member.user.username,
+					money: 1000,
+					point: 0,
+					level: 0,
+				},
+				ball: [
+					{
+						id: 1,
+						quantity: 10,
 					},
-					ball: [
-						{
-							id: 1,
-							quantity: 10,
-						},
-						{
-							id: 2,
-							quantity: 5,
-						},
-						{
-							id: 3,
-							quantity: 1,
-						},
-					],
-				}
-			);
+					{
+						id: 2,
+						quantity: 5,
+					},
+					{
+						id: 3,
+						quantity: 1,
+					},
+				],
+			});
 		}
 	} catch (error) {
 		console.error(error);
@@ -52,9 +44,7 @@ async function addTrainer(member) {
 async function catchPokemon(catchCode, idTrainer, idPokeball) {
 	try {
 		const catchPokemon = await axios.post(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokemon/catch`,
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/catch`,
 			{
 				catchCode: catchCode,
 				idTrainer: idTrainer,
@@ -103,9 +93,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 async function getBallTrainer(message) {
 	try {
 		const response = await axios.get(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokeball/trainer/` + message.member.id
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/trainer/` + message.member.id
 		);
 		let strResponse = 'Vous avez : \n';
 		for (let i = 0; i < response.data.length; i++) {
@@ -113,11 +101,7 @@ async function getBallTrainer(message) {
 				(emoji) => emoji.name === response.data[i].name
 			);
 			strResponse +=
-				'- ' +
-				(customEmoji ? customEmoji.toString() : '') +
-				' : ' +
-				response.data[i].quantity +
-				'\n';
+				'- ' + (customEmoji ? customEmoji.toString() : '') + ' : ' + response.data[i].quantity + '\n';
 		}
 		return strResponse;
 	} catch (error) {
@@ -128,9 +112,7 @@ async function getBallTrainer(message) {
 async function getPokedex(idTrainer, otherTrainer = false) {
 	try {
 		const response = await axios.get(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokemon/trainer/` + idTrainer
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + idTrainer
 		);
 		if (response.data.pokemon.length === 0) {
 			return "Vous n'avez pas encore de pokémon.";
@@ -152,14 +134,9 @@ async function getPokedex(idTrainer, otherTrainer = false) {
 async function getMoney(idTrainer) {
 	try {
 		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/` +
-				idTrainer
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/` + idTrainer
 		);
-		return (
-			'Vous avez : ' +
-			formatNombreAvecSeparateur(response.data.money) +
-			' pokédollars.'
-		);
+		return 'Vous avez : ' + formatNombreAvecSeparateur(response.data.money) + ' pokédollars.';
 	} catch (error) {
 		console.error(error);
 	}
@@ -168,14 +145,11 @@ async function getMoney(idTrainer) {
 async function priceBall(idBall) {
 	try {
 		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/` +
-				idBall
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/` + idBall
 		);
 		return `Le prix d'une ${capitalizeFirstLetter(
 			response.data.name
-		)} est de ${formatNombreAvecSeparateur(
-			response.data.buyingPrice
-		)} pokédollars.`;
+		)} est de ${formatNombreAvecSeparateur(response.data.buyingPrice)} pokédollars.`;
 	} catch (error) {
 		console.error("La pokéball n'existe pas.");
 	}
@@ -191,15 +165,11 @@ async function pricePokemon(namePokemon) {
 		);
 		let pokemon = response.data;
 		if (pokemon.status === 'noExistPokemon') {
-			return `${capitalizeFirstLetter(
-				namePokemon
-			)} n'est ni un pokémon, ni une pokeball.`;
+			return `${capitalizeFirstLetter(namePokemon)} n'est ni un pokémon, ni une pokeball.`;
 		} else {
 			return `Le prix de vente d'un ${capitalizeFirstLetter(
 				namePokemon
-			)} est de ${formatNombreAvecSeparateur(
-				pokemon.infos.sellPrice
-			)} pokédollars.`;
+			)} est de ${formatNombreAvecSeparateur(pokemon.infos.sellPrice)} pokédollars.`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
@@ -244,19 +214,11 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	}
 }
 
-async function getBadge(
-	message,
-	nbPokemon,
-	nbPokemonDiff,
-	nameBadge,
-	roleBadge
-) {
+async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
 	let idTrainer = message.member.id;
 	try {
 		const response = await axios.get(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/pokemon/trainer/` + idTrainer
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + idTrainer
 		);
 		if (response.data.sumPokemon < nbPokemon) {
 			return `Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`;
@@ -267,9 +229,7 @@ async function getBadge(
 	} catch (error) {
 		console.error(error);
 	}
-	let badgeRole = message.guild.roles.cache.find(
-		(role) => role.name === roleBadge
-	);
+	let badgeRole = message.guild.roles.cache.find((role) => role.name === roleBadge);
 
 	if (badgeRole) {
 		if (message.member.roles.cache.has(badgeRole.id)) {
@@ -305,9 +265,7 @@ async function handleCatch(interaction, idPokeball) {
 			replyMessage = `Le Pokémon s'est déjà échappé.`;
 			break;
 		case 'noBall':
-			replyMessage = `Vous n'avez pas de ${
-				balls.find((ball) => ball.id === idPokeball).name
-			}.`;
+			replyMessage = `Vous n'avez pas de ${balls.find((ball) => ball.id === idPokeball).name}.`;
 			break;
 		case 'noExistPokemon':
 			replyMessage = `Le pokémon a disparu.`;
@@ -322,20 +280,14 @@ async function handleCatch(interaction, idPokeball) {
 async function purposeSwapPokemon(interaction) {
 	const pokemonPropose = interaction.options.getString('nom_pokemon_propose');
 	const pokemonRequest = interaction.options.getString('nom_pokemon_demande');
-	const quantityPokemonPropose = interaction.options.getInteger(
-		'quantité_pokemon_propose'
-	);
-	const quantityPokemonRequest = interaction.options.getInteger(
-		'quantité_pokemon_demande'
-	);
+	const quantityPokemonPropose = interaction.options.getInteger('quantité_pokemon_propose');
+	const quantityPokemonRequest = interaction.options.getInteger('quantité_pokemon_demande');
 	if (quantityPokemonPropose <= 0 || quantityPokemonRequest <= 0) {
 		return 'Vous devez proposer/demander au moins un pokémon.';
 	}
 	try {
 		const response = await axios.post(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/trainer/pokemon/trade`,
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/pokemon/trade`,
 			{
 				idTrainer: interaction.user.id,
 				pokemonPropose: pokemonPropose,
@@ -346,9 +298,7 @@ async function purposeSwapPokemon(interaction) {
 			}
 		);
 		if (response.data.status === 'not enough pokemon propose') {
-			return `Vous n'avez pas assez de ${capitalizeFirstLetter(
-				pokemonPropose
-			)}.`;
+			return `Vous n'avez pas assez de ${capitalizeFirstLetter(pokemonPropose)}.`;
 		} else if (response.data.status === 'not found pokemon propose') {
 			return `${capitalizeFirstLetter(pokemonPropose)} n'est pas un pokémon.`;
 		} else if (response.data.status === 'not found pokemon request') {
@@ -374,9 +324,7 @@ async function purposeSwapPokemon(interaction) {
 					'quantité_pokemon_propose'
 				)} ${capitalizeFirstLetter(
 					interaction.options.getString('nom_pokemon_propose')
-				)} contre ${interaction.options.getInteger(
-					'quantité_pokemon_demande'
-				)} ${capitalizeFirstLetter(
+				)} contre ${interaction.options.getInteger('quantité_pokemon_demande')} ${capitalizeFirstLetter(
 					interaction.options.getString('nom_pokemon_demande')
 				)}**`
 			);
@@ -403,12 +351,11 @@ async function purposeSwapPokemon(interaction) {
 	}
 }
 
-async function acceptSwapPokemon(idTrainer, idTrade) {
+async function acceptSwapPokemon(idTrade, interaction) {
+	const idTrainer = interaction.user.id;
 	try {
 		const response = await axios.post(
-			`${
-				process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'
-			}/trainer/pokemon/trade`,
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/pokemon/trade`,
 			{
 				idTrade: idTrade,
 				idTrainer: idTrainer,
@@ -423,11 +370,26 @@ async function acceptSwapPokemon(idTrainer, idTrade) {
 		} else if (status === 'already accepted') {
 			return `Cette échange a déjà été éffectué.`;
 		} else if (status === 'success') {
+			await handleTradeButtonInteraction(idTrade, interaction);
 			return `L'échange a été éffectué avec succès.`;
 		}
 	} catch (error) {
 		console.error(error);
 	}
+}
+
+async function handleTradeButtonInteraction(idTrade, interaction) {
+	// Désactivez le bouton et changez le texte
+	const button = new ButtonBuilder()
+		.setCustomId('trade|' + idTrade)
+		.setStyle(ButtonStyle.Secondary)
+		.setLabel('Échange terminé')
+		.setDisabled(true);
+
+	// Mettez à jour le message original avec le nouveau bouton
+	await interaction.update({
+		components: [new ActionRowBuilder().addComponents(button)],
+	});
 }
 
 export {
@@ -442,4 +404,5 @@ export {
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
+	handleTradeButtonInteraction,
 };
