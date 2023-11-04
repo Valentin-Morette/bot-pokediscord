@@ -124,7 +124,12 @@ function pokeChat(client) {
 				const args = customId.split('|');
 				const idTrade = args[1];
 				const responseMessage = await acceptSwapPokemon(idTrade, interaction);
-				interaction.followUp(responseMessage);
+
+				if (responseMessage) {
+					await interaction.reply(responseMessage);
+				} else {
+					await interaction.followUp(`L'échange a été éffectué avec succès.`);
+				}
 			}
 			return;
 		}

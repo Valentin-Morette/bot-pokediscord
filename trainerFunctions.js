@@ -362,31 +362,33 @@ async function acceptSwapPokemon(idTrade, interaction) {
 				type: 'accept',
 			}
 		);
+
 		const status = response.data.status;
-		if (status === 'not enough pokemon propose') {
-			return `Le dresseur n'a plus assez de ce pokémon.`;
-		} else if (status === 'not enough pokemon request') {
-			return `Vous n'avez pas assez de ce pokémon.`;
-		} else if (status === 'already accepted') {
-			return `Cette échange a déjà été éffectué.`;
-		} else if (status === 'success') {
+		if (status === 'success') {
 			await handleTradeButtonInteraction(idTrade, interaction);
-			return `L'échange a été éffectué avec succès.`;
+			return null;
+		} else {
+			if (status === 'not enough pokemon propose') {
+				return `Le dresseur n'a plus assez de ce pokémon.`;
+			} else if (status === 'not enough pokemon request') {
+				return `Vous n'avez pas assez de ce pokémon.`;
+			} else if (status === 'already accepted') {
+				return `Cette échange a déjà été éffectué.`;
+			}
 		}
 	} catch (error) {
 		console.error(error);
+		return "Une erreur est survenue lors de l'échange.";
 	}
 }
 
 async function handleTradeButtonInteraction(idTrade, interaction) {
-	// Désactivez le bouton et changez le texte
 	const button = new ButtonBuilder()
 		.setCustomId('trade|' + idTrade)
 		.setStyle(ButtonStyle.Secondary)
 		.setLabel('Échange terminé')
 		.setDisabled(true);
 
-	// Mettez à jour le message original avec le nouveau bouton
 	await interaction.update({
 		components: [new ActionRowBuilder().addComponents(button)],
 	});
