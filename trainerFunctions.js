@@ -4,7 +4,6 @@ import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { capitalizeFirstLetter, formatNombreAvecSeparateur } from './globalFunctions.js';
 import { balls } from './variables.js';
-import { createButtons } from './globalFunctions.js';
 
 async function addTrainer(member) {
 	try {
@@ -284,16 +283,28 @@ async function handleCatch(interaction, idPokeball) {
 	let replyMessage;
 	let components;
 
+	const originalEmbed = interaction.message.embeds[0];
+	const newEmbed = new EmbedBuilder()
+		.setTitle(originalEmbed.title)
+		.setColor(originalEmbed.color)
+		.setThumbnail(originalEmbed.thumbnail?.url);
+
+	let addFieldsValue = originalEmbed.fields[0]?.value ?? '0';
+
 	switch (response.status) {
 		case 'noCatch':
 			replyMessage = `Le ${response.pokemonName} est resorti, retentez votre chance !`;
-			components = [createButtons(interaction.message, catchCode)];
+			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
 		case 'catch':
 			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
+			addFieldsValue = parseInt(addFieldsValue) + 1;
+			components = await disabledButtons(interaction);
 			break;
 		case 'escape':
 			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
+			addFieldsValue = parseInt(addFieldsValue) + 1;
+			components = await disabledButtons(interaction);
 			break;
 		case 'alreadyCatch':
 			replyMessage = `Le Pokémon a déjà été capturé.`;
@@ -311,7 +322,25 @@ async function handleCatch(interaction, idPokeball) {
 			replyMessage = 'Une erreur inattendue s’est produite.';
 	}
 
-	interaction.reply({ content: replyMessage, components });
+	newEmbed.setDescription(replyMessage);
+	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
+
+	interaction.update({ embeds: [newEmbed], components });
+}
+
+async function disabledButtons(interaction) {
+	let newRow = new ActionRowBuilder();
+	interaction.message.components[0].components.forEach((button) => {
+		const newButton = new ButtonBuilder()
+			.setCustomId(button.customId)
+			.setEmoji(button.emoji)
+			.setStyle(button.style)
+			.setDisabled(true);
+
+		newRow.addComponents(newButton);
+	});
+
+	return [newRow];
 }
 
 async function purposeSwapPokemon(interaction) {

@@ -33,7 +33,8 @@ async function findRandomPokemon(interaction, type) {
 
 		const embed = new EmbedBuilder()
 			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
-			.setImage(pokemon.img)
+			.setDescription('Attrapez-le !')
+			.setThumbnail(pokemon.img)
 			.setColor('#FFFFFF');
 
 		return {
