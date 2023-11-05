@@ -146,11 +146,21 @@ async function getPokedex(interaction) {
 			columns[columnIndex].push(embedField);
 		}
 
-		embed.addFields(
-			{ name: ' ', value: col1.join('\n'), inline: true },
-			{ name: ' ', value: col2.join('\n'), inline: true },
-			{ name: ' ', value: col3.join('\n'), inline: true }
-		);
+		const fields = [];
+
+		if (col1.length > 0) {
+			fields.push({ name: ' ', value: col1.join('\n'), inline: true });
+		}
+		if (col2.length > 0) {
+			fields.push({ name: ' ', value: col2.join('\n'), inline: true });
+		}
+		if (col3.length > 0) {
+			fields.push({ name: ' ', value: col3.join('\n'), inline: true });
+		}
+
+		if (fields.length > 0) {
+			embed.addFields(...fields);
+		}
 
 		return { embeds: [embed] };
 	} catch (error) {
