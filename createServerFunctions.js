@@ -261,7 +261,8 @@ async function commandesMessage(message) {
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
 					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n" +
 					'- /disponible : pour voir les pokémons disponibles dans la zone.\n' +
-					'- /echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé] : pour échanger des pokémons avec un autre joueur.'
+					'- /echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé] : pour échanger des pokémons avec un autre joueur.\n' +
+					"- /zone [nom du pokemon] : pour voir les zones d'apparitions d'un pokémon."
 			);
 
 		channel.send({ embeds: [commandEmbed] });

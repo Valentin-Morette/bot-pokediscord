@@ -32,6 +32,18 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'zone',
+		description: 'Affiche les zones disponibles pour un pokémon',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'vendre',
 		description: 'Vendre un / des pokémon(s)',
 		options: [

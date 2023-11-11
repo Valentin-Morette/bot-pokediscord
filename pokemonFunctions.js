@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { all } from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
@@ -167,4 +167,38 @@ function spawnTypeTranslation(type) {
 	}
 }
 
-export { findRandomPokemon, evolvePokemon, clearOldWildPokemon, nbPokemon, getAvailable };
+async function getZoneForPokemon(namePokemon) {
+	try {
+		if (namePokemon === 'mew') {
+			return 'Personne ne sait où se trouve Mew. :person_shrugging:';
+		}
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone/pokemon/${namePokemon}`
+		);
+		let zones = response.data;
+		if (zones.status === 'noExistPokemon') {
+			return capitalizeFirstLetter(namePokemon) + " n'est pas un pokémon.";
+		} else if (zones.result.length === 0) {
+			return capitalizeFirstLetter(namePokemon) + ' est disponible seulement par évolution.';
+		} else {
+			let allZone = [];
+			for (let i = 0; i < zones.result.length; i++) {
+				allZone.push(capitalizeFirstLetter(zones.result[i].name));
+			}
+			return `${capitalizeFirstLetter(namePokemon)} est disponible dans ${
+				allZone.length === 1 ? 'la zone' : 'les zones suivantes'
+			} :\n- ${allZone.join('\n- ')}.`;
+		}
+	} catch (error) {
+		console.error("Erreur lors de l'obtention des zones.");
+	}
+}
+
+export {
+	findRandomPokemon,
+	evolvePokemon,
+	clearOldWildPokemon,
+	nbPokemon,
+	getAvailable,
+	getZoneForPokemon,
+};

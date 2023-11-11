@@ -21,7 +21,6 @@ import {
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
-	handleTradeButtonInteraction,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -29,6 +28,7 @@ import {
 	clearOldWildPokemon,
 	nbPokemon,
 	getAvailable,
+	getZoneForPokemon,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
 import { commandsPokechat, balls } from './variables.js';
@@ -163,6 +163,11 @@ function pokeChat(client) {
 			if (interaction.commandName === 'disponible') {
 				const channelName = client.channels.cache.get(interaction.channelId).name;
 				interaction.reply(await getAvailable(channelName));
+				return;
+			}
+
+			if (interaction.commandName === 'zone') {
+				interaction.reply(await getZoneForPokemon(interaction.options.getString('nom')));
 				return;
 			}
 
