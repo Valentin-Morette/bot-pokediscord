@@ -2,7 +2,7 @@ import axios, { all } from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { capitalizeFirstLetter } from './globalFunctions.js';
+import { capitalizeFirstLetter, createListEmbed } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
 	try {
@@ -67,10 +67,15 @@ async function evolvePokemon(idTrainer, namePokemon) {
 			const embed = new EmbedBuilder()
 				.setTitle(
 					`Vous avez fait évoluer ${capitalizeFirstLetter(namePokemon)} en ${
-						evolvePokemon.data.pokemonName
+						evolvePokemon.data.pokemonEvolve.name
 					} !`
 				)
-				.setImage(evolvePokemon.data.pokemonImg)
+				.setDescription('Félicitations ! Vous avez obtenu un nouveau pokémon !')
+				.setThumbnail(evolvePokemon.data.pokemonEvolve.img)
+				.setFooter({
+					text: 'Evolution de ' + capitalizeFirstLetter(namePokemon),
+				})
+				.setTimestamp()
 				.setColor('#FFFFFF');
 			return { embeds: [embed] };
 		} else if (evolvePokemon.data.status === 'noEvolution') {
@@ -169,7 +174,7 @@ function spawnTypeTranslation(type) {
 
 async function getZoneForPokemon(namePokemon) {
 	try {
-		if (namePokemon === 'mew') {
+		if (namePokemon.toLowerCase() === 'mew') {
 			return 'Personne ne sait où se trouve Mew. :person_shrugging:';
 		}
 		const response = await axios.get(
@@ -177,17 +182,20 @@ async function getZoneForPokemon(namePokemon) {
 		);
 		let zones = response.data;
 		if (zones.status === 'noExistPokemon') {
-			return capitalizeFirstLetter(namePokemon) + " n'est pas un pokémon.";
+			return capitalizeFirstLetter(zones.pokemon.name) + " n'est pas un pokémon.";
 		} else if (zones.result.length === 0) {
-			return capitalizeFirstLetter(namePokemon) + ' est disponible seulement par évolution.';
+			return capitalizeFirstLetter(zones.pokemon.name) + ' est disponible seulement par évolution.';
 		} else {
 			let allZone = [];
 			for (let i = 0; i < zones.result.length; i++) {
-				allZone.push(capitalizeFirstLetter(zones.result[i].name));
+				allZone.push('- ' + capitalizeFirstLetter(zones.result[i].name));
 			}
-			return `${capitalizeFirstLetter(namePokemon)} est disponible dans ${
-				allZone.length === 1 ? 'la zone' : 'les zones suivantes'
-			} :\n- ${allZone.join('\n- ')}.`;
+			const title = 'Liste des zones pour ' + capitalizeFirstLetter(zones.pokemon.name);
+			const footer = capitalizeFirstLetter(zones.pokemon.name);
+			const thumbnailUrl = zones.pokemon.img;
+
+			let embed = createListEmbed(allZone, title, footer, thumbnailUrl);
+			return { embeds: [embed] };
 		}
 	} catch (error) {
 		console.error("Erreur lors de l'obtention des zones.");

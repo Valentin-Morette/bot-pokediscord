@@ -1,4 +1,5 @@
 import { ButtonBuilder } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 function capitalizeFirstLetter(string) {
@@ -25,10 +26,58 @@ function createButtons(message, catchCode) {
 	return row;
 }
 
+function createListEmbed(
+	items = null,
+	title = null,
+	footer = null,
+	thumbnailUrl = null,
+	img = null,
+	color = '#FFFFFF'
+) {
+	let embed = new EmbedBuilder().setColor(color);
+
+	if (title) {
+		embed.setTitle(title);
+	}
+	if (thumbnailUrl) {
+		embed.setThumbnail(thumbnailUrl);
+	}
+	if (footer) {
+		embed.setFooter({ text: footer });
+		embed.setTimestamp();
+	}
+	if (img) {
+		embed.setImage(img);
+	}
+
+	if (items) {
+		if (typeof items === 'string') {
+			embed.setDescription(items);
+		} else if (Array.isArray(items) && items.length > 0) {
+			const columns = [[], [], []];
+			let tiers = Math.ceil(items.length / 3);
+
+			for (let i = 0; i < items.length; i++) {
+				const item = items[i];
+				const columnIndex = Math.floor(i / tiers);
+				columns[columnIndex].push(item);
+			}
+
+			columns.forEach((col) => {
+				if (col.length > 0) {
+					embed.addFields({ name: ' ', value: col.join('\n'), inline: true });
+				}
+			});
+		}
+	}
+
+	return embed;
+}
+
 function heartbeat(client) {
 	setInterval(() => {
 		client.ws.ping;
 	}, 300000);
 }
 
-export { capitalizeFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat };
+export { capitalizeFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed };

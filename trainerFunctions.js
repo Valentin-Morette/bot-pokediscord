@@ -2,7 +2,11 @@ import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { capitalizeFirstLetter, formatNombreAvecSeparateur } from './globalFunctions.js';
+import {
+	capitalizeFirstLetter,
+	formatNombreAvecSeparateur,
+	createListEmbed,
+} from './globalFunctions.js';
 import { balls } from './variables.js';
 
 async function addTrainer(member) {
@@ -110,7 +114,6 @@ async function getBallTrainer(message) {
 
 async function getPokedex(interaction) {
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
-	let otherTrainer = user.id !== interaction.user.id;
 	try {
 		const response = await axios.get(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + user.id
@@ -121,45 +124,14 @@ async function getPokedex(interaction) {
 			return "Vous n'avez pas encore de pokémon.";
 		}
 
-		let embed = new EmbedBuilder()
-			.setTitle(
-				`${otherTrainer ? `${user.globalName} a` : 'Vous avez'} ${
-					response.data.sumPokemon
-				} pokémon, dont ${response.data.countPokemon} différents.`
-			)
-			.setColor('#E31030')
-			.setThumbnail(user.displayAvatarURL({ format: 'png', dynamic: true }))
-			.setFooter({
-				text: 'Pokedex de ' + user.globalName + ' - ' + response.data.countPokemon + '/151',
-			})
-			.setTimestamp();
+		const items = pokemons.map((pokemon) => `- ${pokemon.quantity} ${pokemon.name}`);
+		const title = `${user.id !== interaction.user.id ? `${user.globalName} a` : 'Vous avez'} ${
+			response.data.sumPokemon
+		} pokémon, dont ${response.data.countPokemon} différents.`;
+		const footer = 'Pokedex de ' + user.globalName + ' - ' + response.data.countPokemon + '/151';
+		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
 
-		const columns = [[], [], []];
-		const [col1, col2, col3] = columns;
-		let tiers = Math.ceil(pokemons.length / 3);
-
-		for (let i = 0; i < pokemons.length; i++) {
-			const pokemon = pokemons[i];
-			const embedField = `- ${pokemon.quantity} ${pokemon.name}`;
-			const columnIndex = Math.floor(i / tiers);
-			columns[columnIndex].push(embedField);
-		}
-
-		const fields = [];
-
-		if (col1.length > 0) {
-			fields.push({ name: ' ', value: col1.join('\n'), inline: true });
-		}
-		if (col2.length > 0) {
-			fields.push({ name: ' ', value: col2.join('\n'), inline: true });
-		}
-		if (col3.length > 0) {
-			fields.push({ name: ' ', value: col3.join('\n'), inline: true });
-		}
-
-		if (fields.length > 0) {
-			embed.addFields(...fields);
-		}
+		let embed = createListEmbed(items, title, footer, thumbnailUrl, null, '#E31030');
 
 		return { embeds: [embed] };
 	} catch (error) {
