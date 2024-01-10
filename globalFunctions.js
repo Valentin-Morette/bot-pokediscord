@@ -2,7 +2,7 @@ import { ButtonBuilder } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 
-function capitalizeFirstLetter(string) {
+function upFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -80,4 +80,4 @@ function heartbeat(client) {
 	}, 300000);
 }
 
-export { capitalizeFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed };
+export { upFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed };

@@ -2,7 +2,7 @@ import axios, { all } from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { capitalizeFirstLetter, createListEmbed } from './globalFunctions.js';
+import { upFirstLetter, createListEmbed } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
 	try {
@@ -60,28 +60,28 @@ async function evolvePokemon(idTrainer, namePokemon) {
 				'Il vous faut au minimum ' +
 				evolvePokemon.data.numberPokemon +
 				' ' +
-				capitalizeFirstLetter(namePokemon) +
+				upFirstLetter(namePokemon) +
 				' pour le faire évoluer.'
 			);
 		} else if (evolvePokemon.data.status === 'evolve') {
 			const embed = new EmbedBuilder()
 				.setTitle(
-					`Vous avez fait évoluer ${capitalizeFirstLetter(namePokemon)} en ${
+					`Vous avez fait évoluer ${upFirstLetter(namePokemon)} en ${
 						evolvePokemon.data.pokemonEvolve.name
 					} !`
 				)
 				.setDescription('Félicitations ! Vous avez obtenu un nouveau pokémon !')
 				.setThumbnail(evolvePokemon.data.pokemonEvolve.img)
 				.setFooter({
-					text: 'Evolution de ' + capitalizeFirstLetter(namePokemon),
+					text: 'Evolution de ' + upFirstLetter(namePokemon),
 				})
 				.setTimestamp()
 				.setColor('#FFFFFF');
 			return { embeds: [embed] };
 		} else if (evolvePokemon.data.status === 'noEvolution') {
-			return capitalizeFirstLetter(namePokemon) + " n'a pas d'évolution.";
+			return upFirstLetter(namePokemon) + " n'a pas d'évolution.";
 		} else if (evolvePokemon.data.status === 'noExistPokemon') {
-			return capitalizeFirstLetter(namePokemon) + " n'est pas un pokémon.";
+			return upFirstLetter(namePokemon) + " n'est pas un pokémon.";
 		} else {
 			return "Erreur lors de l'évolution du pokémon.";
 		}
@@ -102,20 +102,23 @@ async function nbPokemon(namePokemon) {
 	try {
 		const response = await axios.post(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
-			{
-				namePokemon: namePokemon,
-			}
+			{ namePokemon }
 		);
 		let pokemon = response.data;
+
 		if (pokemon.status === 'noExistPokemon') {
-			return `${capitalizeFirstLetter(namePokemon)} n'est pas un pokémon`;
-		} else if (pokemon.infos.numberEvolution === null) {
-			return `${capitalizeFirstLetter(namePokemon)} n'a pas d'évolution.`;
-		} else {
-			return `Il vous faut ${pokemon.infos.numberEvolution} ${capitalizeFirstLetter(
-				namePokemon
-			)} pour faire évoluer votre pokémon.`;
+			return `${upFirstLetter(namePokemon)} n'est pas un pokémon`;
 		}
+
+		const title =
+			pokemon.infos.numberEvolution === null
+				? `${upFirstLetter(namePokemon)} ne peut pas évoluer.`
+				: `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
+						namePokemon
+				  )} pour le faire évoluer en ${upFirstLetter(pokemon.infos.evolution.name)}.`;
+		const footer = 'Nombre de ' + upFirstLetter(namePokemon);
+		const embed = createListEmbed(null, title, footer, pokemon.infos.img);
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
 	}
@@ -182,16 +185,16 @@ async function getZoneForPokemon(namePokemon) {
 		);
 		let zones = response.data;
 		if (zones.status === 'noExistPokemon') {
-			return capitalizeFirstLetter(zones.pokemon.name) + " n'est pas un pokémon.";
+			return upFirstLetter(zones.pokemon.name) + " n'est pas un pokémon.";
 		} else if (zones.result.length === 0) {
-			return capitalizeFirstLetter(zones.pokemon.name) + ' est disponible seulement par évolution.';
+			return upFirstLetter(zones.pokemon.name) + ' est disponible seulement par évolution.';
 		} else {
 			let allZone = [];
 			for (let i = 0; i < zones.result.length; i++) {
-				allZone.push('- ' + capitalizeFirstLetter(zones.result[i].name));
+				allZone.push('- ' + upFirstLetter(zones.result[i].name));
 			}
-			const title = 'Liste des zones pour ' + capitalizeFirstLetter(zones.pokemon.name);
-			const footer = capitalizeFirstLetter(zones.pokemon.name);
+			const title = 'Liste des zones pour ' + upFirstLetter(zones.pokemon.name);
+			const footer = upFirstLetter(zones.pokemon.name);
 			const thumbnailUrl = zones.pokemon.img;
 
 			let embed = createListEmbed(allZone, title, footer, thumbnailUrl);

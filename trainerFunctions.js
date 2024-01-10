@@ -2,11 +2,7 @@ import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import {
-	capitalizeFirstLetter,
-	formatNombreAvecSeparateur,
-	createListEmbed,
-} from './globalFunctions.js';
+import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed } from './globalFunctions.js';
 import { balls } from './variables.js';
 
 async function addTrainer(member) {
@@ -155,9 +151,9 @@ async function priceBall(idBall) {
 		const response = await axios.get(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/` + idBall
 		);
-		return `Le prix d'une ${capitalizeFirstLetter(
-			response.data.name
-		)} est de ${formatNombreAvecSeparateur(response.data.buyingPrice)} pokédollars.`;
+		return `Le prix d'une ${upFirstLetter(response.data.name)} est de ${formatNombreAvecSeparateur(
+			response.data.buyingPrice
+		)} pokédollars.`;
 	} catch (error) {
 		console.error("La pokéball n'existe pas.");
 	}
@@ -173,11 +169,11 @@ async function pricePokemon(namePokemon) {
 		);
 		let pokemon = response.data;
 		if (pokemon.status === 'noExistPokemon') {
-			return `${capitalizeFirstLetter(namePokemon)} n'est ni un pokémon, ni une pokeball.`;
+			return `${upFirstLetter(namePokemon)} n'est ni un pokémon, ni une pokeball.`;
 		} else {
-			return `Le prix de vente d'un ${capitalizeFirstLetter(
-				namePokemon
-			)} est de ${formatNombreAvecSeparateur(pokemon.infos.sellPrice)} pokédollars.`;
+			return `Le prix de vente d'un ${upFirstLetter(namePokemon)} est de ${formatNombreAvecSeparateur(
+				pokemon.infos.sellPrice
+			)} pokédollars.`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
@@ -211,7 +207,7 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 				'Vous avez acheté ' +
 				quantity +
 				' ' +
-				capitalizeFirstLetter(nameBall) +
+				upFirstLetter(nameBall) +
 				' pour ' +
 				formatNombreAvecSeparateur(response.data.price) +
 				' pokédollars.'
@@ -336,11 +332,11 @@ async function purposeSwapPokemon(interaction) {
 			}
 		);
 		if (response.data.status === 'not enough pokemon propose') {
-			return `Vous n'avez pas assez de ${capitalizeFirstLetter(pokemonPropose)}.`;
+			return `Vous n'avez pas assez de ${upFirstLetter(pokemonPropose)}.`;
 		} else if (response.data.status === 'not found pokemon propose') {
-			return `${capitalizeFirstLetter(pokemonPropose)} n'est pas un pokémon.`;
+			return `${upFirstLetter(pokemonPropose)} n'est pas un pokémon.`;
 		} else if (response.data.status === 'not found pokemon request') {
-			return `${capitalizeFirstLetter(pokemonRequest)} n'est pas un pokémon.`;
+			return `${upFirstLetter(pokemonRequest)} n'est pas un pokémon.`;
 		}
 
 		let row = new ActionRowBuilder();
@@ -356,13 +352,13 @@ async function purposeSwapPokemon(interaction) {
 			.setURL('https://google.com')
 			.setImage(response.data.imgPokemonPropose)
 			.setDescription(
-				`**${capitalizeFirstLetter(
+				`**${upFirstLetter(
 					interaction.user.username
 				)} propose d'échanger ${interaction.options.getInteger(
 					'quantité_pokemon_propose'
-				)} ${capitalizeFirstLetter(
+				)} ${upFirstLetter(
 					interaction.options.getString('nom_pokemon_propose')
-				)} contre ${interaction.options.getInteger('quantité_pokemon_demande')} ${capitalizeFirstLetter(
+				)} contre ${interaction.options.getInteger('quantité_pokemon_demande')} ${upFirstLetter(
 					interaction.options.getString('nom_pokemon_demande')
 				)}**`
 			);
