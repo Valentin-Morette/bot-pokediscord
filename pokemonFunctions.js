@@ -46,6 +46,47 @@ async function findRandomPokemon(interaction, type) {
 	}
 }
 
+async function spawnPokemon(message, clientPokechat) {
+	try {
+		const pokemon = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
+			{
+				namePokemon: message.content.split(' ')[1],
+			}
+		);
+		if (pokemon.data.status === 'noExistPokemon') {
+			message.channel.send(`${upFirstLetter(message.content.split(' ')[1])} n'est pas un pokémon.`);
+			return;
+		}
+		let pokemonSpawn = pokemon.data;
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		let row = new ActionRowBuilder();
+		balls.forEach((ball) => {
+			const customEmoji = clientPokechat.emojis.cache.find((emoji) => emoji.name === ball);
+			const button = new ButtonBuilder()
+				.setCustomId(ball + '|' + pokemonSpawn.catchCode)
+				.setStyle(ButtonStyle.Secondary);
+			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+
+			row.addComponents(button);
+		});
+
+		const embed = new EmbedBuilder()
+			.setTitle(`Un ${pokemonSpawn.name} sauvage apparaît !`)
+			.setDescription('Attrapez-le !')
+			.setThumbnail(pokemonSpawn.img)
+			.setColor('#FFFFFF');
+
+		message.channel.send({
+			embeds: [embed],
+			components: [row],
+		});
+		return;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function evolvePokemon(idTrainer, namePokemon) {
 	try {
 		const evolvePokemon = await axios.post(
@@ -177,29 +218,32 @@ function spawnTypeTranslation(type) {
 
 async function getZoneForPokemon(namePokemon) {
 	try {
-		if (namePokemon.toLowerCase() === 'mew') {
-			return 'Personne ne sait où se trouve Mew. :person_shrugging:';
-		}
 		const response = await axios.get(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone/pokemon/${namePokemon}`
 		);
 		let zones = response.data;
-		if (zones.status === 'noExistPokemon') {
-			return upFirstLetter(zones.pokemon.name) + " n'est pas un pokémon.";
-		} else if (zones.result.length === 0) {
-			return upFirstLetter(zones.pokemon.name) + ' est disponible seulement par évolution.';
-		} else {
-			let allZone = [];
-			for (let i = 0; i < zones.result.length; i++) {
-				allZone.push('- ' + upFirstLetter(zones.result[i].name));
-			}
-			const title = 'Liste des zones pour ' + upFirstLetter(zones.pokemon.name);
-			const footer = upFirstLetter(zones.pokemon.name);
-			const thumbnailUrl = zones.pokemon.img;
 
-			let embed = createListEmbed(allZone, title, footer, thumbnailUrl);
-			return { embeds: [embed] };
+		if (zones.status === 'noExistPokemon') {
+			return `${upFirstLetter(namePokemon)} n'est pas un pokémon.`;
 		}
+
+		let title =
+			zones.result.length === 0
+				? `${upFirstLetter(zones.pokemon.name)} est disponible seulement par évolution.`
+				: `Liste des zones pour ${upFirstLetter(zones.pokemon.name)}`;
+
+		let allZone = zones.result.map((zone) => `- ${upFirstLetter(zone.name)}`);
+
+		if (namePokemon.toLowerCase() === 'mew') {
+			title = 'Personne ne sait où se trouve Mew.';
+			allZone = [];
+		}
+
+		const footer = upFirstLetter(zones.pokemon.name);
+		const thumbnailUrl = zones.pokemon.img;
+
+		let embed = createListEmbed(allZone, title, footer, thumbnailUrl);
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error("Erreur lors de l'obtention des zones.");
 	}
@@ -212,4 +256,5 @@ export {
 	nbPokemon,
 	getAvailable,
 	getZoneForPokemon,
+	spawnPokemon,
 };

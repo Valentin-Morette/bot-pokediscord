@@ -276,8 +276,8 @@ async function commandesMessage(message) {
 
 async function allMessage(message) {
 	commandesMessage(message);
-	channelName = 'boutique';
-	channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
+	let channelName = 'boutique';
+	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const priceEmbed = new EmbedBuilder()
 			.setColor('#3498db')
