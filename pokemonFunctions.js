@@ -88,15 +88,18 @@ async function spawnPokemon(message, clientPokechat) {
 }
 
 async function spawnPokemonWithRune(interaction) {
+	const idTrainer = interaction.user.id;
+	const pokemonName = interaction.options.getString('nom');
 	try {
 		const pokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/use`,
 			{
-				namePokemon: interaction.options.getString('nom'),
+				idTrainer: idTrainer,
+				pokemonName: pokemonName,
 			}
 		);
-		if (pokemon.data.status === 'noExistPokemon') {
-			return `${upFirstLetter(interaction.options.getString('nom'))} n'est pas un pokémon.`;
+		if (pokemon.data.status === 'noRune') {
+			return `Vous n'avez pas de rune de ${upFirstLetter(pokemonName)}.`;
 		}
 		let pokemonSpawn = pokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
@@ -296,4 +299,5 @@ export {
 	getAvailable,
 	getZoneForPokemon,
 	spawnPokemon,
+	spawnPokemonWithRune,
 };

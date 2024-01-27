@@ -31,6 +31,7 @@ import {
 	getAvailable,
 	getZoneForPokemon,
 	spawnPokemon,
+	spawnPokemonWithRune,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
 import { commandsPokechat, balls } from './variables.js';
@@ -205,6 +206,11 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'prix') {
 				interaction.reply(await getPrice(interaction.options.getString('nom')));
+				return;
+			}
+
+			if (interaction.commandName === 'utiliser-rune') {
+				interaction.reply(await spawnPokemonWithRune(interaction));
 				return;
 			}
 

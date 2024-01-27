@@ -125,6 +125,18 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'utiliser-rune',
+		description: 'Utilise une rune de pokémon',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'echange',
 		description: 'Echange un pokémon avec un autre dresseur',
 		options: [
