@@ -21,6 +21,7 @@ import {
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
+	buyRune,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -204,6 +205,11 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'prix') {
 				interaction.reply(await getPrice(interaction.options.getString('nom')));
+				return;
+			}
+
+			if (interaction.commandName === 'achat-rune') {
+				interaction.reply(await buyRune(interaction));
 				return;
 			}
 

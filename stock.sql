@@ -11,3 +11,24 @@ CREATE TABLE `pokeDiscord`.`trade` (
     FOREIGN KEY (`idPokemonPropose`) REFERENCES `pokemon`(`id`),
     FOREIGN KEY (`idPokemonRequest`) REFERENCES `pokemon`(`id`)
 ) ENGINE = InnoDB;
+
+
+CREATE TABLE `rune_trainer` (
+  `id` int NOT NULL,
+  `idPokemon` int NOT NULL,
+  `idTrainer` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `quantity` int NOT NULL,
+  `isShiny` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `rune_trainer`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idPokemon` (`idPokemon`,`idTrainer`,`isShiny`),
+  ADD KEY `fk_rune_trainer_idTrainer` (`idTrainer`);
+
+ALTER TABLE `rune_trainer`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3138;
+
+ALTER TABLE `rune_trainer`
+  ADD CONSTRAINT `fk_rune_trainer_idPokemon` FOREIGN KEY (`idPokemon`) REFERENCES `pokemon` (`id`),
+  ADD CONSTRAINT `fk_rune_trainer_idTrainer` FOREIGN KEY (`idTrainer`) REFERENCES `trainer` (`idDiscord`);

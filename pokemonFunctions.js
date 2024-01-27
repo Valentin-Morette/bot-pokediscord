@@ -87,6 +87,45 @@ async function spawnPokemon(message, clientPokechat) {
 	}
 }
 
+async function spawnPokemonWithRune(interaction) {
+	try {
+		const pokemon = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
+			{
+				namePokemon: interaction.options.getString('nom'),
+			}
+		);
+		if (pokemon.data.status === 'noExistPokemon') {
+			return `${upFirstLetter(interaction.options.getString('nom'))} n'est pas un pokémon.`;
+		}
+		let pokemonSpawn = pokemon.data;
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		let row = new ActionRowBuilder();
+		balls.forEach((ball) => {
+			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
+			const button = new ButtonBuilder()
+				.setCustomId(ball + '|' + pokemonSpawn.catchCode)
+				.setStyle(ButtonStyle.Secondary);
+			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+
+			row.addComponents(button);
+		});
+
+		const embed = new EmbedBuilder()
+			.setTitle(`Un ${pokemonSpawn.name} sauvage apparaît !`)
+			.setDescription('Attrapez-le !')
+			.setThumbnail(pokemonSpawn.img)
+			.setColor('#FFFFFF');
+
+		return {
+			embeds: [embed],
+			components: [row],
+		};
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function evolvePokemon(idTrainer, namePokemon) {
 	try {
 		const evolvePokemon = await axios.post(

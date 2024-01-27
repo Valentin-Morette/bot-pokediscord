@@ -428,6 +428,34 @@ async function handleTradeButtonInteraction(idTrade, interaction) {
 	});
 }
 
+async function buyRune(interaction) {
+	const pokemonName = interaction.options.getString('nom');
+	const quantity = interaction.options.getInteger('quantité') ?? 1;
+	const idTrainer = interaction.user.id;
+	try {
+		const response = await axios.post(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/buy`,
+			{
+				idTrainer: idTrainer,
+				pokemonName: pokemonName,
+				quantity: quantity,
+			}
+		);
+		console.log(response.data);
+		if (response.data.status === 'noExistPokemon') {
+			return `${upFirstLetter(pokemonName)} n'est pas un pokémon.`;
+		} else if (response.data.status === 'noMoney') {
+			return `Vous n'avez pas assez d'argent.`;
+		} else if (response.data.status === 'buy') {
+			return `Vous avez acheté ${quantity} rune de ${upFirstLetter(
+				pokemonName
+			)} pour ${formatNombreAvecSeparateur(response.data.priceSend)} pokédollars.`;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export {
 	addTrainer,
 	getBallTrainer,
@@ -441,4 +469,5 @@ export {
 	purposeSwapPokemon,
 	acceptSwapPokemon,
 	handleTradeButtonInteraction,
+	buyRune,
 };

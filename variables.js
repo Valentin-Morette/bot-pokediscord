@@ -106,6 +106,25 @@ const commandsPokechat = [
 		description: 'Affiche les pokémons disponibles sur le salon',
 	},
 	{
+		name: 'achat-rune',
+		description:
+			"Achète une rune d'un pokémon, pour le faire spawn (prix: 3X le prix de vente du pokémon)",
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de rune de pokémon à acheter',
+				required: false,
+			},
+		],
+	},
+	{
 		name: 'echange',
 		description: 'Echange un pokémon avec un autre dresseur',
 		options: [
