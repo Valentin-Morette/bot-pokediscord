@@ -114,11 +114,14 @@ async function spawnPokemonWithRune(interaction) {
 			row.addComponents(button);
 		});
 
-		const embed = new EmbedBuilder()
-			.setTitle(`Un ${pokemonSpawn.name} sauvage apparaît !`)
-			.setDescription('Attrapez-le !')
-			.setThumbnail(pokemonSpawn.img)
-			.setColor('#FFFFFF');
+		const embed = createListEmbed(
+			'Attrapez-le !',
+			`Vous avez fait apparaître un ${pokemonSpawn.name}!`,
+			null,
+			pokemonSpawn.img,
+			null,
+			'#9f53ec'
+		);
 
 		return {
 			embeds: [embed],

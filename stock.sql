@@ -27,7 +27,7 @@ ALTER TABLE `rune_trainer`
   ADD KEY `fk_rune_trainer_idTrainer` (`idTrainer`);
 
 ALTER TABLE `rune_trainer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3138;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `rune_trainer`
   ADD CONSTRAINT `fk_rune_trainer_idPokemon` FOREIGN KEY (`idPokemon`) REFERENCES `pokemon` (`id`),

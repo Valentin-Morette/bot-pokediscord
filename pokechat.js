@@ -22,6 +22,8 @@ import {
 	purposeSwapPokemon,
 	acceptSwapPokemon,
 	buyRune,
+	checkRune,
+	pricePokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -209,13 +211,23 @@ function pokeChat(client) {
 				return;
 			}
 
-			if (interaction.commandName === 'utiliser-rune') {
+			if (interaction.commandName === 'rune-utiliser') {
 				interaction.reply(await spawnPokemonWithRune(interaction));
 				return;
 			}
 
-			if (interaction.commandName === 'achat-rune') {
+			if (interaction.commandName === 'rune-achat') {
 				interaction.reply(await buyRune(interaction));
+				return;
+			}
+
+			if (interaction.commandName === 'rune-inventaire') {
+				interaction.reply(await checkRune(interaction));
+				return;
+			}
+
+			if (interaction.commandName === 'rune-prix') {
+				interaction.reply(await pricePokemon(interaction.options.getString('nom'), true));
 				return;
 			}
 

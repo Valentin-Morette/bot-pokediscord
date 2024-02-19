@@ -159,7 +159,7 @@ async function priceBall(idBall) {
 	}
 }
 
-async function pricePokemon(namePokemon) {
+async function pricePokemon(namePokemon, isRune = false) {
 	try {
 		const response = await axios.post(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
@@ -168,12 +168,20 @@ async function pricePokemon(namePokemon) {
 			}
 		);
 		let pokemon = response.data;
+		if (isRune && pokemon.infos.catchRate === -100) {
+			return `${upFirstLetter(
+				namePokemon
+			)} n'est pas un pokémon achetable, car il n'est pas disponible à l'état sauvage.`;
+		}
+		const sellPrice = isRune ? pokemon.infos.sellPrice * 3 : pokemon.infos.sellPrice;
 		if (pokemon.status === 'noExistPokemon') {
-			return `${upFirstLetter(namePokemon)} n'est ni un pokémon, ni une pokeball.`;
+			return `${upFirstLetter(namePokemon)} n'est ${
+				isRune ? 'pas un pokémon' : 'ni un pokémon, ni une pokeball'
+			}.`;
 		} else {
-			return `Le prix de vente d'un ${upFirstLetter(namePokemon)} est de ${formatNombreAvecSeparateur(
-				pokemon.infos.sellPrice
-			)} pokédollars.`;
+			return `Le prix de vente ${isRune ? "d'une rune de" : "d'un"} ${upFirstLetter(
+				namePokemon
+			)} est de ${formatNombreAvecSeparateur(sellPrice)} pokédollars.`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
@@ -429,7 +437,10 @@ async function handleTradeButtonInteraction(idTrade, interaction) {
 }
 
 async function buyRune(interaction) {
-	const pokemonName = interaction.options.getString('nom');
+	const pokemonName = interaction.options.getString('nom').toLowerCase();
+	if (pokemonName === 'mew') {
+		return 'Vous ne pouvez pas acheter de rune pour Mew.';
+	}
 	const quantity = interaction.options.getInteger('quantité') ?? 1;
 	const idTrainer = interaction.user.id;
 	try {
@@ -441,9 +452,10 @@ async function buyRune(interaction) {
 				quantity: quantity,
 			}
 		);
-		console.log(response.data);
 		if (response.data.status === 'noExistPokemon') {
 			return `${upFirstLetter(pokemonName)} n'est pas un pokémon.`;
+		} else if (response.data.status === 'noSell') {
+			return `Seul les pokémons disponibles à l'état sauvage peuvent être achetés.`;
 		} else if (response.data.status === 'noMoney') {
 			return `Vous n'avez pas assez d'argent.`;
 		} else if (response.data.status === 'buy') {
@@ -451,6 +463,32 @@ async function buyRune(interaction) {
 				pokemonName
 			)} pour ${formatNombreAvecSeparateur(response.data.priceSend)} pokédollars.`;
 		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function checkRune(interaction) {
+	try {
+		const response = await axios.get(
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/` + interaction.user.id
+		);
+		console.log(response);
+		if (response.data.rune.length === 0) {
+			return "Vous n'avez pas de rune de pokémon.";
+		}
+		const sumRune = response.data.sumRune;
+		const countRune = response.data.countRune;
+		const items = response.data.rune.map((rune) => `- ${rune.quantity} ${rune.name}`);
+		const title = `Vous avez ${sumRune} rune${sumRune > 1 ? 's' : ''} de pokémon${
+			countRune > 1 ? `, dont ${response.data.countRune} différents.` : '.'
+		}`;
+		const footer = `Liste des runes de pokémon de ${interaction.user.globalName}`;
+		const thumbnailUrl = interaction.user.displayAvatarURL({ format: 'png', dynamic: true });
+
+		let embed = createListEmbed(items, title, footer, thumbnailUrl, null, '#9f53ec');
+
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error(error);
 	}
@@ -470,4 +508,6 @@ export {
 	acceptSwapPokemon,
 	handleTradeButtonInteraction,
 	buyRune,
+	checkRune,
+	pricePokemon,
 };

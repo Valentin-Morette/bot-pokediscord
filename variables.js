@@ -106,7 +106,7 @@ const commandsPokechat = [
 		description: 'Affiche les pokémons disponibles sur le salon',
 	},
 	{
-		name: 'achat-rune',
+		name: 'rune-achat',
 		description:
 			"Achète une rune d'un pokémon, pour le faire spawn (prix: 3X le prix de vente du pokémon)",
 		options: [
@@ -125,8 +125,24 @@ const commandsPokechat = [
 		],
 	},
 	{
-		name: 'utiliser-rune',
+		name: 'rune-utiliser',
 		description: 'Utilise une rune de pokémon',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
+		name: 'rune-inventaire',
+		description: 'Affiche la liste de vos runes de pokémon',
+	},
+	{
+		name: 'rune-prix',
+		description: "Affiche le prix d'une rune de pokémon",
 		options: [
 			{
 				name: 'nom',
