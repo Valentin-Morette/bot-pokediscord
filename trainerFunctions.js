@@ -473,7 +473,6 @@ async function checkRune(interaction) {
 		const response = await axios.get(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/` + interaction.user.id
 		);
-		console.log(response);
 		if (response.data.rune.length === 0) {
 			return "Vous n'avez pas de rune de pokémon.";
 		}
