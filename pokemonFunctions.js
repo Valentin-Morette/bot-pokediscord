@@ -1,4 +1,4 @@
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';

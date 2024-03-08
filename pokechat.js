@@ -179,7 +179,12 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'pokedex') {
-				interaction.reply(await getPokedex(interaction));
+				interaction.reply(await getPokedex(interaction, 'regular'));
+				return;
+			}
+
+			if (interaction.commandName === 'shinydex') {
+				interaction.reply(await getPokedex(interaction, 'shiny'));
 				return;
 			}
 

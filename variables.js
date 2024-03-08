@@ -16,6 +16,18 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'shinydex',
+		description: "Affiche votre shinydex ou celui d'un dresseur",
+		options: [
+			{
+				name: 'dresseur',
+				type: 6,
+				description: 'Nom du dresseur',
+				required: false,
+			},
+		],
+	},
+	{
 		name: 'ball',
 		description: 'Affiche vos pokéballs',
 	},

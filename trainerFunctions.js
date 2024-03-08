@@ -108,16 +108,19 @@ async function getBallTrainer(message) {
 	}
 }
 
-async function getPokedex(interaction) {
+async function getPokedex(interaction, type) {
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	try {
 		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + user.id
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` +
+				user.id +
+				'/' +
+				type
 		);
 		const pokemons = response.data.pokemon;
 
 		if (pokemons.length === 0) {
-			return "Vous n'avez pas encore de pokémon.";
+			return "Vous n'avez pas encore de pokémon" + (type === 'shiny' ? ' shiny' : '') + '.';
 		}
 
 		const items = pokemons.map((pokemon) => `- ${pokemon.quantity} ${pokemon.name}`);

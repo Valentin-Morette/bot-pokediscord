@@ -12,7 +12,6 @@ CREATE TABLE `pokeDiscord`.`trade` (
     FOREIGN KEY (`idPokemonRequest`) REFERENCES `pokemon`(`id`)
 ) ENGINE = InnoDB;
 
-
 CREATE TABLE `rune_trainer` (
   `id` int NOT NULL,
   `idPokemon` int NOT NULL,
@@ -32,3 +31,12 @@ ALTER TABLE `rune_trainer`
 ALTER TABLE `rune_trainer`
   ADD CONSTRAINT `fk_rune_trainer_idPokemon` FOREIGN KEY (`idPokemon`) REFERENCES `pokemon` (`id`),
   ADD CONSTRAINT `fk_rune_trainer_idTrainer` FOREIGN KEY (`idTrainer`) REFERENCES `trainer` (`idDiscord`);
+
+ALTER TABLE `trade`
+  ADD FOREIGN KEY (`idTrainer`) REFERENCES `trainer`(`idDiscord`),
+  ADD FOREIGN KEY (`idPokemonPropose`) REFERENCES `pokemon`(`id`),
+  ADD FOREIGN KEY (`idPokemonRequest`) REFERENCES `pokemon`(`id`);
+
+ALTER TABLE `pokemon_wild` ADD `isShiny` TINYINT(1) NOT NULL DEFAULT '0' AFTER `catchCode`;
+ALTER TABLE `pokemon` CHANGE `shinyRate` `shinyRate` SMALLINT UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `pokemon` ADD `shinyRate` TINYINT(3) UNSIGNED NULL DEFAULT NULL AFTER `sellPrice`;
