@@ -44,6 +44,18 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'evolution-shiny',
+		description: 'Fait évoluer un pokémon shiny',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'zone',
 		description: 'Affiche les zones disponibles pour un pokémon',
 		options: [

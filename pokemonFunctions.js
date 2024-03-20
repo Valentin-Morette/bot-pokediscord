@@ -30,11 +30,11 @@ async function findRandomPokemon(interaction, type) {
 
 			row.addComponents(button);
 		});
-
+		let star = pokemon.isShiny ? '✨' : '';
 		const embed = new EmbedBuilder()
-			.setTitle(`Un ${pokemon.name} sauvage apparaît !`)
+			.setTitle(`Un ${pokemon.name + star} sauvage apparaît !`)
 			.setDescription('Attrapez-le !')
-			.setThumbnail(pokemon.img)
+			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
 			.setColor('#FFFFFF');
 
 		return {
@@ -132,41 +132,44 @@ async function spawnPokemonWithRune(interaction) {
 	}
 }
 
-async function evolvePokemon(idTrainer, namePokemon) {
+async function evolvePokemon(idTrainer, namePokemon, isShiny) {
 	try {
 		const evolvePokemon = await axios.post(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/evolve`,
 			{
 				namePokemon: namePokemon,
 				idTrainer: idTrainer,
+				isShiny: isShiny,
 			}
 		);
-		if (evolvePokemon.data.status === 'noPokemon') {
+		const pokemon = evolvePokemon.data;
+		if (pokemon.status === 'noPokemon') {
 			return (
 				'Il vous faut au minimum ' +
-				evolvePokemon.data.numberPokemon +
+				pokemon.numberPokemon +
 				' ' +
 				upFirstLetter(namePokemon) +
 				' pour le faire évoluer.'
 			);
-		} else if (evolvePokemon.data.status === 'evolve') {
+		} else if (pokemon.status === 'evolve') {
+			let star = pokemon.isShiny ? '✨' : '';
 			const embed = new EmbedBuilder()
 				.setTitle(
-					`Vous avez fait évoluer ${upFirstLetter(namePokemon)} en ${
-						evolvePokemon.data.pokemonEvolve.name
+					`Vous avez fait évoluer ${upFirstLetter(namePokemon) + star} en ${
+						pokemon.pokemonEvolve.name + star
 					} !`
 				)
 				.setDescription('Félicitations ! Vous avez obtenu un nouveau pokémon !')
-				.setThumbnail(evolvePokemon.data.pokemonEvolve.img)
+				.setThumbnail(pokemon.isShiny ? pokemon.pokemonEvolve.imgShiny : pokemon.pokemonEvolve.img)
 				.setFooter({
 					text: 'Evolution de ' + upFirstLetter(namePokemon),
 				})
 				.setTimestamp()
 				.setColor('#FFFFFF');
 			return { embeds: [embed] };
-		} else if (evolvePokemon.data.status === 'noEvolution') {
+		} else if (pokemon.status === 'noEvolution') {
 			return upFirstLetter(namePokemon) + " n'a pas d'évolution.";
-		} else if (evolvePokemon.data.status === 'noExistPokemon') {
+		} else if (pokemon.status === 'noExistPokemon') {
 			return upFirstLetter(namePokemon) + " n'est pas un pokémon.";
 		} else {
 			return "Erreur lors de l'évolution du pokémon.";

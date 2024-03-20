@@ -40,3 +40,7 @@ ALTER TABLE `trade`
 ALTER TABLE `pokemon_wild` ADD `isShiny` TINYINT(1) NOT NULL DEFAULT '0' AFTER `catchCode`;
 ALTER TABLE `pokemon` CHANGE `shinyRate` `shinyRate` SMALLINT UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `pokemon` ADD `shinyRate` TINYINT(3) UNSIGNED NULL DEFAULT NULL AFTER `sellPrice`;
+ALTER TABLE `pokemon` ADD `imgShiny` VARCHAR(255) NOT NULL AFTER `img`;
+UPDATE pokemon
+SET imgShiny = REPLACE(img, 'regular.png', 'shiny.png')
+WHERE img IS NOT NULL;
