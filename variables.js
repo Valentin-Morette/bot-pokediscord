@@ -86,6 +86,24 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'vendre-shiny',
+		description: 'Vendre un / des pokémon(s) shiny',
+		options: [
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon',
+				required: true,
+			},
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'prix',
 		description: "Affiche le prix d'une pokéball ou d'un pokémon",
 		options: [

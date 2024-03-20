@@ -209,7 +209,20 @@ function pokeChat(client) {
 					await sellPokemon(
 						interaction.user.id,
 						interaction.options.getString('nom'),
-						interaction.options.getInteger('quantité')
+						interaction.options.getInteger('quantité'),
+						false
+					)
+				);
+				return;
+			}
+
+			if (interaction.commandName === 'vendre-shiny') {
+				interaction.reply(
+					await sellPokemon(
+						interaction.user.id,
+						interaction.options.getString('nom'),
+						interaction.options.getInteger('quantité'),
+						true
 					)
 				);
 				return;

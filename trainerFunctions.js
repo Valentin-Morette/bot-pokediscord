@@ -56,7 +56,7 @@ async function catchPokemon(catchCode, idTrainer, idPokeball) {
 	}
 }
 
-async function sellPokemon(idTrainer, namePokemon, quantity) {
+async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 	try {
 		if (quantity <= 0) {
 			return "Vous ne pouvez pas vendre moins d'un pokémon.";
@@ -67,6 +67,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity) {
 				namePokemon: namePokemon,
 				idTrainer: idTrainer,
 				quantity: quantity,
+				isShiny: isShiny,
 			}
 		);
 		if (sellPokemon.data.status === 'noPokemon') {
@@ -184,7 +185,7 @@ async function pricePokemon(namePokemon, isRune = false) {
 		} else {
 			return `Le prix de vente ${isRune ? "d'une rune de" : "d'un"} ${upFirstLetter(
 				namePokemon
-			)} est de ${formatNombreAvecSeparateur(sellPrice)} pokédollars.`;
+			)} est de ${formatNombreAvecSeparateur(sellPrice)} pokédollars. ${isRune ? '' : '(x10 en shiny)'}`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
