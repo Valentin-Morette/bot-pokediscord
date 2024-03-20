@@ -44,3 +44,4 @@ ALTER TABLE `pokemon` ADD `imgShiny` VARCHAR(255) NOT NULL AFTER `img`;
 UPDATE pokemon
 SET imgShiny = REPLACE(img, 'regular.png', 'shiny.png')
 WHERE img IS NOT NULL;
+ALTER TABLE `rune_trainer` DROP `isShiny`

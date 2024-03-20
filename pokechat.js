@@ -32,7 +32,6 @@ import {
 	nbPokemon,
 	getAvailable,
 	getZoneForPokemon,
-	spawnPokemon,
 	spawnPokemonWithRune,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
@@ -76,9 +75,7 @@ function pokeChat(client) {
 		if (message.author.bot) return;
 
 		if (message.author.id === process.env.MYDISCORDID) {
-			if (message.content.startsWith('!spawn')) {
-				await spawnPokemon(message, client);
-			} else if (message.content === '!initServer') {
+			if (message.content === '!initServer') {
 				await initServer(message, client);
 			} else if (message.content === '!createAllChannels') {
 				await createAllChannels(message);

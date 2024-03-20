@@ -46,47 +46,6 @@ async function findRandomPokemon(interaction, type) {
 	}
 }
 
-async function spawnPokemon(message, clientPokechat) {
-	try {
-		const pokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
-			{
-				namePokemon: message.content.split(' ')[1],
-			}
-		);
-		if (pokemon.data.status === 'noExistPokemon') {
-			message.channel.send(`${upFirstLetter(message.content.split(' ')[1])} n'est pas un pokémon.`);
-			return;
-		}
-		let pokemonSpawn = pokemon.data;
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-		let row = new ActionRowBuilder();
-		balls.forEach((ball) => {
-			const customEmoji = clientPokechat.emojis.cache.find((emoji) => emoji.name === ball);
-			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemonSpawn.catchCode)
-				.setStyle(ButtonStyle.Secondary);
-			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
-
-			row.addComponents(button);
-		});
-
-		const embed = new EmbedBuilder()
-			.setTitle(`Un ${pokemonSpawn.name} sauvage apparaît !`)
-			.setDescription('Attrapez-le !')
-			.setThumbnail(pokemonSpawn.img)
-			.setColor('#FFFFFF');
-
-		message.channel.send({
-			embeds: [embed],
-			components: [row],
-		});
-		return;
-	} catch (error) {
-		console.error(error);
-	}
-}
-
 async function spawnPokemonWithRune(interaction) {
 	const idTrainer = interaction.user.id;
 	const pokemonName = interaction.options.getString('nom');
@@ -113,12 +72,13 @@ async function spawnPokemonWithRune(interaction) {
 
 			row.addComponents(button);
 		});
-
+		let img = pokemonSpawn.isShiny ? pokemonSpawn.imgShiny : pokemonSpawn.img;
+		let star = pokemonSpawn.isShiny ? '✨' : '';
 		const embed = createListEmbed(
 			'Attrapez-le !',
-			`Vous avez fait apparaître un ${pokemonSpawn.name}!`,
+			`Vous avez fait apparaître un ${pokemonSpawn.name + star}!`,
 			null,
-			pokemonSpawn.img,
+			img,
 			null,
 			'#9f53ec'
 		);
@@ -304,6 +264,5 @@ export {
 	nbPokemon,
 	getAvailable,
 	getZoneForPokemon,
-	spawnPokemon,
 	spawnPokemonWithRune,
 };
