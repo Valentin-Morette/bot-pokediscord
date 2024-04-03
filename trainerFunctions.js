@@ -40,12 +40,12 @@ async function addTrainer(member) {
 	}
 }
 
-async function catchPokemon(catchCode, idTrainer, idPokeball) {
+async function catchPokemon(idPokemonWild, idTrainer, idPokeball) {
 	try {
 		const catchPokemon = await axios.post(
 			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/catch`,
 			{
-				catchCode: catchCode,
+				idPokemonWild: idPokemonWild,
 				idTrainer: idTrainer,
 				idBall: idPokeball,
 			}
@@ -256,9 +256,9 @@ async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge)
 }
 
 async function handleCatch(interaction, idPokeball) {
-	const catchCode = interaction.customId.split('|')[1];
+	const idPokemonWild = interaction.customId.split('|')[1];
 	const idTrainer = interaction.user.id;
-	const response = await catchPokemon(catchCode, idTrainer, idPokeball);
+	const response = await catchPokemon(idPokemonWild, idTrainer, idPokeball);
 	let replyMessage;
 	let components;
 

@@ -10,13 +10,13 @@ function formatNombreAvecSeparateur(n) {
 	return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-function createButtons(message, catchCode) {
+function createButtons(message, idPokemonWild) {
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 	let row = new ActionRowBuilder();
 	balls.forEach((ball) => {
 		const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
 		const button = new ButtonBuilder()
-			.setCustomId(ball + '|' + catchCode)
+			.setCustomId(ball + '|' + idPokemonWild)
 			.setStyle(ButtonStyle.Secondary);
 		button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 

@@ -24,7 +24,7 @@ async function findRandomPokemon(interaction, type) {
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemon.catchCode)
+				.setCustomId(ball + '|' + pokemon.idPokemonWild)
 				.setStyle(ButtonStyle.Secondary);
 			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 
