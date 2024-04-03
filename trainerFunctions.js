@@ -323,6 +323,7 @@ async function disabledButtons(interaction) {
 }
 
 async function purposeSwapPokemon(interaction) {
+	console.log(interaction.options);
 	const pokemonPropose = interaction.options.getString('nom_pokemon_propose');
 	const pokemonRequest = interaction.options.getString('nom_pokemon_demande');
 	const quantityPokemonPropose = interaction.options.getInteger('quantité_pokemon_propose');

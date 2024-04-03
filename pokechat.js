@@ -35,7 +35,7 @@ import {
 	spawnPokemonWithRune,
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
-import { commandsPokechat, balls } from './variables.js';
+import { commandsPokechat, balls, pokemons } from './variables.js';
 import { heartbeat } from './globalFunctions.js';
 
 function pokeChat(client) {
@@ -97,6 +97,19 @@ function pokeChat(client) {
 	});
 
 	client.on('interactionCreate', async (interaction) => {
+		if (interaction.isAutocomplete()) {
+			const focusedOption = interaction.options.getFocused(true);
+
+			if (focusedOption.name === 'nom') {
+				const filtered = pokemons.filter((pokemon) =>
+					pokemon.toLowerCase().startsWith(focusedOption.value.toLowerCase())
+				);
+
+				await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+			}
+			return;
+		}
+
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
 			if (customId.startsWith('pokeball')) {
