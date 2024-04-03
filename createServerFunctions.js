@@ -254,8 +254,12 @@ async function commandesMessage(message) {
 					'- /superCanne : pour pêcher un pokémon avec la super canne.\n' +
 					'- /megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
 					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.\n' +
+					'- /vendre-shiny [quantité] [nom du pokémon] : pour vendre un pokémon shiny.\n' +
+					"- /pokedex [nom du dressseur (optionnel)] : pour voir le pokédex d'un dresseur.\n" +
+					"- /shinydex [nom du dressseur (optionnel)] : pour voir le pokédex shiny d'un dresseur.\n" +
 					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
+					'- /evolution-shiny [nom du pokémon] : pour faire évoluer un pokémon shiny.\n' +
 					'- /argent : pour voir votre argent.\n' +
 					'- /ball : pour voir toutes vos pokéballs.\n' +
 					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +

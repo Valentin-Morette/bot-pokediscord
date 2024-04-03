@@ -119,7 +119,6 @@ async function getPokedex(interaction, type) {
 				type
 		);
 		const pokemons = response.data.pokemon;
-
 		if (pokemons.length === 0) {
 			return "Vous n'avez pas encore de pokémon" + (type === 'shiny' ? ' shiny' : '') + '.';
 		}
@@ -185,7 +184,7 @@ async function pricePokemon(namePokemon, isRune = false) {
 		} else {
 			return `Le prix de vente ${isRune ? "d'une rune de" : "d'un"} ${upFirstLetter(
 				namePokemon
-			)} est de ${formatNombreAvecSeparateur(sellPrice)} pokédollars. ${isRune ? '' : '(x10 en shiny)'}`;
+			)} est de ${formatNombreAvecSeparateur(sellPrice)} pokédollars. ${isRune ? '' : '(x3 en shiny)'}`;
 		}
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");
