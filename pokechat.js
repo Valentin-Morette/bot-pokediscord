@@ -97,19 +97,7 @@ function pokeChat(client) {
 	});
 
 	client.on('interactionCreate', async (interaction) => {
-		if (interaction.isAutocomplete()) {
-			const focusedOption = interaction.options.getFocused(true);
-
-			if (focusedOption.name === 'nom') {
-				const filtered = pokemons.filter((pokemon) =>
-					pokemon.toLowerCase().startsWith(focusedOption.value.toLowerCase())
-				);
-
-				await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
-			}
-			return;
-		}
-
+		// Button interaction
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
 			if (customId.startsWith('pokeball')) {
@@ -151,6 +139,7 @@ function pokeChat(client) {
 			return;
 		}
 
+		// Command interaction
 		if (interaction.isCommand()) {
 			if (interaction.commandName === 'cherche') {
 				interaction.reply(await findRandomPokemon(interaction, 'herbe'));
@@ -275,6 +264,25 @@ function pokeChat(client) {
 				interaction.reply(await purposeSwapPokemon(interaction));
 				return;
 			}
+		}
+
+		// Autocomplete interaction
+		if (interaction.isAutocomplete()) {
+			const focusedOption = interaction.options.getFocused(true);
+
+			if (focusedOption.value === '') {
+				return;
+			}
+
+			const name = focusedOption.name;
+			if (name === 'nom' || name === 'nom_pokemon_demande' || name === 'nom_pokemon_propose') {
+				const filtered = pokemons.filter((pokemon) =>
+					pokemon.toLowerCase().startsWith(focusedOption.value.toLowerCase())
+				);
+
+				await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+			}
+			return;
 		}
 	});
 

@@ -328,6 +328,8 @@ async function purposeSwapPokemon(interaction) {
 	const pokemonRequest = interaction.options.getString('nom_pokemon_demande');
 	const quantityPokemonPropose = interaction.options.getInteger('quantité_pokemon_propose');
 	const quantityPokemonRequest = interaction.options.getInteger('quantité_pokemon_demande');
+	const pokemonProposeShiny = interaction.options.getString('pokemon_propose_shiny') === 'true';
+	const pokemonRequestShiny = interaction.options.getString('pokemon_demande_shiny') === 'true';
 	if (quantityPokemonPropose <= 0 || quantityPokemonRequest <= 0) {
 		return 'Vous devez proposer/demander au moins un pokémon.';
 	}
@@ -340,6 +342,8 @@ async function purposeSwapPokemon(interaction) {
 				pokemonRequest: pokemonRequest,
 				quantityPokemonPropose: quantityPokemonPropose,
 				quantityPokemonRequest: quantityPokemonRequest,
+				pokemonProposeShiny: pokemonProposeShiny,
+				pokemonRequestShiny: pokemonRequestShiny,
 				type: 'propose',
 			}
 		);

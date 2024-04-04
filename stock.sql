@@ -45,3 +45,5 @@ UPDATE pokemon
 SET imgShiny = REPLACE(img, 'regular.png', 'shiny.png')
 WHERE img IS NOT NULL;
 ALTER TABLE `rune_trainer` DROP `isShiny`
+
+ALTER TABLE `trade` ADD `isShinyPropose` TINYINT NOT NULL AFTER `quantityPokemonRequest`, ADD `isShinyRequest` TINYINT NOT NULL AFTER `isShinyPropose`;
