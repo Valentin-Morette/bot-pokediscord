@@ -31,11 +31,12 @@ async function findRandomPokemon(interaction, type) {
 			row.addComponents(button);
 		});
 		let star = pokemon.isShiny ? '✨' : '';
+		const color = pokemon.isShiny ? '#ffed00' : '#FFFFFF';
 		const embed = new EmbedBuilder()
 			.setTitle(`Un ${pokemon.name + star} sauvage apparaît !`)
 			.setDescription('Attrapez-le !')
 			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
-			.setColor('#FFFFFF');
+			.setColor(color);
 
 		return {
 			embeds: [embed],
@@ -125,7 +126,7 @@ async function evolvePokemon(idTrainer, namePokemon, isShiny) {
 					text: 'Evolution de ' + upFirstLetter(namePokemon),
 				})
 				.setTimestamp()
-				.setColor('#FFFFFF');
+				.setColor(pokemon.isShiny ? '#ffed00' : '#FFFFFF');
 			return { embeds: [embed] };
 		} else if (pokemon.status === 'noEvolution') {
 			return upFirstLetter(namePokemon) + " n'a pas d'évolution.";
@@ -250,7 +251,7 @@ async function getZoneForPokemon(namePokemon) {
 		const footer = upFirstLetter(zones.pokemon.name);
 		const thumbnailUrl = zones.pokemon.img;
 
-		let embed = createListEmbed(allZone, title, footer, thumbnailUrl);
+		let embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23');
 		return { embeds: [embed] };
 	} catch (error) {
 		console.error("Erreur lors de l'obtention des zones.");

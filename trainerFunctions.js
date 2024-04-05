@@ -78,6 +78,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 				quantity +
 				' ' +
 				namePokemon +
+				hasStar(isShiny) +
 				' pour ' +
 				sellPokemon.data.sellPrice +
 				' pokédollars.'
@@ -322,6 +323,10 @@ async function disabledButtons(interaction) {
 	return [newRow];
 }
 
+function hasStar(isShiny) {
+	return isShiny ? '✨' : '';
+}
+
 async function purposeSwapPokemon(interaction) {
 	console.log(interaction.options);
 	const pokemonPropose = interaction.options.getString('nom_pokemon_propose');
@@ -348,7 +353,7 @@ async function purposeSwapPokemon(interaction) {
 			}
 		);
 		if (response.data.status === 'not enough pokemon propose') {
-			return `Vous n'avez pas assez de ${upFirstLetter(pokemonPropose)}.`;
+			return `Vous n'avez pas assez de ${upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)}.`;
 		} else if (response.data.status === 'not found pokemon propose') {
 			return `${upFirstLetter(pokemonPropose)} n'est pas un pokémon.`;
 		} else if (response.data.status === 'not found pokemon request') {
@@ -367,15 +372,12 @@ async function purposeSwapPokemon(interaction) {
 		const embed1 = new EmbedBuilder()
 			.setURL('https://google.com')
 			.setImage(response.data.imgPokemonPropose)
+			.setColor('#D3D3D3')
 			.setDescription(
-				`**${upFirstLetter(
-					interaction.user.username
-				)} propose d'échanger ${interaction.options.getInteger(
-					'quantité_pokemon_propose'
-				)} ${upFirstLetter(
-					interaction.options.getString('nom_pokemon_propose')
-				)} contre ${interaction.options.getInteger('quantité_pokemon_demande')} ${upFirstLetter(
-					interaction.options.getString('nom_pokemon_demande')
+				`**${upFirstLetter(interaction.user.username)} propose d'échanger ${quantityPokemonPropose} ${
+					upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)
+				} contre ${quantityPokemonRequest} ${upFirstLetter(
+					pokemonRequest + hasStar(pokemonRequestShiny)
 				)}**`
 			);
 		const embed2 = new EmbedBuilder()
@@ -414,6 +416,7 @@ async function acceptSwapPokemon(idTrade, interaction) {
 		);
 
 		const status = response.data.status;
+		console.log(response.data);
 		if (status === 'success') {
 			await handleTradeButtonInteraction(idTrade, interaction);
 			return null;
