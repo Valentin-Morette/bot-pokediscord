@@ -91,20 +91,26 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 	}
 }
 
-async function getBallTrainer(message) {
+async function getBallTrainer(interaction) {
+	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	try {
 		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/trainer/` + message.member.id
+			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/trainer/` +
+				interaction.member.id
 		);
-		let strResponse = 'Vous avez : \n';
+		const arrResponse = [];
 		for (let i = 0; i < response.data.length; i++) {
-			const customEmoji = message.guild.emojis.cache.find(
+			const customEmoji = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === response.data[i].name
 			);
-			strResponse +=
-				'- ' + (customEmoji ? customEmoji.toString() : '') + ' : ' + response.data[i].quantity + '\n';
+			arrResponse.push(
+				'- ' + (customEmoji ? customEmoji.toString() : '') + ' : ' + response.data[i].quantity
+			);
 		}
-		return strResponse;
+		const footer = 'Liste des pokéballs de ' + interaction.member.user.username;
+		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
+		const embed = createListEmbed(arrResponse, 'Vos pokéballs :', footer, thumbnailUrl, null, '#E31030');
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error(error);
 	}
