@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { ButtonBuilder } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
@@ -80,4 +81,11 @@ function heartbeat(client) {
 	}, 300000);
 }
 
-export { upFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed };
+const API = axios.create({
+	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:5000',
+	headers: {
+		'X-API-KEY': process.env.API_KEY,
+	},
+});
+
+export { upFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed, API };

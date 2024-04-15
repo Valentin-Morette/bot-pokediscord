@@ -1,18 +1,14 @@
-import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { upFirstLetter, createListEmbed } from './globalFunctions.js';
+import { upFirstLetter, createListEmbed, API } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
 	try {
-		const randomPokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`,
-			{
-				nameZone: interaction.channel.name,
-				spawnType: type,
-			}
-		);
+		const randomPokemon = await API.post(`/pokemon/wild`, {
+			nameZone: interaction.channel.name,
+			spawnType: type,
+		});
 		if (randomPokemon.data.length === 0) {
 			return type === 'herbe'
 				? 'Il n y a pas de pokémon sauvage dans cette zone.'
@@ -51,13 +47,10 @@ async function spawnPokemonWithRune(interaction) {
 	const idTrainer = interaction.user.id;
 	const pokemonName = interaction.options.getString('nom');
 	try {
-		const pokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/use`,
-			{
-				idTrainer: idTrainer,
-				pokemonName: pokemonName,
-			}
-		);
+		const pokemon = await API.post(`/rune/use`, {
+			idTrainer: idTrainer,
+			pokemonName: pokemonName,
+		});
 		if (pokemon.data.status === 'noRune') {
 			return `Vous n'avez pas de rune de ${upFirstLetter(pokemonName)}.`;
 		}
@@ -95,14 +88,11 @@ async function spawnPokemonWithRune(interaction) {
 
 async function evolvePokemon(idTrainer, namePokemon, isShiny) {
 	try {
-		const evolvePokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/evolve`,
-			{
-				namePokemon: namePokemon,
-				idTrainer: idTrainer,
-				isShiny: isShiny,
-			}
-		);
+		const evolvePokemon = await API.post(`/pokemon/evolve`, {
+			namePokemon: namePokemon,
+			idTrainer: idTrainer,
+			isShiny: isShiny,
+		});
 		const pokemon = evolvePokemon.data;
 		if (pokemon.status === 'noPokemon') {
 			return (
@@ -142,7 +132,7 @@ async function evolvePokemon(idTrainer, namePokemon, isShiny) {
 
 async function clearOldWildPokemon() {
 	try {
-		await axios.delete(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/wild`);
+		await API.delete(`/pokemon/wild`);
 	} catch (error) {
 		console.error(error);
 	}
@@ -150,10 +140,7 @@ async function clearOldWildPokemon() {
 
 async function nbPokemon(namePokemon) {
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
-			{ namePokemon }
-		);
+		const response = await API.post(`/pokemon/info`, { namePokemon });
 		let pokemon = response.data;
 
 		if (pokemon.status === 'noExistPokemon') {
@@ -176,12 +163,9 @@ async function nbPokemon(namePokemon) {
 
 async function getAvailable(channelName) {
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/zone`,
-			{
-				nameZone: channelName,
-			}
-		);
+		const response = await API.post(`/pokemon/zone`, {
+			nameZone: channelName,
+		});
 
 		const pokemonsBySpawnType = response.data.reduce((acc, pokemon) => {
 			if (!acc[pokemon.spawnType]) {
@@ -227,9 +211,7 @@ function spawnTypeTranslation(type) {
 
 async function getZoneForPokemon(namePokemon) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone/pokemon/${namePokemon}`
-		);
+		const response = await API.get(`/zone/pokemon/${namePokemon}`);
 		let zones = response.data;
 
 		if (zones.status === 'noExistPokemon') {

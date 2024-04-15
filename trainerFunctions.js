@@ -1,17 +1,14 @@
-import axios from 'axios';
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed } from './globalFunctions.js';
+import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from './globalFunctions.js';
 import { balls } from './variables.js';
 
 async function addTrainer(member) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/verify/` + member.id
-		);
+		const response = await API.get(`/trainer/verify/` + member.id);
 		if (!response.data.hasAccount) {
-			await axios.post(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer`, {
+			await API.post(`/trainer`, {
 				trainer: {
 					idDiscord: member.id,
 					name: member.user.username,
@@ -42,14 +39,11 @@ async function addTrainer(member) {
 
 async function catchPokemon(idPokemonWild, idTrainer, idPokeball) {
 	try {
-		const catchPokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/catch`,
-			{
-				idPokemonWild: idPokemonWild,
-				idTrainer: idTrainer,
-				idBall: idPokeball,
-			}
-		);
+		const catchPokemon = await API.post(`/pokemon/catch`, {
+			idPokemonWild: idPokemonWild,
+			idTrainer: idTrainer,
+			idBall: idPokeball,
+		});
 		return catchPokemon.data;
 	} catch (error) {
 		console.error(error);
@@ -61,15 +55,12 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 		if (quantity <= 0) {
 			return "Vous ne pouvez pas vendre moins d'un pokémon.";
 		}
-		const sellPokemon = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/sell`,
-			{
-				namePokemon: namePokemon,
-				idTrainer: idTrainer,
-				quantity: quantity,
-				isShiny: isShiny,
-			}
-		);
+		const sellPokemon = await API.post(`/pokemon/sell`, {
+			namePokemon: namePokemon,
+			idTrainer: idTrainer,
+			quantity: quantity,
+			isShiny: isShiny,
+		});
 		if (sellPokemon.data.status === 'noPokemon') {
 			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
 		} else if (sellPokemon.data.status === 'sell') {
@@ -94,10 +85,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 async function getBallTrainer(interaction) {
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/trainer/` +
-				interaction.member.id
-		);
+		const response = await API.get(`/pokeball/trainer/` + interaction.member.id);
 		const arrResponse = [];
 		for (let i = 0; i < response.data.length; i++) {
 			const customEmoji = interaction.guild.emojis.cache.find(
@@ -119,12 +107,7 @@ async function getBallTrainer(interaction) {
 async function getPokedex(interaction, type) {
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` +
-				user.id +
-				'/' +
-				type
-		);
+		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + type);
 		const pokemons = response.data.pokemon;
 		if (pokemons.length === 0) {
 			return "Vous n'avez pas encore de pokémon" + (type === 'shiny' ? ' shiny' : '') + '.';
@@ -160,9 +143,7 @@ async function getPokedex(interaction, type) {
 
 async function getMoney(idTrainer) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/` + idTrainer
-		);
+		const response = await API.get(`/trainer/` + idTrainer);
 		return 'Vous avez : ' + formatNombreAvecSeparateur(response.data.money) + ' pokédollars.';
 	} catch (error) {
 		console.error(error);
@@ -171,9 +152,7 @@ async function getMoney(idTrainer) {
 
 async function priceBall(idBall) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/` + idBall
-		);
+		const response = await API.get(`/pokeball/` + idBall);
 		return `Le prix d'une ${upFirstLetter(response.data.name)} est de ${formatNombreAvecSeparateur(
 			response.data.buyingPrice
 		)} pokédollars.`;
@@ -184,12 +163,9 @@ async function priceBall(idBall) {
 
 async function pricePokemon(namePokemon, isRune = false) {
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/info`,
-			{
-				namePokemon: namePokemon,
-			}
-		);
+		const response = await API.post(`/pokemon/info`, {
+			namePokemon: namePokemon,
+		});
 		let pokemon = response.data;
 		if (isRune && pokemon.infos.catchRate === -100) {
 			return `${upFirstLetter(
@@ -223,14 +199,11 @@ async function getPrice(item) {
 
 async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball/buy`,
-			{
-				idDiscord: idTrainer,
-				idBall: idBall,
-				quantity: quantity,
-			}
-		);
+		const response = await API.post(`/pokeball/buy`, {
+			idDiscord: idTrainer,
+			idBall: idBall,
+			quantity: quantity,
+		});
 		if (response.data.status === 'noMoney') {
 			return "Vous n'avez pas assez d'argent.";
 		} else if (response.data.status === 'buy') {
@@ -252,9 +225,7 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
 	let idTrainer = message.member.id;
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokemon/trainer/` + idTrainer
-		);
+		const response = await API.get(`/pokemon/trainer/` + idTrainer);
 		if (response.data.sumPokemon < nbPokemon) {
 			return `Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`;
 		}
@@ -358,19 +329,16 @@ async function purposeSwapPokemon(interaction) {
 		return 'Vous devez proposer/demander au moins un pokémon.';
 	}
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/pokemon/trade`,
-			{
-				idTrainer: interaction.user.id,
-				pokemonPropose: pokemonPropose,
-				pokemonRequest: pokemonRequest,
-				quantityPokemonPropose: quantityPokemonPropose,
-				quantityPokemonRequest: quantityPokemonRequest,
-				pokemonProposeShiny: pokemonProposeShiny,
-				pokemonRequestShiny: pokemonRequestShiny,
-				type: 'propose',
-			}
-		);
+		const response = await API.post(`/trainer/pokemon/trade`, {
+			idTrainer: interaction.user.id,
+			pokemonPropose: pokemonPropose,
+			pokemonRequest: pokemonRequest,
+			quantityPokemonPropose: quantityPokemonPropose,
+			quantityPokemonRequest: quantityPokemonRequest,
+			pokemonProposeShiny: pokemonProposeShiny,
+			pokemonRequestShiny: pokemonRequestShiny,
+			type: 'propose',
+		});
 		if (response.data.status === 'not enough pokemon propose') {
 			return `Vous n'avez pas assez de ${upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)}.`;
 		} else if (response.data.status === 'not found pokemon propose') {
@@ -425,14 +393,11 @@ async function purposeSwapPokemon(interaction) {
 async function acceptSwapPokemon(idTrade, interaction) {
 	const idTrainer = interaction.user.id;
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/trainer/pokemon/trade`,
-			{
-				idTrade: idTrade,
-				idTrainer: idTrainer,
-				type: 'accept',
-			}
-		);
+		const response = await API.post(`/trainer/pokemon/trade`, {
+			idTrade: idTrade,
+			idTrainer: idTrainer,
+			type: 'accept',
+		});
 
 		const status = response.data.status;
 		console.log(response.data);
@@ -474,14 +439,11 @@ async function buyRune(interaction) {
 	const quantity = interaction.options.getInteger('quantité') ?? 1;
 	const idTrainer = interaction.user.id;
 	try {
-		const response = await axios.post(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/buy`,
-			{
-				idTrainer: idTrainer,
-				pokemonName: pokemonName,
-				quantity: quantity,
-			}
-		);
+		const response = await API.post(`/rune/buy`, {
+			idTrainer: idTrainer,
+			pokemonName: pokemonName,
+			quantity: quantity,
+		});
 		if (response.data.status === 'noExistPokemon') {
 			return `${upFirstLetter(pokemonName)} n'est pas un pokémon.`;
 		} else if (response.data.status === 'noSell') {
@@ -500,9 +462,7 @@ async function buyRune(interaction) {
 
 async function checkRune(interaction) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/rune/` + interaction.user.id
-		);
+		const response = await API.get(`/rune/` + interaction.user.id);
 		if (response.data.rune.length === 0) {
 			return "Vous n'avez pas de rune de pokémon.";
 		}

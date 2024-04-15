@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import { EmbedBuilder } from 'discord.js';
 import { AttachmentBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { API } from './globalFunctions.js';
 
 async function sendArenaMessage(
 	message,
@@ -77,7 +77,7 @@ async function createAllChannels(message, client) {
 		permissionOverwrites: permissionsCancel,
 	});
 	try {
-		const response = await axios.get(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/zone`);
+		const response = await API.get(`/zone`);
 
 		const categoryZone = {};
 
@@ -154,9 +154,7 @@ async function deleteAllChannels(guild) {
 
 async function addemojis(message) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball`
-		);
+		const response = await API.get(`/pokeball`);
 		response.data.forEach(async (pokeball) => {
 			const emoji = await message.guild.emojis.create({
 				name: pokeball.name,
@@ -170,9 +168,7 @@ async function addemojis(message) {
 
 async function deleteEmojis(message) {
 	try {
-		const response = await axios.get(
-			`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/pokeball`
-		);
+		const response = await API.get(`/pokeball`);
 		response.data.forEach(async (pokeball) => {
 			const emoji = await message.guild.emojis.cache.find((emoji) => emoji.name === pokeball.name);
 			emoji.delete();
@@ -184,7 +180,7 @@ async function deleteEmojis(message) {
 
 async function addRoles(message) {
 	try {
-		const response = await axios.get(`${process.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/role`);
+		const response = await API.get(`/role`);
 
 		for (let roleData of response.data) {
 			const options = {
