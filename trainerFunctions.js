@@ -134,10 +134,23 @@ async function getPokedex(interaction, type) {
 		const title = `${user.id !== interaction.user.id ? `${user.globalName} a` : 'Vous avez'} ${
 			response.data.sumPokemon
 		} pokémon, dont ${response.data.countPokemon} différents.`;
-		const footer = 'Pokedex de ' + user.globalName + ' - ' + response.data.countPokemon + '/151';
+		const footer =
+			(type === 'shiny' ? 'Shiny' : 'Poke') +
+			'dex de ' +
+			user.globalName +
+			' - ' +
+			response.data.countPokemon +
+			'/151';
 		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
 
-		let embed = createListEmbed(items, title, footer, thumbnailUrl, null, '#E31030');
+		let embed = createListEmbed(
+			items,
+			title,
+			footer,
+			thumbnailUrl,
+			null,
+			type === 'shiny' ? '#FFED00' : '#FF0000'
+		);
 
 		return { embeds: [embed] };
 	} catch (error) {
