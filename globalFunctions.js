@@ -76,10 +76,11 @@ function createListEmbed(
 }
 
 function correctNameZone(name) {
-	if (name.includes('・')) {
-		name = name.split('・')[1];
-	}
-	return name;
+	return name
+		.replace(/^.*?・/, '')
+		.normalize('NFKD')
+		.toLowerCase()
+		.replace(/[\u0300-\u036f]/g, '');
 }
 
 function heartbeat(client) {
