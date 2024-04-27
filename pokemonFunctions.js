@@ -1,16 +1,12 @@
 import { EmbedBuilder } from 'discord.js';
 import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
-import { upFirstLetter, createListEmbed, API } from './globalFunctions.js';
+import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
-	let nameZone = interaction.channel.name;
-	if (nameZone.includes('・')) {
-		nameZone = nameZone.split('・')[1];
-	}
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
-			nameZone,
+			nameZone: correctNameZone(interaction.channel.name),
 			spawnType: type,
 		});
 		if (randomPokemon.data.length === 0) {
@@ -168,7 +164,7 @@ async function nbPokemon(namePokemon) {
 async function getAvailable(channelName) {
 	try {
 		const response = await API.post(`/pokemon/zone`, {
-			nameZone: channelName,
+			nameZone: correctNameZone(channelName),
 		});
 
 		const pokemonsBySpawnType = response.data.reduce((acc, pokemon) => {

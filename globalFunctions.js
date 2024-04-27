@@ -75,6 +75,13 @@ function createListEmbed(
 	return embed;
 }
 
+function correctNameZone(name) {
+	if (name.includes('・')) {
+		name = name.split('・')[1];
+	}
+	return name;
+}
+
 function heartbeat(client) {
 	setInterval(() => {
 		client.ws.ping;
@@ -88,4 +95,12 @@ const API = axios.create({
 	},
 });
 
-export { upFirstLetter, formatNombreAvecSeparateur, createButtons, heartbeat, createListEmbed, API };
+export {
+	upFirstLetter,
+	formatNombreAvecSeparateur,
+	createButtons,
+	heartbeat,
+	createListEmbed,
+	correctNameZone,
+	API,
+};
