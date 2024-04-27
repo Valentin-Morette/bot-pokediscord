@@ -106,17 +106,22 @@ async function getBallTrainer(interaction) {
 
 async function getPokedex(interaction, type) {
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
+	let sameUser = user.id !== interaction.user.id;
 	try {
 		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + type);
 		const pokemons = response.data.pokemon;
 		if (pokemons.length === 0) {
-			return "Vous n'avez pas encore de pokémon" + (type === 'shiny' ? ' shiny' : '') + '.';
+			return (
+				`${sameUser ? `${user.globalName} n'a` : `Vous n'avez`} pas encore de pokémon` +
+				(type === 'shiny' ? ' shiny' : '') +
+				'.'
+			);
 		}
 
 		const items = pokemons.map((pokemon) => `- ${pokemon.quantity} ${pokemon.name}`);
-		const title = `${user.id !== interaction.user.id ? `${user.globalName} a` : 'Vous avez'} ${
+		const title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${
 			response.data.sumPokemon
-		} pokémon, dont ${response.data.countPokemon} différents.`;
+		} pokémon${hasStar(type === 'shiny')}, dont ${response.data.countPokemon} différents.`;
 		const footer =
 			(type === 'shiny' ? 'Shiny' : 'Poke') +
 			'dex de ' +
