@@ -4,9 +4,13 @@ import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { upFirstLetter, createListEmbed, API } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type) {
+	let nameZone = interaction.channel.name;
+	if (nameZone.includes('・')) {
+		nameZone = nameZone.split('・')[1];
+	}
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
-			nameZone: interaction.channel.name,
+			nameZone,
 			spawnType: type,
 		});
 		if (randomPokemon.data.length === 0) {
