@@ -236,7 +236,7 @@ async function initServer(message, client) {
 }
 
 async function commandesMessage(message) {
-	let channelName = 'commandes';
+	let channelName = '⌨・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const messages = await channel.messages.fetch();
