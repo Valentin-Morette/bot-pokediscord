@@ -1,13 +1,4 @@
-import {
-	addemojis,
-	deleteEmojis,
-	createAllChannels,
-	deleteAllChannels,
-	addRoles,
-	initServer,
-	allMessage,
-	commandesMessage,
-} from './createServerFunctions.js';
+import { addBallEmojis, allMessage, commandesMessage } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
 	addTrainer,
@@ -75,18 +66,8 @@ function pokeChat(client) {
 		if (message.author.bot) return;
 
 		if (message.author.id === process.env.MYDISCORDID) {
-			if (message.content === '!initServer') {
-				await initServer(message, client);
-			} else if (message.content === '!createAllChannels') {
-				await createAllChannels(message);
-			} else if (message.content === '!deleteAllChannels') {
-				await deleteAllChannels(message.guild);
-			} else if (message.content === '!addEmojis') {
-				await addemojis(message);
-			} else if (message.content === '!createRoles') {
-				await addRoles(message);
-			} else if (message.content === '!deleteEmojis') {
-				await deleteEmojis(message.guild);
+			if (message.content === '!addBallEmojis') {
+				await addBallEmojis(message);
 			} else if (message.content === '!allMessage') {
 				await allMessage(message);
 			} else if (message.content === '!updateCmdMessage') {
