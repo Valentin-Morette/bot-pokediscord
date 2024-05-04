@@ -27,7 +27,7 @@ import {
 } from './pokemonFunctions.js';
 import { slashCommande } from './createServerFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { heartbeat } from './globalFunctions.js';
+import { heartbeat, createListEmbed } from './globalFunctions.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
@@ -56,10 +56,26 @@ function pokeChat(client) {
 			member.roles.add(badgeRole).catch(console.error);
 		}
 
-		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === 'accueil');
+		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
 		if (welcomeChannel) {
 			welcomeChannel.send(`Bienvenue ${member} sur le serveur!`);
 		}
+
+		const route1Channel = member.guild.channels.cache.find((ch) => ch.name === '🌳・𝐑𝐨𝐮𝐭𝐞-𝟏');
+
+		const title = `Bienvenue sur le serveur, ${member}!`;
+		const description =
+			`Le but de ce serveur est de capturer tous les pokémons.\n` +
+			`Chaque channel correspond à une zone de capture du jeu, chaque zone a des pokémons différents.\n` +
+			`Pour essayer de capturer un pokémon, il vous faut taper **\`${'/cherche'}\`** dans un channel (Exemple : <#${
+				route1Channel.id
+			}>).`;
+		const footer = 'Tutoriel - 1/3';
+		const thumbnailUrl = member.user.displayAvatarURL();
+
+		const embed = createListEmbed(description, title, footer, thumbnailUrl, null, '#0099ff');
+
+		member.send({ embeds: [embed] });
 	});
 
 	client.on('messageCreate', async (message) => {
