@@ -13,8 +13,6 @@ async function addTrainer(member) {
 					idDiscord: member.id,
 					name: member.user.username,
 					money: 1000,
-					point: 0,
-					level: 0,
 				},
 				ball: [
 					{
@@ -272,6 +270,9 @@ async function handleCatch(interaction, idPokeball) {
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
 		case 'catch':
+			if (response.sendTuto) {
+				sendSecondaryTutorialMessage(interaction);
+			}
 			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
@@ -301,6 +302,28 @@ async function handleCatch(interaction, idPokeball) {
 	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
 
 	interaction.update({ embeds: [newEmbed], components });
+}
+
+async function sendSecondaryTutorialMessage(interaction) {
+	const shopChannel = interaction.guild.channels.cache.find(
+		(channel) => channel.name === '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞'
+	);
+	const commandChannel = interaction.guild.channels.cache.find(
+		(channel) => channel.name === '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬'
+	);
+	const title = '🎉 Premier Pokémon capturé ! 🎉';
+	const footer = 'Tutoriel - 2/2';
+	const description =
+		`Vous pouvez voir vos pokémons capturés en tapant **\`/pokedex\`** dans n'importe quel channel.\n\n` +
+		`Vous avez utilisé des pokéballs, allez dans le channel <#${shopChannel.id}> pour en acheter.\n\n` +
+		`Pour voir la liste de vos pokéballs, tapez **\`/ball\`**.\n` +
+		`Pour voir votre argent, tapez **\`/argent\`**.\n\n` +
+		`Pour capturer un autre pokémon, tapez **\`/cherche\`** dans un channel de capture. \n\n` +
+		`Pour consulter la liste des commandes, allez dans le channel <#${commandChannel.id}>.`;
+
+	const tutorialEmbed = createListEmbed(description, title, footer, null, null, '#0099ff');
+
+	await interaction.user.send({ embeds: [tutorialEmbed] });
 }
 
 async function disabledButtons(interaction) {
