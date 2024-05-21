@@ -70,7 +70,7 @@ function pokeChat(client) {
 			`Pour essayer de capturer un pokémon, il vous faut taper **\`${'/cherche'}\`** dans un channel (Exemple : <#${
 				route1Channel.id
 			}>).`;
-		const footer = 'Tutoriel - 1/3';
+		const footer = 'Tutoriel - 1/2';
 		const thumbnailUrl = member.user.displayAvatarURL();
 
 		const embed = createListEmbed(description, title, footer, thumbnailUrl, null, '#0099ff');
