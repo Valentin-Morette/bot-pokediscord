@@ -60,7 +60,7 @@ async function spawnPokemonWithRune(interaction) {
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemonSpawn.catchCode)
+				.setCustomId(ball + '|' + pokemonSpawn.idPokemonWild)
 				.setStyle(ButtonStyle.Secondary);
 			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 

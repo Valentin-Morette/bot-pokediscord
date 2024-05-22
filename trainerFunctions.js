@@ -427,7 +427,6 @@ async function acceptSwapPokemon(idTrade, interaction) {
 		});
 
 		const status = response.data.status;
-		console.log(response.data);
 		if (status === 'success') {
 			await handleTradeButtonInteraction(idTrade, interaction);
 			return null;
@@ -463,7 +462,12 @@ async function buyRune(interaction) {
 	if (pokemonName === 'mew') {
 		return 'Vous ne pouvez pas acheter de rune pour Mew.';
 	}
+
 	const quantity = interaction.options.getInteger('quantité') ?? 1;
+	if (quantity <= 0) {
+		return 'Vous devez indiquer une quantité supérieure à 0.';
+	}
+
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.post(`/rune/buy`, {
