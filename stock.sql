@@ -48,15 +48,3 @@
 
 -- ALTER TABLE `trade` ADD `isShinyPropose` TINYINT NOT NULL AFTER `quantityPokemonRequest`, ADD `isShinyRequest` TINYINT NOT NULL AFTER `isShinyPropose`;
 
-CREATE TABLE `tutorial_command_trainer` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `idTrainer` VARCHAR(50) NOT NULL ,
-  `commandName` VARCHAR(100) NOT NULL ,
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
-
-ALTER TABLE `tutorial_command_trainer` CHANGE `idTrainer` `idTrainer` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
-ALTER TABLE `tutorial_command_trainer` CHANGE `commandName` `commandName` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
-
-ALTER TABLE `tutorial_command_trainer`
-  ADD FOREIGN KEY (`idTrainer`) REFERENCES `trainer`(`idDiscord`);

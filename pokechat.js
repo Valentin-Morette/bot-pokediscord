@@ -15,6 +15,7 @@ import {
 	buyRune,
 	checkRune,
 	pricePokemon,
+	kickMember,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -63,7 +64,7 @@ function pokeChat(client) {
 
 		const route1Channel = member.guild.channels.cache.find((ch) => ch.name === '🌳・𝐑𝐨𝐮𝐭𝐞-𝟏');
 
-		const title = `Bienvenue sur le serveur, ${member}!`;
+		const title = `Bienvenue sur le serveur !`;
 		const description =
 			`Le but de ce serveur est de capturer tous les pokémons.\n` +
 			`Chaque channel correspond à une zone de capture du jeu, chaque zone a des pokémons différents.\n` +
@@ -88,6 +89,8 @@ function pokeChat(client) {
 				await allMessage(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
+			} else if (message.content.startsWith('!kick')) {
+				await kickMember(message);
 			}
 			return;
 		}

@@ -511,6 +511,14 @@ async function checkRune(interaction) {
 	}
 }
 
+async function kickMember(message) {
+	const member = message.mentions.members.first();
+	if (member) {
+		API.delete(`/trainer/` + member.user.id);
+		member.kick();
+	}
+}
+
 export {
 	addTrainer,
 	getBallTrainer,
@@ -527,4 +535,5 @@ export {
 	buyRune,
 	checkRune,
 	pricePokemon,
+	kickMember,
 };
