@@ -141,6 +141,11 @@ function pokeChat(client) {
 
 		// Command interaction
 		if (interaction.isCommand()) {
+			if (interaction.channel.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥') {
+				interaction.reply(`Vous ne pouvez pas utiliser de commande dans l'accueil.`);
+				return;
+			}
+
 			if (interaction.commandName === 'cherche') {
 				interaction.reply(await findRandomPokemon(interaction, 'herbe'));
 				return;
