@@ -12,20 +12,20 @@ async function addTrainer(member) {
 				trainer: {
 					idDiscord: member.id,
 					name: member.user.username,
-					money: 1000,
+					money: 2000,
 				},
 				ball: [
 					{
 						id: 1,
-						quantity: 10,
+						quantity: 30,
 					},
 					{
 						id: 2,
-						quantity: 5,
+						quantity: 10,
 					},
 					{
 						id: 3,
-						quantity: 1,
+						quantity: 5,
 					},
 				],
 			});
