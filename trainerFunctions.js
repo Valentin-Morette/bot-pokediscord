@@ -259,13 +259,13 @@ async function handleCatch(interaction, idPokeball) {
 	const originalEmbed = interaction.message.embeds[0];
 	const newEmbed = new EmbedBuilder()
 		.setTitle(originalEmbed.title)
-		.setColor(originalEmbed.color)
 		.setThumbnail(originalEmbed.thumbnail?.url);
 
 	let addFieldsValue = originalEmbed.fields[0]?.value ?? '0';
 
 	switch (response.status) {
 		case 'noCatch':
+			newEmbed.setColor(originalEmbed.color);
 			replyMessage = `Le ${response.pokemonName} est resorti, retentez votre chance !`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
@@ -273,25 +273,30 @@ async function handleCatch(interaction, idPokeball) {
 			if (response.sendTuto) {
 				sendSecondaryTutorialMessage(interaction);
 			}
+			newEmbed.setColor('#3aa12f');
 			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
 		case 'escape':
+			newEmbed.setColor('#c71a28');
 			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
 		case 'alreadyCatch':
+			newEmbed.setColor(originalEmbed.color);
 			replyMessage = `Le Pokémon a déjà été capturé.`;
 			break;
 		case 'alreadyEscape':
 			replyMessage = `Le Pokémon s'est déjà échappé.`;
 			break;
 		case 'noBall':
+			newEmbed.setColor(originalEmbed.color);
 			replyMessage = `Vous n'avez pas de ${balls.find((ball) => ball.id === idPokeball).name}.`;
 			break;
 		case 'noExistPokemon':
+			newEmbed.setColor(originalEmbed.color);
 			replyMessage = `Le pokémon a disparu.`;
 			break;
 		default:

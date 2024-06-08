@@ -367,7 +367,7 @@ const pokemons = [
 	'Krabboss',
 	'Voltorbe',
 	'Électrode',
-	'Nœunœuf',
+	'Noeunoeuf',
 	'Noadkoko',
 	'Osselait',
 	'Ossatueur',
