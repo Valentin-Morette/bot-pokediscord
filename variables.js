@@ -42,6 +42,12 @@ const commandsPokechat = [
 				required: true,
 				autocomplete: true,
 			},
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon à faire évoluer',
+				required: false,
+			},
 		],
 	},
 	{
@@ -54,6 +60,12 @@ const commandsPokechat = [
 				description: 'Nom du pokémon',
 				required: true,
 				autocomplete: true,
+			},
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon à faire évoluer',
+				required: false,
 			},
 		],
 	},

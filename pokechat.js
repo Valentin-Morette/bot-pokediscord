@@ -199,14 +199,24 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'evolution') {
 				interaction.reply(
-					await evolvePokemon(interaction.user.id, interaction.options.getString('nom'), false)
+					await evolvePokemon(
+						interaction.user.id,
+						interaction.options.getString('nom'),
+						interaction.options.getInteger('quantité'),
+						false
+					)
 				);
 				return;
 			}
 
 			if (interaction.commandName === 'evolution-shiny') {
 				interaction.reply(
-					await evolvePokemon(interaction.user.id, interaction.options.getString('nom'), true)
+					await evolvePokemon(
+						interaction.user.id,
+						interaction.options.getString('nom'),
+						interaction.options.getInteger('quantité'),
+						true
+					)
 				);
 				return;
 			}
