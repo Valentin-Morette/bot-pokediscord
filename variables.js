@@ -107,17 +107,27 @@ const commandsPokechat = [
 		description: 'Vendre un / des pokémon(s)',
 		options: [
 			{
-				name: 'quantité',
-				type: 4,
-				description: 'Quantité de pokémon',
-				required: true,
-			},
-			{
 				name: 'nom',
 				type: 3,
 				description: 'Nom du pokémon',
 				required: true,
 				autocomplete: true,
+			},
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon',
+				required: false,
+			},
+			{
+				name: 'max',
+				type: 3,
+				description: 'Faire évoluer le maximum de pokémon possible',
+				required: false,
+				choices: [
+					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
+				],
 			},
 		],
 	},
@@ -126,17 +136,27 @@ const commandsPokechat = [
 		description: 'Vendre un / des pokémon(s) shiny',
 		options: [
 			{
-				name: 'quantité',
-				type: 4,
-				description: 'Quantité de pokémon',
-				required: true,
-			},
-			{
 				name: 'nom',
 				type: 3,
 				description: 'Nom du pokémon',
 				required: true,
 				autocomplete: true,
+			},
+			{
+				name: 'quantité',
+				type: 4,
+				description: 'Quantité de pokémon',
+				required: false,
+			},
+			{
+				name: 'max',
+				type: 3,
+				description: 'Faire évoluer le maximum de pokémon possible',
+				required: false,
+				choices: [
+					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
+				],
 			},
 		],
 	},

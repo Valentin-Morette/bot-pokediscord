@@ -47,9 +47,13 @@ async function catchPokemon(idPokemonWild, idTrainer, idPokeball) {
 	}
 }
 
-async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
+async function sellPokemon(idTrainer, namePokemon, quantity, isShiny, max = false) {
 	try {
-		if (quantity <= 0) {
+		quantity = quantity == null && !max ? 1 : quantity;
+		if (max && quantity != null) {
+			max = false;
+		}
+		if (quantity <= 0 && !max) {
 			return "Vous ne pouvez pas vendre moins d'un pokémon.";
 		}
 		const sellPokemon = await API.post(`/pokemon/sell`, {
@@ -57,13 +61,14 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny) {
 			idTrainer: idTrainer,
 			quantity: quantity,
 			isShiny: isShiny,
+			max: max,
 		});
 		if (sellPokemon.data.status === 'noPokemon') {
-			return "Vous n'avez pas " + quantity + ' ' + namePokemon + '.';
+			return "Vous n'avez pas " + sellPokemon.data.quantity + ' ' + namePokemon + '.';
 		} else if (sellPokemon.data.status === 'sell') {
 			return (
 				'Vous avez vendu ' +
-				quantity +
+				sellPokemon.data.quantity +
 				' ' +
 				namePokemon +
 				hasStar(isShiny) +
