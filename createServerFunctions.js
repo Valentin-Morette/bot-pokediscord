@@ -1,9 +1,12 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import { EmbedBuilder } from 'discord.js';
-import { AttachmentBuilder } from 'discord.js';
-import { ButtonBuilder } from 'discord.js';
-import { ActionRowBuilder, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	AttachmentBuilder,
+	ButtonBuilder,
+	ActionRowBuilder,
+	ButtonStyle,
+} from 'discord.js';
 import { API } from './globalFunctions.js';
 
 async function sendArenaMessage(

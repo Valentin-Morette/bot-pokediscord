@@ -1,6 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
-import { ButtonBuilder } from 'discord.js';
-import { ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from './globalFunctions.js';
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';

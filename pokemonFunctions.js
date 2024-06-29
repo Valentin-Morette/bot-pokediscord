@@ -1,6 +1,4 @@
-import { EmbedBuilder } from 'discord.js';
-import { ButtonBuilder } from 'discord.js';
-import { ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 
 async function findRandomPokemon(interaction, type, followUp = false) {
