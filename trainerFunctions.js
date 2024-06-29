@@ -3,6 +3,7 @@ import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from './globalFunctions.js';
 import { balls } from './variables.js';
+import { findRandomPokemon } from './pokemonFunctions.js';
 
 async function addTrainer(member) {
 	try {
@@ -251,6 +252,7 @@ async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge)
 
 async function handleCatch(interaction, idPokeball) {
 	const idPokemonWild = interaction.customId.split('|')[1];
+	const type = interaction.customId.split('|')[2];
 	const idTrainer = interaction.user.id;
 	const response = await catchPokemon(idPokemonWild, idTrainer, idPokeball);
 	let replyMessage;
@@ -307,6 +309,11 @@ async function handleCatch(interaction, idPokeball) {
 	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
 
 	interaction.update({ embeds: [newEmbed], components });
+
+	if (response.status === 'catch' || response.status === 'escape') {
+		// Attendre un court délai avant de relancer findRandomPokemon
+		setTimeout(() => findRandomPokemon(interaction, type, true), 1000);
+	}
 }
 
 async function sendSecondaryTutorialMessage(interaction) {

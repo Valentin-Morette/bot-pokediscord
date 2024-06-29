@@ -3,7 +3,7 @@ import { ButtonBuilder } from 'discord.js';
 import { ActionRowBuilder, ButtonStyle } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 
-async function findRandomPokemon(interaction, type) {
+async function findRandomPokemon(interaction, type, followUp = false) {
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: correctNameZone(interaction.channel.name),
@@ -20,7 +20,7 @@ async function findRandomPokemon(interaction, type) {
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemon.idPokemonWild)
+				.setCustomId(ball + '|' + pokemon.idPokemonWild + '|' + type)
 				.setStyle(ButtonStyle.Secondary);
 			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 
@@ -34,10 +34,16 @@ async function findRandomPokemon(interaction, type) {
 			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
 			.setColor(color);
 
-		return {
+		const responseOptions = {
 			embeds: [embed],
 			components: [row],
 		};
+
+		if (followUp) {
+			await interaction.followUp(responseOptions);
+		} else {
+			return responseOptions;
+		}
 	} catch (error) {
 		console.error(error);
 	}
