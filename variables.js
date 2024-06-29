@@ -48,6 +48,16 @@ const commandsPokechat = [
 				description: 'Quantité de pokémon à faire évoluer',
 				required: false,
 			},
+			{
+				name: 'max',
+				type: 3,
+				description: 'Faire évoluer le maximum de pokémon possible',
+				required: false,
+				choices: [
+					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
+				],
+			},
 		],
 	},
 	{
@@ -66,6 +76,16 @@ const commandsPokechat = [
 				type: 4,
 				description: 'Quantité de pokémon à faire évoluer',
 				required: false,
+			},
+			{
+				name: 'max',
+				type: 3,
+				description: 'Faire évoluer le maximum de pokémon possible',
+				required: false,
+				choices: [
+					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
+				],
 			},
 		],
 	},

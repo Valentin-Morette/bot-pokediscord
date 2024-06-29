@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { ButtonBuilder } from 'discord.js';
-import { EmbedBuilder } from 'discord.js';
-import { ActionRowBuilder, ButtonStyle } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } from 'discord.js';
 
 function upFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);

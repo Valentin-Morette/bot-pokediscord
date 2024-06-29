@@ -203,7 +203,8 @@ function pokeChat(client) {
 						interaction.user.id,
 						interaction.options.getString('nom'),
 						interaction.options.getInteger('quantité'),
-						false
+						false,
+						interaction.options.getString('max') === 'true'
 					)
 				);
 				return;
@@ -215,7 +216,8 @@ function pokeChat(client) {
 						interaction.user.id,
 						interaction.options.getString('nom'),
 						interaction.options.getInteger('quantité'),
-						true
+						true,
+						interaction.options.getString('max') === 'true'
 					)
 				);
 				return;

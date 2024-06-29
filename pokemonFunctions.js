@@ -90,40 +90,46 @@ async function spawnPokemonWithRune(interaction) {
 	}
 }
 
-async function evolvePokemon(idTrainer, namePokemon, quantity, isShiny) {
-	quantity = quantity == null ? 1 : quantity;
+async function evolvePokemon(idTrainer, namePokemon, quantity, isShiny, max = false) {
+	quantity = quantity == null && !max ? 1 : quantity;
+	if (quantity < 1 && !max) {
+		return 'Vous devez entrer une quantité supérieur à 0.';
+	}
+	if (max && quantity != null) {
+		max = false;
+	}
 	try {
 		const evolvePokemon = await API.post(`/pokemon/evolve`, {
 			namePokemon: namePokemon,
 			idTrainer: idTrainer,
 			isShiny: isShiny,
 			quantity: quantity,
+			max: max,
 		});
 		const pokemon = evolvePokemon.data;
-		console.log(pokemon);
 		if (pokemon.status === 'noPokemon') {
 			return (
 				'Il vous faut au minimum ' +
-				pokemon.numberPokemon * quantity +
+				pokemon.numberPokemon * pokemon.quantity +
 				' ' +
 				upFirstLetter(namePokemon) +
 				' pour ' +
-				(quantity > 1 ? 'tous les' : 'le') +
+				(pokemon.quantity > 1 ? 'tous les' : 'le') +
 				' faire évoluer.'
 			);
 		} else if (pokemon.status === 'evolve') {
 			let star = pokemon.isShiny ? '✨' : '';
 			const embed = new EmbedBuilder()
 				.setTitle(
-					`Vous avez fait évoluer ${quantity * pokemon.pokemonPreEvolve.numberEvolution} ${
+					`Vous avez fait évoluer ${pokemon.quantity * pokemon.pokemonPreEvolve.numberEvolution} ${
 						upFirstLetter(namePokemon) + star
-					} en ${quantity} ${pokemon.pokemonEvolve.name + star} !`
+					} en ${pokemon.quantity} ${pokemon.pokemonEvolve.name + star} !`
 				)
 				.setDescription(
 					'Félicitations ! Vous avez obtenu ' +
-						quantity +
+						pokemon.quantity +
 						' nouveau' +
-						(quantity > 1 ? 'x ' : ' ') +
+						(pokemon.quantity > 1 ? 'x ' : ' ') +
 						pokemon.pokemonEvolve.name +
 						star +
 						'.'
