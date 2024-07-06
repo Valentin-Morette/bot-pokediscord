@@ -1,4 +1,10 @@
-import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	ButtonBuilder,
+	ActionRowBuilder,
+	ButtonStyle,
+	AttachmentBuilder,
+} from 'discord.js';
 import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from './globalFunctions.js';
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
@@ -308,6 +314,48 @@ async function handleCatch(interaction, idPokeball) {
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
 		setTimeout(() => findRandomPokemon(interaction, type, true), 800);
+	} else if (response.status === 'noBall') {
+		setTimeout(() => shopMessage(interaction), 800);
+	}
+}
+
+async function shopMessage(interaction) {
+	const channel = interaction.channel;
+	console.log(channel.name);
+
+	const attachment = new AttachmentBuilder(`./assets/shop.png`);
+
+	const pokeballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
+	const superballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
+	const hyperballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
+	const masterballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+
+	const priceEmbed = new EmbedBuilder()
+		.setColor('#FFFFFF')
+		.setTitle("Vous n'avez pas de pokéball ?! Pas de problème !")
+		.setDescription(
+			`${pokeballEmoji} Pokéball : 50 $\n\n` +
+				`${superballEmoji} Superball : 80 $\n\n` +
+				`${hyperballEmoji} Hyperball : 150 $\n\n` +
+				`${masterballEmoji} Masterball : 100 000 $\n\n`
+		)
+		.setThumbnail(`attachment://shop.png`);
+	await channel.send({ embeds: [priceEmbed], files: [attachment] });
+
+	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+	for (let i = 1; i <= 100; i *= 10) {
+		let row = new ActionRowBuilder();
+		balls.forEach((ball) => {
+			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
+			const button = new ButtonBuilder()
+				.setCustomId('buy|' + i + '|' + ball)
+				.setStyle(ButtonStyle.Secondary)
+				.setLabel('' + i)
+				.setEmoji(customEmoji.id);
+
+			row.addComponents(button);
+		});
+		await channel.send({ components: [row] });
 	}
 }
 
@@ -325,7 +373,6 @@ async function sendSecondaryTutorialMessage(interaction) {
 		`Vous avez utilisé des pokéballs, allez dans le channel <#${shopChannel.id}> pour en acheter.\n\n` +
 		`Pour voir la liste de vos pokéballs, tapez **\`/ball\`**.\n` +
 		`Pour voir votre argent, tapez **\`/argent\`**.\n\n` +
-		`Pour capturer un autre pokémon, tapez **\`/cherche\`** dans un channel de capture. \n\n` +
 		`Pour consulter la liste des commandes, allez dans le channel <#${commandChannel.id}>.`;
 
 	const tutorialEmbed = createListEmbed(description, title, footer, null, null, '#0099ff');

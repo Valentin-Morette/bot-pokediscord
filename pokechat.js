@@ -3,7 +3,7 @@ import {
 	addBallEmojis,
 	allMessage,
 	commandesMessage,
-	shopMessage,
+	globalShopMessage,
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -95,7 +95,7 @@ function pokeChat(client) {
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {
-				await shopMessage(message);
+				await globalShopMessage(message);
 			} else if (message.content.startsWith('!kick')) {
 				await kickMember(message);
 			}

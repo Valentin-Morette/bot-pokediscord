@@ -106,7 +106,7 @@ async function commandesMessage(message) {
 	}
 }
 
-async function shopMessage(message) {
+async function globalShopMessage(message) {
 	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
@@ -153,7 +153,7 @@ async function shopMessage(message) {
 
 async function allMessage(message) {
 	commandesMessage(message);
-	shopMessage(message);
+	globalShopMessage(message);
 
 	sendArenaMessage(
 		message,
@@ -273,4 +273,4 @@ function slashCommande(commands) {
 	})();
 }
 
-export { addBallEmojis, slashCommande, allMessage, commandesMessage, shopMessage };
+export { addBallEmojis, slashCommande, allMessage, commandesMessage, globalShopMessage };
