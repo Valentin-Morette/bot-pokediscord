@@ -64,35 +64,43 @@ async function commandesMessage(message) {
 	if (channel) {
 		const messages = await channel.messages.fetch();
 		await channel.bulkDelete(messages);
+
 		const commandEmbed = new EmbedBuilder()
-			.setColor('#3498db')
-			.setTitle('Liste des Commandes du Serveur')
+			.setColor('#FFFFFF')
+			.setTitle('Liste des Commandes du Serveur.')
 			.setDescription(
-				'- /cherche : pour chercher un pokémon.\n' +
-					'- /canne : pour pêcher un pokémon avec la canne.\n' +
-					'- /superCanne : pour pêcher un pokémon avec la super canne.\n' +
-					'- /megaCanne : pour pêcher un pokémon avec la mega canne.\n' +
-					'- /vendre [quantité] [nom du pokémon] : pour vendre un pokémon.\n' +
-					'- /vendre-shiny [quantité] [nom du pokémon] : pour vendre un pokémon shiny.\n' +
-					"- /pokedex [nom du dressseur (optionnel)] : pour voir le pokédex d'un dresseur.\n" +
-					"- /shinydex [nom du dressseur (optionnel)] : pour voir le pokédex shiny d'un dresseur.\n" +
-					'- /nombre-evolution [nom du pokémon] : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
-					'- /evolution [nom du pokémon] : pour faire évoluer un pokémon.\n' +
-					'- /evolution-shiny [nom du pokémon] : pour faire évoluer un pokémon shiny.\n' +
-					'- /argent : pour voir votre argent.\n' +
-					'- /ball : pour voir toutes vos pokéballs.\n' +
-					"- /prix [nom de la pokéball] : pour voir le prix d'achat d'une pokéball.\n" +
-					"- /prix [nom du pokémon] : pour voir le prix de vente d'un pokémon.\n" +
-					'- /disponible : pour voir les pokémons disponibles dans la zone.\n' +
-					'- /echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé] : pour échanger des pokémons avec un autre joueur.\n' +
-					"- /zone [nom du pokemon] : pour voir les zones d'apparitions d'un pokémon.\n" +
-					'- /rune-utiliser [nom du pokémon] : pour utiliser une rune de pokémon.\n' +
-					'- /rune-achat [nom du pokémon] : pour acheter une rune de pokémon.\n' +
-					"- /rune-prix [nom du pokémon] : pour voir le prix d'une rune de pokémon.\n" +
-					'- /rune-inventaire : pour voir les runes de pokémon en votre possession.\n'
+				'**Chercher des Pokémon**\n' +
+					'- `/cherche` : pour chercher un pokémon.\n' +
+					'- `/canne` : pour pêcher un pokémon avec la canne.\n' +
+					'- `/superCanne` : pour pêcher un pokémon avec la super canne.\n' +
+					'- `/megaCanne` : pour pêcher un pokémon avec la mega canne.\n\n' +
+					'**Vendre des Pokémon**\n' +
+					'- `/vendre [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un pokémon.\n' +
+					'- `/vendre-shiny [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un pokémon shiny.\n\n' +
+					'**Consulter les Pokédex**\n' +
+					"- `/pokedex [nom du dresseur (optionnel)]` : pour voir le pokédex d'un dresseur.\n" +
+					"- `/shinydex [nom du dresseur (optionnel)]` : pour voir le pokédex shiny d'un dresseur.\n\n" +
+					'**Évolution des Pokémon**\n' +
+					'- `/nombre-evolution [nom du pokémon]` : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
+					'- `/evolution [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un pokémon.\n' +
+					'- `/evolution-shiny [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un pokémon shiny.\n\n' +
+					'**Inventaire et finances**\n' +
+					'- `/argent` : pour voir votre argent.\n' +
+					'- `/ball` : pour voir toutes vos pokéballs.\n' +
+					"- `/prix [nom de la pokéball]` : pour voir le prix d'achat d'une pokéball.\n" +
+					"- `/prix [nom du pokémon]` : pour voir le prix de vente d'un pokémon.\n\n" +
+					'**Pokémons disponibles et échanges**\n' +
+					'- `/disponible` : pour voir les pokémons disponibles dans la zone.\n' +
+					'- `/echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé]` : pour échanger des pokémons avec un autre joueur.\n' +
+					"- `/zone [nom du pokemon]` : pour voir les zones d'apparitions d'un pokémon.\n\n" +
+					'**Utilisation et achat de runes**\n' +
+					'- `/rune-utiliser [nom du pokémon]` : pour utiliser une rune de pokémon.\n' +
+					'- `/rune-achat [nom du pokémon]` : pour acheter une rune de pokémon.\n' +
+					"- `/rune-prix [nom du pokémon]` : pour voir le prix d'une rune de pokémon.\n" +
+					'- `/rune-inventaire` : pour voir les runes de pokémon en votre possession.\n'
 			);
 
-		channel.send({ embeds: [commandEmbed] });
+		await channel.send({ embeds: [commandEmbed] });
 	} else {
 		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
 	}
@@ -106,14 +114,13 @@ async function shopMessage(message) {
 		await channel.bulkDelete(messages);
 		const attachment = new AttachmentBuilder(`./assets/shop.png`);
 
-		// Find custom emojis for the balls
 		const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
 		const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
 		const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
 		const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
 
 		const priceEmbed = new EmbedBuilder()
-			.setColor('#3498db')
+			.setColor('#FFFFFF')
 			.setTitle('Bienvenu dresseur ! Jete un œil à nos Pokéballs !')
 			.setDescription(
 				`${pokeballEmoji} Pokéball : 50 $\n\n` +
@@ -146,38 +153,7 @@ async function shopMessage(message) {
 
 async function allMessage(message) {
 	commandesMessage(message);
-	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
-	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
-	if (channel) {
-		const priceEmbed = new EmbedBuilder()
-			.setColor('#3498db')
-			.setTitle('Prix des pokéballs')
-			.setDescription(
-				'- Pokéball : 50$\n' +
-					'- Superball : 80$\n' +
-					'- Hyperball : 150$\n' +
-					'- Masterball : 100 000$\n'
-			);
-
-		channel.send({ embeds: [priceEmbed] });
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-		for (let i = 1; i <= 100; i *= 10) {
-			let row = new ActionRowBuilder();
-			balls.forEach((ball) => {
-				const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
-				const button = new ButtonBuilder()
-					.setCustomId('buy|' + i + '|' + ball)
-					.setStyle(ButtonStyle.Secondary)
-					.setLabel('' + i)
-					.setEmoji(customEmoji.id);
-
-				row.addComponents(button);
-			});
-			channel.send({ components: [row] });
-		}
-	} else {
-		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
-	}
+	shopMessage(message);
 
 	sendArenaMessage(
 		message,
