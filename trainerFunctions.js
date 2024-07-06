@@ -11,20 +11,12 @@ async function addTrainer(member) {
 				trainer: {
 					idDiscord: member.id,
 					name: member.user.username,
-					money: 2000,
+					money: 2500,
 				},
 				ball: [
 					{
 						id: 1,
-						quantity: 30,
-					},
-					{
-						id: 2,
-						quantity: 10,
-					},
-					{
-						id: 3,
-						quantity: 5,
+						quantity: 50,
 					},
 				],
 			});
@@ -303,6 +295,7 @@ async function handleCatch(interaction, idPokeball) {
 		case 'noExistPokemon':
 			newEmbed.setColor(originalEmbed.color);
 			replyMessage = `Le pokémon a disparu.`;
+			components = await disabledButtons(interaction);
 			break;
 		default:
 			replyMessage = 'Une erreur inattendue s’est produite.';
@@ -313,9 +306,8 @@ async function handleCatch(interaction, idPokeball) {
 
 	interaction.update({ embeds: [newEmbed], components });
 
-	if (response.status === 'catch' || response.status === 'escape') {
-		// Attendre un court délai avant de relancer findRandomPokemon
-		setTimeout(() => findRandomPokemon(interaction, type, true), 1000);
+	if (response.status !== 'noCatch' && response.status !== 'noBall') {
+		setTimeout(() => findRandomPokemon(interaction, type, true), 800);
 	}
 }
 

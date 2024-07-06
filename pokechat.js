@@ -1,4 +1,10 @@
-import { addBallEmojis, allMessage, commandesMessage } from './createServerFunctions.js';
+import {
+	slashCommande,
+	addBallEmojis,
+	allMessage,
+	commandesMessage,
+	shopMessage,
+} from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
 	addTrainer,
@@ -26,7 +32,6 @@ import {
 	getZoneForPokemon,
 	spawnPokemonWithRune,
 } from './pokemonFunctions.js';
-import { slashCommande } from './createServerFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { heartbeat, createListEmbed } from './globalFunctions.js';
 
@@ -89,6 +94,8 @@ function pokeChat(client) {
 				await allMessage(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
+			} else if (message.content.startsWith('!updateShopMessage')) {
+				await shopMessage(message);
 			} else if (message.content.startsWith('!kick')) {
 				await kickMember(message);
 			}

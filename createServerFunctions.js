@@ -59,7 +59,7 @@ async function addBallEmojis(message) {
 }
 
 async function commandesMessage(message) {
-	let channelName = '⌨・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬';
+	let channelName = '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const messages = await channel.messages.fetch();
@@ -96,14 +96,57 @@ async function commandesMessage(message) {
 	} else {
 		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
 	}
+}
 
-	channelName = 'boutique';
-	channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
+async function shopMessage(message) {
+	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
+	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
+	if (channel) {
+		const messages = await channel.messages.fetch();
+		await channel.bulkDelete(messages);
+		const attachment = new AttachmentBuilder(`./assets/shop.png`);
+
+		// Find custom emojis for the balls
+		const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
+		const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
+		const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
+		const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+
+		const priceEmbed = new EmbedBuilder()
+			.setColor('#3498db')
+			.setTitle('Bienvenu dresseur ! Jete un œil à nos Pokéballs !')
+			.setDescription(
+				`${pokeballEmoji} Pokéball : 50 $\n\n` +
+					`${superballEmoji} Superball : 80 $\n\n` +
+					`${hyperballEmoji} Hyperball : 150 $\n\n` +
+					`${masterballEmoji} Masterball : 100 000 $\n\n`
+			)
+			.setThumbnail(`attachment://shop.png`);
+		await channel.send({ embeds: [priceEmbed], files: [attachment] });
+
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		for (let i = 1; i <= 100; i *= 10) {
+			let row = new ActionRowBuilder();
+			balls.forEach((ball) => {
+				const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+				const button = new ButtonBuilder()
+					.setCustomId('buy|' + i + '|' + ball)
+					.setStyle(ButtonStyle.Secondary)
+					.setLabel('' + i)
+					.setEmoji(customEmoji.id);
+
+				row.addComponents(button);
+			});
+			await channel.send({ components: [row] });
+		}
+	} else {
+		console.error(`Aucun canal trouvé avec le nom ${channelName}`);
+	}
 }
 
 async function allMessage(message) {
 	commandesMessage(message);
-	let channelName = 'boutique';
+	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const priceEmbed = new EmbedBuilder()
@@ -254,4 +297,4 @@ function slashCommande(commands) {
 	})();
 }
 
-export { addBallEmojis, slashCommande, allMessage, commandesMessage };
+export { addBallEmojis, slashCommande, allMessage, commandesMessage, shopMessage };
