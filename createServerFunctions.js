@@ -132,17 +132,20 @@ async function globalShopMessage(message) {
 		await channel.send({ embeds: [priceEmbed], files: [attachment] });
 
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-		for (let i = 1; i <= 100; i *= 10) {
+		for (let i = 1; i <= 1000; i *= 10) {
 			let row = new ActionRowBuilder();
 			balls.forEach((ball) => {
-				const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
-				const button = new ButtonBuilder()
-					.setCustomId('buy|' + i + '|' + ball)
-					.setStyle(ButtonStyle.Secondary)
-					.setLabel('' + i)
-					.setEmoji(customEmoji.id);
+				// n'affiche pas la masterball pour 100 et 1000
+				if (ball !== 'masterball' || i <= 10) {
+					const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+					const button = new ButtonBuilder()
+						.setCustomId('buy|' + i + '|' + ball)
+						.setStyle(ButtonStyle.Secondary)
+						.setLabel('' + i)
+						.setEmoji(customEmoji.id);
 
-				row.addComponents(button);
+					row.addComponents(button);
+				}
 			});
 			await channel.send({ components: [row] });
 		}
