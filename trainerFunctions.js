@@ -9,6 +9,8 @@ import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from 
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
 
+const shopCooldowns = new Map();
+
 async function addTrainer(member) {
 	try {
 		const response = await API.get(`/trainer/verify/` + member.id);
@@ -316,13 +318,29 @@ async function handleCatch(interaction, idPokeball) {
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
 		setTimeout(() => findRandomPokemon(interaction, type, true), 800);
 	} else if (response.status === 'noBall') {
-		setTimeout(() => shopMessage(interaction), 800);
+		const now = Date.now();
+		const cooldownAmount = 5000;
+
+		if (shopCooldowns.has(interaction.user.id)) {
+			const expirationTime = shopCooldowns.get(interaction.user.id);
+			if (now < expirationTime) {
+				return;
+			}
+		}
+
+		shopCooldowns.set(interaction.user.id, now + cooldownAmount);
+
+		for (const [key, val] of shopCooldowns) {
+			if (now > val) {
+				shopCooldowns.delete(key);
+			}
+		}
+		setTimeout(() => shopMessage(interaction), 500);
 	}
 }
 
 async function shopMessage(interaction) {
 	const channel = interaction.channel;
-	console.log(channel.name);
 
 	const attachment = new AttachmentBuilder(`./assets/shop.png`);
 
