@@ -229,8 +229,9 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 
 async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
 	let idTrainer = message.member.id;
+	let pokemonType = nameBadge === 'Maitre Pokémon Shiny' ? 'shiny' : 'regular';
 	try {
-		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/regular');
+		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/' + pokemonType);
 		if (response.data.sumPokemon < nbPokemon) {
 			return `Vous n'avez pas assez de pokémon pour obtenir le badge ${nameBadge}.`;
 		}

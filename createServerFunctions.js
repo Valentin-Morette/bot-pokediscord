@@ -32,7 +32,7 @@ async function sendArenaMessage(
 		const button = new ButtonBuilder()
 			.setCustomId(`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`)
 			.setStyle(ButtonStyle.Primary)
-			.setLabel(channelName == 'plateau-indigo' ? badgeName : `Badge ${badgeName}`);
+			.setLabel(channelName == '🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨' ? badgeName : `Badge ${badgeName}`);
 		row.addComponents(button);
 		await channel.send({
 			embeds: [embed],
@@ -135,7 +135,6 @@ async function globalShopMessage(message) {
 		for (let i = 1; i <= 1000; i *= 10) {
 			let row = new ActionRowBuilder();
 			balls.forEach((ball) => {
-				// n'affiche pas la masterball pour 100 et 1000
 				if (ball !== 'masterball' || i <= 10) {
 					const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
 					const button = new ButtonBuilder()
@@ -155,12 +154,20 @@ async function globalShopMessage(message) {
 }
 
 async function allMessage(message) {
-	commandesMessage(message);
-	globalShopMessage(message);
+	await sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Reglisse',
+		'Maitre Pokémon',
+		'Je suis Reglisse, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
+		1200,
+		151,
+		'Maître Pokémon'
+	);
 
 	sendArenaMessage(
 		message,
-		'argenta',
+		'🏠・𝐀𝐫𝐠𝐞𝐧𝐭𝐚',
 		'Caillou',
 		'Roche',
 		"Je suis Caillou, le champion d'arène de type roche. Pour obtenir le badge roche, il vous faudra au minimum 10 pokémons dont 5 différents.",
@@ -171,7 +178,7 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'azuria',
+		'🏠・𝐀𝐳𝐮𝐫𝐢𝐚',
 		'Flaquette',
 		'Cascade',
 		"Je suis Flaquette, le champion d'arène de type eau. Pour obtenir le badge cascade, il vous faudra au minimum 33 pokémons dont 12 différents.",
@@ -182,7 +189,7 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'carmin-sur-mer',
+		'🏠・𝐂𝐚𝐫𝐦𝐢𝐧-𝐬𝐮𝐫-𝐌𝐞𝐫',
 		'SergentPile',
 		'Foudre',
 		"Je suis le Sergent Pile, le champion d'arène de type Electrik. Pour obtenir le badge Foudre, il vous faudra au minimum 50 pokémons dont 20 différents.",
@@ -193,7 +200,7 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'céladopole',
+		'🏠・𝐂𝐞𝐥𝐚𝐝𝐨𝐩𝐨𝐥𝐞',
 		'Fleurika',
 		'Prisme',
 		"Je suis Fleurika, le champion d'arène de type plante. Pour obtenir le badge prisme, il vous faudra au minimum 67 pokémons dont 23 différents.",
@@ -204,7 +211,7 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'parmanie',
+		'🏠・𝐏𝐚𝐫𝐦𝐚𝐧𝐢𝐞',
 		'Kouga',
 		'Ame',
 		"Je suis Kouga, le champion d'arène de type poison. Pour obtenir le badge Âme, il vous faudra au minimum 80 pokémons dont 30 différents.",
@@ -215,7 +222,7 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'safrania',
+		'🏠・𝐒𝐚𝐟𝐫𝐚𝐧𝐢𝐚',
 		'Mordane',
 		'Marais',
 		"Je suis Mordane, le champion d'arène de type psy. Pour obtenir le badge Marais, il vous faudra au minimum 99 pokémons dont 35 différents.",
@@ -226,35 +233,35 @@ async function allMessage(message) {
 
 	sendArenaMessage(
 		message,
-		'cramois-île',
+		'🏠・𝐂𝐫𝐚𝐦𝐨𝐢𝐬-𝐢𝐥𝐞',
 		'Aoutiste',
 		'Volcan',
-		"Je suis Aoûtiste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 45 différents.",
+		"Je suis Aoûtiste, le champion d'arène de type feu. Pour obtenir le badge Volcan, il vous faudra au minimum 115 pokémons dont 48 différents.",
 		115,
-		45,
+		48,
 		'7 Badges'
 	);
 
 	sendArenaMessage(
 		message,
-		'jadielle',
+		'🏠・𝐉𝐚𝐝𝐢𝐞𝐥𝐥𝐞',
 		'Giavonnou',
 		'Terre',
-		"Je suis Giavonnou, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 50 différents.",
+		"Je suis Giavonnou, le champion d'arène de type sol. Pour obtenir le badge Terre, il vous faudra au minimum 150 pokémons dont 61 différents.",
 		150,
-		50,
+		61,
 		'8 Badges'
 	);
 
 	sendArenaMessage(
 		message,
-		'plateau-indigo',
-		'Reglisse',
-		'Maitre Pokémon',
-		'Je suis Reglisse, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
-		1200,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Shinysse',
+		'Maitre Pokémon Shiny',
+		'Je suis Shinysse, le maitre des pokémon shiny. Pour devenir un Maître Pokémon Shiny, il vous faudra les 151 pokémons shiny différents.',
 		151,
-		'Maître Pokémon'
+		151,
+		'Maître Pokémon Shiny'
 	);
 }
 
