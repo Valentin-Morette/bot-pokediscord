@@ -319,7 +319,7 @@ async function handleCatch(interaction, idPokeball) {
 		setTimeout(() => findRandomPokemon(interaction, type, true), 800);
 	} else if (response.status === 'noBall') {
 		const now = Date.now();
-		const cooldownAmount = 5000;
+		const cooldownAmount = 10000;
 
 		if (shopCooldowns.has(interaction.user.id)) {
 			const expirationTime = shopCooldowns.get(interaction.user.id);
@@ -362,14 +362,15 @@ async function shopMessage(interaction) {
 	await channel.send({ embeds: [priceEmbed], files: [attachment] });
 
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-	for (let i = 1; i <= 100; i *= 10) {
+	for (let i = 10; i <= 100; i *= 10) {
 		let row = new ActionRowBuilder();
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
+			let number = ball === 'masterball' ? i / 10 : i;
 			const button = new ButtonBuilder()
-				.setCustomId('buy|' + i + '|' + ball)
+				.setCustomId('buy|' + number + '|' + ball)
 				.setStyle(ButtonStyle.Secondary)
-				.setLabel('' + i)
+				.setLabel('' + number)
 				.setEmoji(customEmoji.id);
 
 			row.addComponents(button);
