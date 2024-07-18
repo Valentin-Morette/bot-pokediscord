@@ -1,7 +1,7 @@
 import {
 	slashCommande,
 	addBallEmojis,
-	allMessage,
+	arenaMessages,
 	commandesMessage,
 	globalShopMessage,
 } from './createServerFunctions.js';
@@ -90,8 +90,8 @@ function pokeChat(client) {
 		if (message.author.id === process.env.MYDISCORDID) {
 			if (message.content === '!addBallEmojis') {
 				await addBallEmojis(message);
-			} else if (message.content === '!allMessage') {
-				await allMessage(message);
+			} else if (message.content === '!arenaMessages') {
+				await arenaMessages(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {

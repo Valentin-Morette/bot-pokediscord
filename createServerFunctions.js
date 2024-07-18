@@ -153,7 +153,7 @@ async function globalShopMessage(message) {
 	}
 }
 
-async function allMessage(message) {
+async function arenaMessages(message) {
 	await sendArenaMessage(
 		message,
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
@@ -283,4 +283,4 @@ function slashCommande(commands) {
 	})();
 }
 
-export { addBallEmojis, slashCommande, allMessage, commandesMessage, globalShopMessage };
+export { addBallEmojis, slashCommande, arenaMessages, commandesMessage, globalShopMessage };
