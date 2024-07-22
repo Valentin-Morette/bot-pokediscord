@@ -90,7 +90,7 @@ async function spawnPokemonWithRune(interaction) {
 	}
 }
 
-async function evolvePokemon(idTrainer, namePokemon, quantity, isShiny, max = false) {
+async function evolvePokemon(idTrainer, namePokemon, nameZone, quantity, isShiny, max = false) {
 	quantity = quantity == null && !max ? 1 : quantity;
 	if (quantity < 1 && !max) {
 		return 'Vous devez entrer une quantité supérieur à 0.';
@@ -102,6 +102,7 @@ async function evolvePokemon(idTrainer, namePokemon, quantity, isShiny, max = fa
 		const evolvePokemon = await API.post(`/pokemon/evolve`, {
 			namePokemon: namePokemon,
 			idTrainer: idTrainer,
+			nameZone: correctNameZone(nameZone),
 			isShiny: isShiny,
 			quantity: quantity,
 			max: max,
@@ -145,6 +146,8 @@ async function evolvePokemon(idTrainer, namePokemon, quantity, isShiny, max = fa
 			return upFirstLetter(namePokemon) + " n'a pas d'évolution.";
 		} else if (pokemon.status === 'noExistPokemon') {
 			return upFirstLetter(namePokemon) + " n'est pas un pokémon.";
+		} else if (pokemon.status === 'noMaster') {
+			return upFirstLetter(namePokemon) + " ne peux pas évoluer si vous n'êtes pas un maître Pokémon.";
 		} else {
 			return "Erreur lors de l'évolution du pokémon.";
 		}
@@ -170,14 +173,30 @@ async function nbPokemon(namePokemon) {
 			return `${upFirstLetter(namePokemon)} n'est pas un pokémon`;
 		}
 
-		const title =
-			pokemon.infos.numberEvolution === null
-				? `${upFirstLetter(namePokemon)} ne peut pas évoluer.`
-				: `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
-						namePokemon
-				  )} pour le faire évoluer en ${upFirstLetter(pokemon.infos.evolution.name)}.`;
+		let description = null;
+		let title = '';
+
+		// Evolution de Évoli
+		if (pokemon.infos.id === 133) {
+			title = `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
+				namePokemon
+			)} pour le faire évoluer.`;
+			description =
+				`\nZones d'évolution :\n` +
+				`- Voltali : La centrale.\n` +
+				`- Pyroli : La route de la victoire.\n` +
+				`- Aquali : Les îles écume.\n` +
+				`- Aléatoire : les autres zones.`;
+		} else {
+			title =
+				pokemon.infos.numberEvolution === null
+					? `${upFirstLetter(namePokemon)} ne peut pas évoluer.`
+					: `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
+							namePokemon
+					  )} pour obtenir un ${upFirstLetter(pokemon.infos.evolution.name)}.`;
+		}
 		const footer = 'Nombre de ' + upFirstLetter(namePokemon);
-		const embed = createListEmbed(null, title, footer, pokemon.infos.img);
+		const embed = createListEmbed(description, title, footer, pokemon.infos.img);
 		return { embeds: [embed] };
 	} catch (error) {
 		console.error("Le pokémon n'existe pas.");

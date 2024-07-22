@@ -116,7 +116,7 @@ const commandsPokechat = [
 			{
 				name: 'max',
 				type: 3,
-				description: 'Faire évoluer le maximum de pokémon possible',
+				description: 'Vendre le maximum de pokémon possible en laissant 1',
 				required: false,
 				choices: [
 					{ name: 'Non', value: 'false' },
@@ -145,7 +145,7 @@ const commandsPokechat = [
 			{
 				name: 'max',
 				type: 3,
-				description: 'Faire évoluer le maximum de pokémon possible',
+				description: 'Vendre le maximum de pokémon shiny possible en laissant 1',
 				required: false,
 				choices: [
 					{ name: 'Non', value: 'false' },

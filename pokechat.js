@@ -203,12 +203,12 @@ function pokeChat(client) {
 				interaction.reply(await getBallTrainer(interaction));
 				return;
 			}
-
 			if (interaction.commandName === 'evolution') {
 				interaction.reply(
 					await evolvePokemon(
 						interaction.user.id,
 						interaction.options.getString('nom'),
+						interaction.channel.name,
 						interaction.options.getInteger('quantité'),
 						false,
 						interaction.options.getString('max') === 'true'
