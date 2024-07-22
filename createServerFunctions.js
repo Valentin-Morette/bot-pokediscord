@@ -159,8 +159,8 @@ async function arenaMessages(message) {
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Reglisse',
 		'Maitre Pokémon',
-		'Je suis Reglisse, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra au minimum 1200 pokémons dont 151 différents.',
-		1200,
+		'Je suis Reglisse, le maitre de la ligue pokémon. Pour devenir un Maître Pokémon, il vous faudra les 151 pokémons différents.',
+		151,
 		151,
 		'Maître Pokémon'
 	);
