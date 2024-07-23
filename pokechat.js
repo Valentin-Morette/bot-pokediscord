@@ -222,6 +222,7 @@ function pokeChat(client) {
 					await evolvePokemon(
 						interaction.user.id,
 						interaction.options.getString('nom'),
+						interaction.channel.name,
 						interaction.options.getInteger('quantité'),
 						true,
 						interaction.options.getString('max') === 'true'
