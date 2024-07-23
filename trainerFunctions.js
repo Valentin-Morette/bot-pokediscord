@@ -359,9 +359,10 @@ async function shopMessage(interaction) {
 				`${masterballEmoji} Masterball : 100 000 $\n\n`
 		)
 		.setThumbnail(`attachment://shop.png`);
-	await channel.send({ embeds: [priceEmbed], files: [attachment] });
 
+	let rows = []; // Array to store action rows
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+
 	for (let i = 10; i <= 100; i *= 10) {
 		let row = new ActionRowBuilder();
 		balls.forEach((ball) => {
@@ -375,8 +376,11 @@ async function shopMessage(interaction) {
 
 			row.addComponents(button);
 		});
-		await channel.send({ components: [row] });
+		rows.push(row);
 	}
+
+	// Send everything in one message
+	await channel.send({ embeds: [priceEmbed], files: [attachment], components: rows });
 }
 
 async function sendSecondaryTutorialMessage(interaction) {
