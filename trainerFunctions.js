@@ -339,7 +339,7 @@ async function handleCatch(interaction, idPokeball) {
 	}
 }
 
-async function shopMessage(interaction) {
+async function shopMessage(interaction, needReply = false) {
 	const channel = interaction.channel;
 
 	const attachment = new AttachmentBuilder(`./assets/shop.png`);
@@ -349,9 +349,13 @@ async function shopMessage(interaction) {
 	const hyperballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
 	const masterballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
 
+	const title = needReply
+		? 'Bienvenue dans la boutique de Pokéball !'
+		: "Vous n'avez pas de pokéball ?! Pas de problème !";
+
 	const priceEmbed = new EmbedBuilder()
 		.setColor('#FFFFFF')
-		.setTitle("Vous n'avez pas de pokéball ?! Pas de problème !")
+		.setTitle(title)
 		.setDescription(
 			`${pokeballEmoji} Pokéball : 50 $\n\n` +
 				`${superballEmoji} Superball : 80 $\n\n` +
@@ -360,7 +364,7 @@ async function shopMessage(interaction) {
 		)
 		.setThumbnail(`attachment://shop.png`);
 
-	let rows = []; // Array to store action rows
+	let rows = [];
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 
 	for (let i = 10; i <= 100; i *= 10) {
@@ -379,8 +383,11 @@ async function shopMessage(interaction) {
 		rows.push(row);
 	}
 
-	// Send everything in one message
-	await channel.send({ embeds: [priceEmbed], files: [attachment], components: rows });
+	if (needReply) {
+		return { embeds: [priceEmbed], files: [attachment], components: rows };
+	} else {
+		await channel.send({ embeds: [priceEmbed], files: [attachment], components: rows });
+	}
 }
 
 async function sendSecondaryTutorialMessage(interaction) {
@@ -569,6 +576,27 @@ async function buyRune(interaction) {
 	}
 }
 
+async function quantityPokemon(interaction, isShiny = false) {
+	const pokemonName = interaction.options.getString('nom').toLowerCase();
+	const idTrainer = interaction.user.id;
+	try {
+		const response = await API.post(`/pokemon/quantity`, {
+			idTrainer: idTrainer,
+			pokemonName: pokemonName,
+			isShiny: isShiny,
+		});
+		if (response.data.status === 'noExistPokemon') {
+			return `${upFirstLetter(pokemonName)} n'est pas un pokémon.`;
+		} else {
+			return `Vous avez ${response.data.quantity} ${upFirstLetter(pokemonName)}${hasStar(
+				isShiny
+			)} dans votre ${isShiny ? 'shiny' : 'poké'}dex.`;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function checkRune(interaction) {
 	try {
 		const response = await API.get(`/rune/` + interaction.user.id);
@@ -617,4 +645,6 @@ export {
 	checkRune,
 	pricePokemon,
 	kickMember,
+	shopMessage,
+	quantityPokemon,
 };

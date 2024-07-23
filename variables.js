@@ -207,6 +207,36 @@ const commandsPokechat = [
 		description: 'Affiche les pokémons disponibles sur le salon',
 	},
 	{
+		name: 'boutique',
+		description: 'Ouvre la boutique de Pokéballs',
+	},
+	{
+		name: 'quantite',
+		description: 'Affiche la quantité de pokémon que vous possédez pour un nom donné',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+				autocomplete: true,
+			},
+		],
+	},
+	{
+		name: 'quantite-shiny',
+		description: 'Affiche la quantité de pokémon shiny que vous possédez pour un nom donné',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du pokémon',
+				required: true,
+				autocomplete: true,
+			},
+		],
+	},
+	{
 		name: 'rune-achat',
 		description:
 			"Achète une rune d'un pokémon, pour le faire spawn (prix: 3X le prix de vente du pokémon)",

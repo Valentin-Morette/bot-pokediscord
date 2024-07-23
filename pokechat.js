@@ -22,6 +22,8 @@ import {
 	checkRune,
 	pricePokemon,
 	kickMember,
+	shopMessage,
+	quantityPokemon,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -178,6 +180,16 @@ function pokeChat(client) {
 				return;
 			}
 
+			if (interaction.commandName === 'quantite') {
+				interaction.reply(await quantityPokemon(interaction));
+				return;
+			}
+
+			if (interaction.commandName === 'quantite-shiny') {
+				interaction.reply(await quantityPokemon(interaction, true));
+				return;
+			}
+
 			if (interaction.commandName === 'disponible') {
 				const channelName = client.channels.cache.get(interaction.channelId).name;
 				interaction.reply(await getAvailable(channelName));
@@ -196,6 +208,11 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'shinydex') {
 				interaction.reply(await getPokedex(interaction, 'shiny'));
+				return;
+			}
+
+			if (interaction.commandName === 'boutique') {
+				interaction.reply(await shopMessage(interaction, true));
 				return;
 			}
 
