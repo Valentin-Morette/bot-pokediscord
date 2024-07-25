@@ -77,9 +77,11 @@ async function commandesMessage(message) {
 					'**Vendre des Pokémon**\n' +
 					'- `/vendre [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un pokémon.\n' +
 					'- `/vendre-shiny [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un pokémon shiny.\n\n' +
-					'**Consulter les Pokédex**\n' +
+					'**Consulter les Pokémons**\n' +
 					"- `/pokedex [nom du dresseur (optionnel)]` : pour voir le pokédex d'un dresseur.\n" +
-					"- `/shinydex [nom du dresseur (optionnel)]` : pour voir le pokédex shiny d'un dresseur.\n\n" +
+					"- `/shinydex [nom du dresseur (optionnel)]` : pour voir le pokédex shiny d'un dresseur.\n" +
+					'- `/quantite [nom du pokémon]` : pour voir la quantité de pokémon que vous possédez pour un pokémon donné.\n' +
+					'- `/quantite-shiny [nom du pokémon]` : pour voir la quantité de pokémon shiny que vous possédez pour un pokémon donné.\n\n' +
 					'**Évolution des Pokémon**\n' +
 					'- `/nombre-evolution [nom du pokémon]` : pour voir le nombre de pokémon necessaire pour une évolution.\n' +
 					'- `/evolution [nom du pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un pokémon.\n' +
@@ -88,7 +90,8 @@ async function commandesMessage(message) {
 					'- `/argent` : pour voir votre argent.\n' +
 					'- `/ball` : pour voir toutes vos pokéballs.\n' +
 					"- `/prix [nom de la pokéball]` : pour voir le prix d'achat d'une pokéball.\n" +
-					"- `/prix [nom du pokémon]` : pour voir le prix de vente d'un pokémon.\n\n" +
+					"- `/prix [nom du pokémon]` : pour voir le prix de vente d'un pokémon.\n" +
+					'- `/boutique` : pour ouvrir la boutique.\n\n' +
 					'**Pokémons disponibles et échanges**\n' +
 					'- `/disponible` : pour voir les pokémons disponibles dans la zone.\n' +
 					'- `/echange [nombre pokemon proposé] [nom du pokemon proposé] [nombre pokemon demandé] [nom du pokemon demandé]` : pour échanger des pokémons avec un autre joueur.\n' +

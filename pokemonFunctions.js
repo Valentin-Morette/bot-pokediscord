@@ -1,7 +1,10 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 
+let commandCount = 0;
+
 async function findRandomPokemon(interaction, type, followUp = false) {
+	commandCount++;
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: correctNameZone(interaction.channel.name),
@@ -37,6 +40,12 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 			components: [row],
 		};
 
+		if (commandCount === 100) {
+			const extraEmbed = buyMeACoffee(color);
+			responseOptions.embeds.push(extraEmbed);
+			commandCount = 0;
+		}
+
 		if (followUp) {
 			await interaction.followUp(responseOptions);
 		} else {
@@ -45,6 +54,23 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 	} catch (error) {
 		console.error(error);
 	}
+}
+
+function buyMeACoffee(color) {
+	const embed = new EmbedBuilder()
+		.setTitle('🌟 Soutenez le serveur sur Buy Me a Coffee! 🌟')
+		.setDescription(
+			'Maintenir le bot actif implique des coûts. En offrant un café sur Buy Me a Coffee, vous aidez à couvrir ces frais et à continuer à fournir un jeu gratuit et de qualité. Chaque café compte! Merci pour votre soutien!  ☕'
+		)
+		.addFields({
+			name: '🔗 Lien Buy Me a Coffee',
+			value: 'https://buymeacoffee.com/birious',
+		})
+		.setColor(color)
+		.setThumbnail(
+			'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGI4ZWsxaWl2MTc1enF1cnZ4cnAydWlraWFpMXl2bXg2dTc3bGxyZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/TDQOtnWgsBx99cNoyH/giphy.gif'
+		);
+	return { embeds: [embed] };
 }
 
 async function spawnPokemonWithRune(interaction) {

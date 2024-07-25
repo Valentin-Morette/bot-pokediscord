@@ -316,7 +316,7 @@ async function handleCatch(interaction, idPokeball) {
 	interaction.update({ embeds: [newEmbed], components });
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
-		setTimeout(() => findRandomPokemon(interaction, type, true), 800);
+		setTimeout(() => findRandomPokemon(interaction, type, true), 700);
 	} else if (response.status === 'noBall') {
 		const now = Date.now();
 		const cooldownAmount = 10000;
