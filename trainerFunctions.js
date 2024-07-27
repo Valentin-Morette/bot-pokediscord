@@ -212,17 +212,16 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 			quantity: quantity,
 		});
 		if (response.data.status === 'noMoney') {
-			return "Vous n'avez pas assez d'argent.";
-		} else if (response.data.status === 'buy') {
 			return (
-				'Vous avez acheté ' +
-				quantity +
-				' ' +
-				upFirstLetter(nameBall) +
-				' pour ' +
-				formatNombreAvecSeparateur(response.data.price) +
-				' pokédollars.'
+				`Vous n'avez pas assez d'argent, vous avez ${formatNombreAvecSeparateur(
+					response.data.money
+				)}$ et il vous faut ${formatNombreAvecSeparateur(response.data.price)}$. \n` +
+				`Pour obtenir de l'argent, vendez des pokémons avec les commandes **\`/vendre\`** ou **\`/vendre-shiny\`**`
 			);
+		} else if (response.data.status === 'buy') {
+			return `Vous avez acheté ${quantity} ${upFirstLetter(nameBall)} pour ${formatNombreAvecSeparateur(
+				response.data.price
+			)}$.`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -263,9 +262,21 @@ async function handleCatch(interaction, idPokeball) {
 	let components;
 
 	const originalEmbed = interaction.message.embeds[0];
+	let secondOriginalEmbed = null;
 	const newEmbed = new EmbedBuilder()
 		.setTitle(originalEmbed.title)
 		.setThumbnail(originalEmbed.thumbnail?.url);
+	const newEmbed2 = new EmbedBuilder();
+	if (interaction.message.embeds.length > 1) {
+		secondOriginalEmbed = interaction.message.embeds[1];
+		console.log(secondOriginalEmbed);
+		newEmbed2
+			.setTitle(secondOriginalEmbed.title)
+			.setThumbnail(secondOriginalEmbed.thumbnail?.url)
+			.setDescription(secondOriginalEmbed.description)
+			.setColor(secondOriginalEmbed.color)
+			.addFields(secondOriginalEmbed.fields);
+	}
 
 	let addFieldsValue = originalEmbed.fields[0]?.value ?? '0';
 
@@ -280,12 +291,18 @@ async function handleCatch(interaction, idPokeball) {
 				sendSecondaryTutorialMessage(interaction);
 			}
 			newEmbed.setColor('#3aa12f');
+			if (secondOriginalEmbed !== null) {
+				newEmbed2.setColor('#3aa12f');
+			}
 			replyMessage = `Le ${response.pokemonName} a été capturé par <@${interaction.user.id}>.`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
 		case 'escape':
 			newEmbed.setColor('#c71a28');
+			if (secondOriginalEmbed !== null) {
+				newEmbed2.setColor('#c71a28');
+			}
 			replyMessage = `Le ${response.pokemonName} s'est échappé !`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
@@ -313,7 +330,13 @@ async function handleCatch(interaction, idPokeball) {
 	newEmbed.setDescription(replyMessage);
 	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
 
-	interaction.update({ embeds: [newEmbed], components });
+	const responseEmbed = { embeds: [newEmbed], components };
+
+	if (secondOriginalEmbed !== null) {
+		responseEmbed.embeds.push(newEmbed2);
+	}
+
+	interaction.update(responseEmbed);
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
 		setTimeout(() => findRandomPokemon(interaction, type, true), 700);

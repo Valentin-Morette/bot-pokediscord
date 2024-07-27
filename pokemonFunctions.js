@@ -2,6 +2,9 @@ import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'disc
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 
 let commandCount = 0;
+let embedIndex = 0;
+
+const embedFunctions = [buyMeACoffeeEmbed, instantGamingEmbed];
 
 async function findRandomPokemon(interaction, type, followUp = false) {
 	commandCount++;
@@ -40,10 +43,15 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount === 100) {
-			const extraEmbed = buyMeACoffee(color);
+		if (commandCount % 50 === 0) {
+			const { embed: extraEmbed, attachment: extraAttachment } =
+				embedFunctions[embedIndex % embedFunctions.length](color);
 			responseOptions.embeds.push(extraEmbed);
-			commandCount = 0;
+			if (extraAttachment) {
+				if (!responseOptions.files) responseOptions.files = [];
+				responseOptions.files.push(extraAttachment);
+			}
+			embedIndex++;
 		}
 
 		if (followUp) {
@@ -56,7 +64,7 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 	}
 }
 
-function buyMeACoffee(color) {
+function buyMeACoffeeEmbed(color) {
 	const embed = new EmbedBuilder()
 		.setTitle('🌟 Soutenez le serveur sur Buy Me a Coffee! 🌟')
 		.setDescription(
@@ -70,7 +78,22 @@ function buyMeACoffee(color) {
 		.setThumbnail(
 			'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGI4ZWsxaWl2MTc1enF1cnZ4cnAydWlraWFpMXl2bXg2dTc3bGxyZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/TDQOtnWgsBx99cNoyH/giphy.gif'
 		);
-	return { embeds: [embed] };
+	return { embed, attachment: null };
+}
+
+function instantGamingEmbed(color) {
+	const embed = new EmbedBuilder()
+		.setTitle('🎮 Instant Gaming 🎮')
+		.setDescription(
+			"Besoin de jeux à petit prix? Instant Gaming propose des jeux PC, PS4, Xbox et bien d'autres à des prix imbattables. En achetant vos jeux via ce lien, vous soutenez le serveur et le bot. Merci pour votre soutien! 🎮"
+		)
+		.addFields({
+			name: '🔗 Lien Instant Gaming',
+			value: 'https://www.instant-gaming.com/?igr=seriousnintendo',
+		})
+		.setColor(color)
+		.setThumbnail('https://seeklogo.com/images/I/instant-gaming-logo-5931E64B57-seeklogo.com.png');
+	return { embed, attachment: null };
 }
 
 async function spawnPokemonWithRune(interaction) {
