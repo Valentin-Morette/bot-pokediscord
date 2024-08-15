@@ -15,8 +15,8 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 		});
 		if (randomPokemon.data.length === 0) {
 			return type === 'herbe'
-				? 'Il n y a pas de pokémon sauvage dans cette zone.'
-				: 'Il n y a pas de zone de pêche dans cette zone.';
+				? 'There are no wild Pokemon in this area.'
+				: 'There is no fishing spot in this area.';
 		}
 		let pokemon = randomPokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
@@ -33,8 +33,8 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 		let star = pokemon.isShiny ? '✨' : '';
 		const color = pokemon.isShiny ? '#ffed00' : '#FFFFFF';
 		const embed = new EmbedBuilder()
-			.setTitle(`Un ${pokemon.name + star} sauvage apparaît !`)
-			.setDescription('Attrapez-le !')
+			.setTitle(`A wild ${pokemon.name + star} appears!`)
+			.setDescription('Catch it!')
 			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
 			.setColor(color);
 
@@ -66,12 +66,12 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 
 function buyMeACoffeeEmbed(color) {
 	const embed = new EmbedBuilder()
-		.setTitle('🌟 Soutenez le serveur sur Buy Me a Coffee! 🌟')
+		.setTitle('🌟 Support the server on Buy Me a Coffee! 🌟')
 		.setDescription(
-			'Maintenir le bot actif implique des coûts. En offrant un café sur Buy Me a Coffee, vous aidez à couvrir ces frais et à continuer à fournir un jeu gratuit et de qualité. Chaque café compte! Merci pour votre soutien!  ☕'
+			'Keeping the bot active comes with costs. By buying a coffee on Buy Me a Coffee, you help cover these expenses and continue providing a free and quality game. Every coffee counts! Thank you for your support! ☕'
 		)
 		.addFields({
-			name: '🔗 Lien Buy Me a Coffee',
+			name: '🔗 Buy Me a Coffee Link',
 			value: 'https://buymeacoffee.com/birious',
 		})
 		.setColor(color)
@@ -85,10 +85,10 @@ function instantGamingEmbed(color) {
 	const embed = new EmbedBuilder()
 		.setTitle('🎮 Instant Gaming 🎮')
 		.setDescription(
-			"Besoin de jeux à petit prix? Instant Gaming propose des jeux PC, PS4, Xbox et bien d'autres à des prix imbattables. En achetant vos jeux via ce lien, vous soutenez le serveur et le bot. Merci pour votre soutien! 🎮"
+			'Looking for games at low prices? Instant Gaming offers PC, PS4, Xbox games, and many more at unbeatable prices. By purchasing your games through this link, you support the server and the bot. Thank you for your support! 🎮'
 		)
 		.addFields({
-			name: '🔗 Lien Instant Gaming',
+			name: '🔗 Instant Gaming Link',
 			value: 'https://www.instant-gaming.com/?igr=seriousnintendo',
 		})
 		.setColor(color)
@@ -98,14 +98,14 @@ function instantGamingEmbed(color) {
 
 async function spawnPokemonWithRune(interaction) {
 	const idTrainer = interaction.user.id;
-	const pokemonName = interaction.options.getString('nom');
+	const pokemonName = interaction.options.getString('name');
 	try {
 		const pokemon = await API.post(`/rune/use`, {
 			idTrainer: idTrainer,
 			pokemonName: pokemonName,
 		});
 		if (pokemon.data.status === 'noRune') {
-			return `Vous n'avez pas de rune de ${upFirstLetter(pokemonName)}.`;
+			return `You don't have a rune for ${upFirstLetter(pokemonName)}.`;
 		}
 		let pokemonSpawn = pokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
@@ -122,8 +122,8 @@ async function spawnPokemonWithRune(interaction) {
 		let img = pokemonSpawn.isShiny ? pokemonSpawn.imgShiny : pokemonSpawn.img;
 		let star = pokemonSpawn.isShiny ? '✨' : '';
 		const embed = createListEmbed(
-			'Attrapez-le !',
-			`Vous avez fait apparaître un ${pokemonSpawn.name + star}!`,
+			'Catch it!',
+			`You have spawned a ${pokemonSpawn.name + star}!`,
 			null,
 			img,
 			null,
@@ -142,7 +142,7 @@ async function spawnPokemonWithRune(interaction) {
 async function evolvePokemon(idTrainer, namePokemon, nameZone, quantity, isShiny, max = false) {
 	quantity = quantity == null && !max ? 1 : quantity;
 	if (quantity < 1 && !max) {
-		return 'Vous devez entrer une quantité supérieur à 0.';
+		return 'You must enter a quantity greater than 0.';
 	}
 	if (max && quantity != null) {
 		max = false;
@@ -159,49 +159,49 @@ async function evolvePokemon(idTrainer, namePokemon, nameZone, quantity, isShiny
 		const pokemon = evolvePokemon.data;
 		if (pokemon.status === 'noPokemon') {
 			return (
-				'Il vous faut au minimum ' +
+				'You need at least ' +
 				pokemon.numberPokemon * pokemon.quantity +
 				' ' +
 				upFirstLetter(namePokemon) +
-				' pour ' +
-				(pokemon.quantity > 1 ? 'tous les' : 'le') +
-				' faire évoluer.'
+				' to evolve ' +
+				(pokemon.quantity > 1 ? 'all of them' : 'it') +
+				'.'
 			);
 		} else if (pokemon.status === 'evolve') {
 			let star = pokemon.isShiny ? '✨' : '';
 			const embed = new EmbedBuilder()
 				.setTitle(
-					`Vous avez fait évoluer ${pokemon.quantity * pokemon.pokemonPreEvolve.numberEvolution} ${
+					`You have evolved ${pokemon.quantity * pokemon.pokemonPreEvolve.numberEvolution} ${
 						upFirstLetter(namePokemon) + star
-					} en ${pokemon.quantity} ${pokemon.pokemonEvolve.name + star} !`
+					} into ${pokemon.quantity} ${pokemon.pokemonEvolve.name + star}!`
 				)
 				.setDescription(
-					'Félicitations ! Vous avez obtenu ' +
+					'Congratulations! You have obtained ' +
 						pokemon.quantity +
-						' nouveau' +
-						(pokemon.quantity > 1 ? 'x ' : ' ') +
+						' new ' +
+						(pokemon.quantity > 1 ? 'ones' : '') +
 						pokemon.pokemonEvolve.name +
 						star +
 						'.'
 				)
 				.setThumbnail(pokemon.isShiny ? pokemon.pokemonEvolve.imgShiny : pokemon.pokemonEvolve.img)
 				.setFooter({
-					text: 'Evolution de ' + upFirstLetter(namePokemon),
+					text: 'Evolution of ' + upFirstLetter(namePokemon),
 				})
 				.setTimestamp()
 				.setColor(pokemon.isShiny ? '#ffed00' : '#FFFFFF');
 			return { embeds: [embed] };
 		} else if (pokemon.status === 'noEvolution') {
-			return upFirstLetter(namePokemon) + " n'a pas d'évolution.";
+			return upFirstLetter(namePokemon) + ' has no evolution.';
 		} else if (pokemon.status === 'noExistPokemon') {
-			return upFirstLetter(namePokemon) + " n'est pas un pokémon.";
+			return upFirstLetter(namePokemon) + ' is not a Pokemon.';
 		} else if (pokemon.status === 'noMaster') {
-			return upFirstLetter(namePokemon) + " ne peux pas évoluer si vous n'êtes pas un maître Pokémon.";
+			return upFirstLetter(namePokemon) + ' cannot evolve unless you are a Pokemon master.';
 		} else {
-			return "Erreur lors de l'évolution du pokémon.";
+			return "Error during the Pokemon's evolution.";
 		}
 	} catch (error) {
-		console.error("Erreur lors de l'évolution du pokémon.");
+		console.error("Error during the Pokemon's evolution.");
 	}
 }
 
@@ -219,7 +219,7 @@ async function nbPokemon(namePokemon) {
 		let pokemon = response.data;
 
 		if (pokemon.status === 'noExistPokemon') {
-			return `${upFirstLetter(namePokemon)} n'est pas un pokémon`;
+			return `${upFirstLetter(namePokemon)} is not a Pokemon`;
 		}
 
 		let description = null;
@@ -227,28 +227,26 @@ async function nbPokemon(namePokemon) {
 
 		// Evolution de Évoli
 		if (pokemon.infos.id === 133) {
-			title = `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
-				namePokemon
-			)} pour le faire évoluer.`;
+			title = `You need ${pokemon.infos.numberEvolution} ${upFirstLetter(namePokemon)} to evolve it.`;
 			description =
-				`\nZones d'évolution :\n` +
-				`- Voltali : La centrale.\n` +
-				`- Pyroli : La route de la victoire.\n` +
-				`- Aquali : Les îles écume.\n` +
-				`- Aléatoire : les autres zones.`;
+				`\nEvolution zones:\n` +
+				`- Jolteon: The Power Plant.\n` +
+				`- Flareon: Victory Road.\n` +
+				`- Vaporeon: The Seafoam Islands.\n` +
+				`- Random: other zones.`;
 		} else {
 			title =
 				pokemon.infos.numberEvolution === null
-					? `${upFirstLetter(namePokemon)} ne peut pas évoluer.`
-					: `Il vous faut ${pokemon.infos.numberEvolution} ${upFirstLetter(
+					? `${upFirstLetter(namePokemon)} cannot evolve.`
+					: `You need ${pokemon.infos.numberEvolution} ${upFirstLetter(
 							namePokemon
-					  )} pour obtenir un ${upFirstLetter(pokemon.infos.evolution.name)}.`;
+					  )} to obtain a ${upFirstLetter(pokemon.infos.evolution.name)}.`;
 		}
-		const footer = 'Nombre de ' + upFirstLetter(namePokemon);
+		const footer = 'Number of ' + upFirstLetter(namePokemon);
 		const embed = createListEmbed(description, title, footer, pokemon.infos.img);
 		return { embeds: [embed] };
 	} catch (error) {
-		console.error("Le pokémon n'existe pas.");
+		console.error('The Pokemon does not exist.');
 	}
 }
 
@@ -272,9 +270,9 @@ async function getAvailable(channelName) {
 		for (const spawnType of spawnOrder) {
 			if (pokemonsBySpawnType[spawnType]) {
 				messages.push(
-					`Les Pokémon suivants sont disponibles ${spawnTypeTranslation(
+					`The following Pokemon are available ${spawnTypeTranslation(
 						spawnType
-					)} :\n- ${pokemonsBySpawnType[spawnType].join('\n- ')}.`
+					)}:\n- ${pokemonsBySpawnType[spawnType].join('\n- ')}.`
 				);
 			}
 		}
@@ -288,13 +286,13 @@ async function getAvailable(channelName) {
 function spawnTypeTranslation(type) {
 	switch (type) {
 		case 'herbe':
-			return "dans l'herbe";
+			return 'in the grass';
 		case 'canne':
-			return 'à la canne';
+			return 'with the rod';
 		case 'superCanne':
-			return 'à la super canne';
+			return 'with the super rod';
 		case 'megaCanne':
-			return 'à la méga canne';
+			return 'with the mega rod';
 		default:
 			return type;
 	}
@@ -306,18 +304,18 @@ async function getZoneForPokemon(namePokemon) {
 		let zones = response.data;
 
 		if (zones.status === 'noExistPokemon') {
-			return `${upFirstLetter(namePokemon)} n'est pas un pokémon.`;
+			return `${upFirstLetter(namePokemon)} is not a Pokemon.`;
 		}
 
 		let title =
 			zones.result.length === 0
-				? `${upFirstLetter(zones.pokemon.name)} est disponible seulement par évolution.`
-				: `Liste des zones pour ${upFirstLetter(zones.pokemon.name)}`;
+				? `${upFirstLetter(zones.pokemon.name)} is only available through evolution.`
+				: `List of zones for ${upFirstLetter(zones.pokemon.name)}`;
 
 		let allZone = zones.result.map((zone) => `- ${upFirstLetter(zone.name)}`);
 
 		if (namePokemon.toLowerCase() === 'mew') {
-			title = 'Personne ne sait où se trouve Mew.';
+			title = 'No one knows where Mew is.';
 			allZone = [];
 		}
 
@@ -327,7 +325,7 @@ async function getZoneForPokemon(namePokemon) {
 		let embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23');
 		return { embeds: [embed] };
 	} catch (error) {
-		console.error("Erreur lors de l'obtention des zones.");
+		console.error('Error retrieving zones.');
 	}
 }
 
