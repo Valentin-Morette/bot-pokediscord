@@ -271,7 +271,6 @@ async function handleCatch(interaction, idPokeball) {
 	const newEmbed2 = new EmbedBuilder();
 	if (interaction.message.embeds.length > 1) {
 		secondOriginalEmbed = interaction.message.embeds[1];
-		console.log(secondOriginalEmbed);
 		newEmbed2
 			.setTitle(secondOriginalEmbed.title)
 			.setThumbnail(secondOriginalEmbed.thumbnail?.url)
