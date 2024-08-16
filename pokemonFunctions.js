@@ -179,7 +179,7 @@ async function evolvePokemon(idTrainer, namePokemon, nameZone, quantity, isShiny
 					'Congratulations! You have obtained ' +
 						pokemon.quantity +
 						' new ' +
-						(pokemon.quantity > 1 ? 'ones' : '') +
+						(pokemon.quantity > 1 ? 'ones ' : '') +
 						pokemon.pokemonEvolve.name +
 						star +
 						'.'
