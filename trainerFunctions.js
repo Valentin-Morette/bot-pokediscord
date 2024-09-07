@@ -85,7 +85,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny, max = fals
 }
 
 async function getBallTrainer(interaction) {
-	let user = interaction.options.getUser('dresseur') ?? interaction.user;
+	let user = interaction.user;
 	try {
 		const response = await API.get(`/pokeball/trainer/` + interaction.member.id);
 		const arrResponse = [];
@@ -107,7 +107,8 @@ async function getBallTrainer(interaction) {
 }
 
 async function getPokedex(interaction, type) {
-	let user = interaction.options.getUser('dresseur') ?? interaction.user;
+	let user = interaction.options.getUser('trainer') ?? interaction.user;
+	console.log(user);
 	let sameUser = user.id !== interaction.user.id;
 	try {
 		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + type);

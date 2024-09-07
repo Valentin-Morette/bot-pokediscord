@@ -216,54 +216,30 @@ function pokeChat(client) {
 				interaction.reply(await getBallTrainer(interaction));
 				return;
 			}
-			if (interaction.commandName === 'evolution') {
+
+			if (interaction.commandName === 'evolution' || interaction.commandName === 'evolution-shiny') {
+				const isShiny = interaction.commandName === 'evolution-shiny';
 				interaction.reply(
 					await evolvePokemon(
 						interaction.user.id,
 						interaction.options.getString('name'),
 						interaction.channel.name,
 						interaction.options.getInteger('quantity'),
-						false,
+						isShiny,
 						interaction.options.getString('max') === 'true'
 					)
 				);
 				return;
 			}
 
-			if (interaction.commandName === 'evolution-shiny') {
-				interaction.reply(
-					await evolvePokemon(
-						interaction.user.id,
-						interaction.options.getString('name'),
-						interaction.channel.name,
-						interaction.options.getInteger('quantity'),
-						true,
-						interaction.options.getString('max') === 'true'
-					)
-				);
-				return;
-			}
-
-			if (interaction.commandName === 'sell') {
+			if (interaction.commandName === 'sell' || interaction.commandName === 'sell-shiny') {
+				const isShiny = interaction.commandName === 'sell-shiny';
 				interaction.reply(
 					await sellPokemon(
 						interaction.user.id,
 						interaction.options.getString('name'),
 						interaction.options.getInteger('quantity'),
-						false,
-						interaction.options.getString('max') === 'true'
-					)
-				);
-				return;
-			}
-
-			if (interaction.commandName === 'sell-shiny') {
-				interaction.reply(
-					await sellPokemon(
-						interaction.user.id,
-						interaction.options.getString('name'),
-						interaction.options.getInteger('quantity'),
-						true,
+						isShiny,
 						interaction.options.getString('max') === 'true'
 					)
 				);
