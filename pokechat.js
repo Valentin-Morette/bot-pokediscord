@@ -12,6 +12,8 @@ import {
 	sellPokemon,
 	getPokedex,
 	getMoney,
+	getAffiliateCode,
+	useAffiliateCode,
 	buyBall,
 	getPrice,
 	getBadge,
@@ -278,6 +280,18 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'trade') {
 				interaction.reply(await purposeSwapPokemon(interaction));
+				return;
+			}
+
+			if (interaction.commandName === 'affiliate-code') {
+				interaction.reply(await getAffiliateCode(interaction.user.id));
+				return;
+			}
+
+			if (interaction.commandName === 'use-affiliate-code') {
+				interaction.reply(
+					await useAffiliateCode(interaction.user.id, interaction.options.getString('code'))
+				);
 				return;
 			}
 		}

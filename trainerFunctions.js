@@ -153,7 +153,37 @@ async function getPokedex(interaction, type) {
 async function getMoney(idTrainer) {
 	try {
 		const response = await API.get(`/trainer/` + idTrainer);
-		return 'You have: ' + formatNombreAvecSeparateur(response.data.money) + ' pokedollars.';
+		return 'You have : ' + formatNombreAvecSeparateur(response.data.money) + ' pokedollars.';
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function getAffiliateCode(idTrainer) {
+	try {
+		const response = await API.get(`/trainer/` + idTrainer);
+		return 'You affiliate code is : ' + response.data.affiliateCode;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function useAffiliateCode(idTrainer, affiliateCode) {
+	try {
+		const response = await API.post(`/trainer/affiliate`, {
+			idTrainer: idTrainer,
+			affiliateCode: affiliateCode,
+		});
+		if (response.data.status === 'noExistCode') {
+			return 'This affiliate code does not exist.';
+		} else if (response.data.status === 'alreadyAffiliate') {
+			return 'You have already used an affiliate code.';
+		} else if (response.data.status === 'success') {
+			return (
+				'You received 10 000 pokedollars using the affiliate code of ' +
+				upFirstLetter(response.data.name)
+			);
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -653,6 +683,8 @@ export {
 	getBallTrainer,
 	getPokedex,
 	getMoney,
+	getAffiliateCode,
+	useAffiliateCode,
 	buyBall,
 	getBadge,
 	getPrice,

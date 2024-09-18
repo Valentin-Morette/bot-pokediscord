@@ -4,6 +4,22 @@ const commandsPokechat = [
 		description: 'Displays your money',
 	},
 	{
+		name: 'affiliate-code',
+		description: 'Displays your affiliate code',
+	},
+	{
+		name: 'use-affiliate-code',
+		description: 'Use an affiliate code, giving 10 000 pokedollars to each person',
+		options: [
+			{
+				name: 'code',
+				type: 3,
+				description: 'Affiliate code',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'pokedex',
 		description: 'Displays your Pokedex or that of a trainer',
 		options: [
