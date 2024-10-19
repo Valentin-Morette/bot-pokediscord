@@ -54,7 +54,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny, max = fals
 			max = false;
 		}
 		if (quantity <= 0 && !max) {
-			return 'You cannot sell less than one Pokemon.';
+			return 'Vous devez vendre au moins un Pokemon.';
 		}
 		const sellPokemon = await API.post(`/pokemon/sell`, {
 			namePokemon: namePokemon,
@@ -64,23 +64,23 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny, max = fals
 			max: max,
 		});
 		if (sellPokemon.data.status === 'noPokemon') {
-			return "You don't have " + sellPokemon.data.quantity + ' ' + namePokemon + '.';
+			return "Vous n'avez pas " + sellPokemon.data.quantity + ' ' + namePokemon + '.';
 		} else if (sellPokemon.data.status === 'sell') {
 			return (
-				'You sold ' +
+				'Vous avez vendu ' +
 				sellPokemon.data.quantity +
 				' ' +
 				namePokemon +
 				hasStar(isShiny) +
-				' for ' +
+				' pour ' +
 				formatNombreAvecSeparateur(sellPokemon.data.sellPrice) +
 				' Pokedollars.'
 			);
 		} else if (sellPokemon.data.status === 'noExistPokemon') {
-			return namePokemon + ' is not a Pokemon.';
+			return namePokemon + " n'est pas un Pokémon.";
 		}
 	} catch (error) {
-		console.error('Error selling a Pokemon.');
+		console.error('Erreur lors de la vente du Pokemon.');
 	}
 }
 
@@ -97,9 +97,9 @@ async function getBallTrainer(interaction) {
 				'- ' + (customEmoji ? customEmoji.toString() : '') + ' : ' + response.data[i].quantity
 			);
 		}
-		const footer = 'List of Pokeballs for ' + interaction.member.user.username;
+		const footer = 'Liste des Pokéball de ' + interaction.member.user.username;
 		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
-		const embed = createListEmbed(arrResponse, 'Your Pokeballs:', footer, thumbnailUrl, null, '#E31030');
+		const embed = createListEmbed(arrResponse, 'Vos Pokéballs:', footer, thumbnailUrl, null, '#E31030');
 		return { embeds: [embed] };
 	} catch (error) {
 		console.error(error);
@@ -114,20 +114,20 @@ async function getPokedex(interaction, type) {
 		const pokemons = response.data.pokemon;
 		if (pokemons.length === 0) {
 			return (
-				`${sameUser ? `${user.globalName} has` : `You have`} no Pokemon` +
+				`${sameUser ? `${user.globalName} n'a` : `Vous n'avez`} pas encore de Pokémon` +
 				(type === 'shiny' ? ' shiny' : '') +
-				' yet.'
+				'.'
 			);
 		}
 
 		const items = pokemons.map((pokemon) => `- ${pokemon.quantity} ${pokemon.name}`);
-		const title = `${sameUser ? `${user.globalName} has` : 'You have'} ${
+		const title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${
 			response.data.sumPokemon
-		} Pokemon${hasStar(type === 'shiny')}, including ${response.data.countPokemon} different ones.`;
+		} Pokémon${hasStar(type === 'shiny')}, dont ${response.data.countPokemon} différents.`;
 
 		const footer =
 			(type === 'shiny' ? 'Shiny' : 'Poke') +
-			'dex of ' +
+			'dex de ' +
 			user.globalName +
 			' - ' +
 			response.data.countPokemon +
@@ -153,7 +153,7 @@ async function getPokedex(interaction, type) {
 async function getMoney(idTrainer) {
 	try {
 		const response = await API.get(`/trainer/` + idTrainer);
-		return 'You have : ' + formatNombreAvecSeparateur(response.data.money) + ' pokedollars.';
+		return 'Vous avez : ' + formatNombreAvecSeparateur(response.data.money) + ' pokédollars.';
 	} catch (error) {
 		console.error(error);
 	}
@@ -162,7 +162,7 @@ async function getMoney(idTrainer) {
 async function getAffiliateCode(idTrainer) {
 	try {
 		const response = await API.get(`/trainer/` + idTrainer);
-		return 'You affiliate code is : ' + response.data.affiliateCode;
+		return 'Votre code affilié est : ' + response.data.affiliateCode;
 	} catch (error) {
 		console.error(error);
 	}
@@ -175,28 +175,17 @@ async function useAffiliateCode(idTrainer, affiliateCode) {
 			affiliateCode: affiliateCode,
 		});
 		if (response.data.status === 'noExistCode') {
-			return 'This affiliate code does not exist.';
+			return "Ce code d'affiliation n'existe pas.";
 		} else if (response.data.status === 'alreadyAffiliate') {
-			return 'You have already used an affiliate code.';
+			return "Vous avez déjà utilisé un code d'affiliation.";
 		} else if (response.data.status === 'success') {
 			return (
-				'You received 10 000 pokedollars using the affiliate code of ' +
+				"Vous avez reçu 10 000 pokédollars en utilisant le code d'affiliation de " +
 				upFirstLetter(response.data.name)
 			);
 		}
 	} catch (error) {
 		console.error(error);
-	}
-}
-
-async function priceBall(idBall) {
-	try {
-		const response = await API.get(`/pokeball/` + idBall);
-		return `The price of a ${upFirstLetter(response.data.name)} is ${formatNombreAvecSeparateur(
-			response.data.buyingPrice
-		)} Pokedollars.`;
-	} catch (error) {
-		console.error('The Pokeball does not exist.');
 	}
 }
 
@@ -209,31 +198,23 @@ async function pricePokemon(namePokemon, isRune = false) {
 		if (isRune && pokemon.infos.catchRate === -100) {
 			return `${upFirstLetter(
 				namePokemon
-			)} is not a purchasable Pokemon, as it is not available in the wild.`;
+			)} n'est pas un Pokémon achetable, car il n'est pas disponible à l'état sauvage.`;
 		}
 		const sellPrice = isRune ? pokemon.infos.sellPrice * 3 : pokemon.infos.sellPrice;
 		if (pokemon.status === 'noExistPokemon') {
-			return `${upFirstLetter(namePokemon)} is ${
-				isRune ? 'not a Pokemon' : 'neither a Pokemon nor a Pokeball'
-			}.`;
+			return `${upFirstLetter(namePokemon)} + "n'est pas un Pokémon.`;
 		} else {
-			return `The selling price of ${isRune ? 'a rune of' : 'a'} ${upFirstLetter(
+			return `Le prix de vente d'${isRune ? 'une rune de' : 'un'} ${upFirstLetter(
 				namePokemon
-			)} is ${formatNombreAvecSeparateur(sellPrice)} Pokedollars. ${isRune ? '' : '(x3 if shiny)'}`;
+			)} est de ${formatNombreAvecSeparateur(sellPrice)} Pokedollars. ${isRune ? '' : '(x3 si shiny)'}`;
 		}
 	} catch (error) {
-		console.error('The Pokemon does not exist.');
+		console.error("Ce Pokemon n'existe pas.");
 	}
 }
 
 async function getPrice(item) {
-	const isPokeball = balls.some((ball) => ball.name === item);
-	if (isPokeball) {
-		const ball = balls.find((ball) => ball.name === item);
-		return await priceBall(ball.id);
-	} else {
-		return await pricePokemon(item);
-	}
+	return await pricePokemon(item);
 }
 
 async function buyBall(idTrainer, idBall, quantity, nameBall) {
@@ -245,15 +226,15 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 		});
 		if (response.data.status === 'noMoney') {
 			return (
-				`You don't have enough money, you have ${formatNombreAvecSeparateur(
+				`Vous n'avez pas assez d'argent, vous avez ${formatNombreAvecSeparateur(
 					response.data.money
-				)}$ and you need ${formatNombreAvecSeparateur(response.data.price)}$. \n` +
-				`To get more money, sell Pokemon using the commands **\`/sell\`** or **\`/sell-shiny\`**`
+				)}$ et il vous faut ${formatNombreAvecSeparateur(response.data.price)}$. \n` +
+				`Pour obtenir plus d'argent, vendez des Pokémon en utilisant les commandes **\`/sell\`** ou **\`/sell-shiny\`**`
 			);
 		} else if (response.data.status === 'buy') {
-			return `You bought ${quantity} ${upFirstLetter(nameBall)} for ${formatNombreAvecSeparateur(
+			return `Vous avez acheté ${quantity} ${upFirstLetter(nameBall)} pour ${formatNombreAvecSeparateur(
 				response.data.price
-			)}$.`;
+			)} Pokédollars.`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -262,23 +243,23 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 
 async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
 	let idTrainer = message.member.id;
-	let pokemonType = nameBadge === 'Shiny Pokemon Master' ? 'shiny' : 'regular';
+	let pokemonType = nameBadge === 'Maître Pokémon Shiny' ? 'shiny' : 'regular';
 	try {
 		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/' + pokemonType);
 		if (response.data.sumPokemon < nbPokemon) {
-			return `You don't have enough Pokemon to earn the ${nameBadge} badge.`;
+			return `Vous n'avez pas assez de Pokémon pour obtenir le badge ${nameBadge}.`;
 		}
 		if (response.data.countPokemon < nbPokemonDiff) {
-			return `You don't have enough different Pokemon to earn the ${nameBadge} badge.`;
+			return `Vous n'avez pas assez de Pokémon différents pour obtenir le badge ${nameBadge}.`;
 		}
 		let badgeRole = message.guild.roles.cache.find((role) => role.name === roleBadge);
 
 		if (badgeRole) {
 			if (message.member.roles.cache.has(badgeRole.id)) {
-				return `You already have the ${nameBadge} badge.`;
+				return `Vous avez déjà le badge ${nameBadge}.`;
 			}
 			message.member.roles.add(badgeRole).catch(console.error);
-			return `You have received the ${nameBadge} badge!`;
+			return `Vous avez reçu le badge ${nameBadge} !`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -314,7 +295,7 @@ async function handleCatch(interaction, idPokeball) {
 	switch (response.status) {
 		case 'noCatch':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `The ${response.pokemonName} broke free, try again!`;
+			replyMessage = `Le ${response.pokemonName} s'est échappé, réessayez !`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
 		case 'catch':
@@ -325,7 +306,7 @@ async function handleCatch(interaction, idPokeball) {
 			if (secondOriginalEmbed !== null) {
 				newEmbed2.setColor('#3aa12f');
 			}
-			replyMessage = `The ${response.pokemonName} was caught by <@${interaction.user.id}>.`;
+			replyMessage = `Le ${response.pokemonName} a été attrapé par <@${interaction.user.id}>.`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
@@ -334,24 +315,24 @@ async function handleCatch(interaction, idPokeball) {
 			if (secondOriginalEmbed !== null) {
 				newEmbed2.setColor('#c71a28');
 			}
-			replyMessage = `The ${response.pokemonName} escaped!`;
+			replyMessage = `Le ${response.pokemonName} s'est échappé! dommage`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
 		case 'alreadyCatch':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `The Pokemon has already been caught.`;
+			replyMessage = `Le Pokémon a déjà été attrapé.`;
 			break;
 		case 'alreadyEscape':
-			replyMessage = `The Pokemon has already escaped.`;
+			replyMessage = `Le Pokémon s'est déjà échappé.`;
 			break;
 		case 'noBall':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `You don't have a ${balls.find((ball) => ball.id === idPokeball).name}.`;
+			replyMessage = `Vous n'avez pas de ${balls.find((ball) => ball.id === idPokeball).name}.`;
 			break;
 		case 'noExistPokemon':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `The Pokemon has disappeared.`;
+			replyMessage = `Le Pokémon à disparu.`;
 			components = await disabledButtons(interaction);
 			break;
 		default:
@@ -359,7 +340,7 @@ async function handleCatch(interaction, idPokeball) {
 	}
 
 	newEmbed.setDescription(replyMessage);
-	newEmbed.addFields({ name: 'Attempts', value: addFieldsValue.toString(), inline: true });
+	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
 
 	const responseEmbed = { embeds: [newEmbed], components };
 
@@ -403,7 +384,9 @@ async function shopMessage(interaction, needReply = false) {
 	const hyperballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
 	const masterballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
 
-	const title = needReply ? 'Welcome to the Pokeball shop!' : "Don't have any Pokeballs? No problem!";
+	const title = needReply
+		? 'Bienvenue à la boutique de Pokéballs !'
+		: "Vous n'avez pas de Pokéballs ? Pas de problème !";
 
 	const priceEmbed = new EmbedBuilder()
 		.setColor('#FFFFFF')
@@ -443,18 +426,14 @@ async function shopMessage(interaction, needReply = false) {
 }
 
 async function sendSecondaryTutorialMessage(interaction) {
-	const shopChannel = interaction.guild.channels.cache.find((channel) => channel.name === '🛒・𝐒𝐡𝐨𝐩');
-	const commandChannel = interaction.guild.channels.cache.find(
-		(channel) => channel.name === '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬'
-	);
-	const title = '🎉 First Pokemon Caught! 🎉';
-	const footer = 'Tutorial - 2/2';
+	const title = '🎉 Premier Pokémon Capturé ! 🎉';
+	const footer = 'Tutoriel - 2/2';
 	const description =
-		`You can view your captured Pokemon by typing **\`/pokedex\`** in any channel.\n\n` +
-		`You used some Pokeballs, head over to the <#${shopChannel.id}> channel to buy more.\n\n` +
-		`To see the list of your Pokeballs, type **\`/ball\`**.\n` +
-		`To check your money, type **\`/money\`**.\n\n` +
-		`To see the list of commands, go to the <#${commandChannel.id}> channel.`;
+		`Vous pouvez voir vos Pokémon capturés en tapant **\`/pokedex\`** dans n'importe quel canal.\n\n` +
+		`Vous avez utilisé quelques Pokéballs, rendez-vous dans le canal 🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞 pour en acheter davantage.\n\n` +
+		`Pour voir la liste de vos Pokéballs, tapez **\`/ball\`**.\n` +
+		`Pour vérifier votre argent, tapez **\`/argent\`**.\n\n` +
+		`Pour voir la liste des commandes, rendez-vous dans le canal 🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬.`;
 
 	const tutorialEmbed = createListEmbed(description, title, footer, null, null, '#0099ff');
 
@@ -481,14 +460,14 @@ function hasStar(isShiny) {
 }
 
 async function purposeSwapPokemon(interaction) {
-	const pokemonPropose = interaction.options.getString('name_pokemon_offer');
-	const pokemonRequest = interaction.options.getString('name_pokemon_request');
-	const quantityPokemonPropose = interaction.options.getInteger('quantity_pokemon_offer');
-	const quantityPokemonRequest = interaction.options.getInteger('quantity_pokemon_request');
-	const pokemonProposeShiny = interaction.options.getString('pokemon_offer_shiny') === 'true';
-	const pokemonRequestShiny = interaction.options.getString('pokemon_request_shiny') === 'true';
+	const pokemonPropose = interaction.options.getString('nom_pokemon_propose');
+	const pokemonRequest = interaction.options.getString('nom_pokemon_demande');
+	const quantityPokemonPropose = interaction.options.getInteger('quantite_pokemon_propose');
+	const quantityPokemonRequest = interaction.options.getInteger('quantite_pokemon_demande');
+	const pokemonProposeShiny = interaction.options.getString('pokemon_propose_shiny') === 'true';
+	const pokemonRequestShiny = interaction.options.getString('pokemon_demande_shiny') === 'true';
 	if (quantityPokemonPropose <= 0 || quantityPokemonRequest <= 0) {
-		return 'You must offer/request at least one Pokemon.';
+		return 'Vous devez proposer et demander au moins un Pokémon.';
 	}
 	try {
 		const response = await API.post(`/trainer/pokemon/trade`, {
@@ -502,11 +481,11 @@ async function purposeSwapPokemon(interaction) {
 			type: 'propose',
 		});
 		if (response.data.status === 'not enough pokemon propose') {
-			return `You don't have enough ${upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)}.`;
+			return `Vous n'avez pas assez de ${upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)}.`;
 		} else if (response.data.status === 'not found pokemon propose') {
-			return `${upFirstLetter(pokemonPropose)} is not a Pokemon.`;
+			return `${upFirstLetter(pokemonPropose)} n'est pas un Pokémon.`;
 		} else if (response.data.status === 'not found pokemon request') {
-			return `${upFirstLetter(pokemonRequest)} is not a Pokemon.`;
+			return `${upFirstLetter(pokemonRequest)} n'est pas un Pokémon.`;
 		}
 
 		let row = new ActionRowBuilder();
@@ -523,9 +502,9 @@ async function purposeSwapPokemon(interaction) {
 			.setImage(response.data.imgPokemonPropose)
 			.setColor('#D3D3D3')
 			.setDescription(
-				`**${upFirstLetter(interaction.user.username)} offers to trade ${quantityPokemonPropose} ${
+				`**${upFirstLetter(interaction.user.username)} veux échanger ${quantityPokemonPropose} ${
 					upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)
-				} for ${quantityPokemonRequest} ${upFirstLetter(
+				} contre ${quantityPokemonRequest} ${upFirstLetter(
 					pokemonRequest + hasStar(pokemonRequestShiny)
 				)}**`
 			);
@@ -567,11 +546,11 @@ async function acceptSwapPokemon(idTrade, interaction) {
 			return null;
 		} else {
 			if (status === 'not enough pokemon propose') {
-				return `The trainer no longer has enough of this Pokemon.`;
+				return `Le dresseur n'a plus assez de ce Pokémon.`;
 			} else if (status === 'not enough pokemon request') {
-				return `You don't have enough of this Pokemon.`;
+				return `Vous n'avez pas assez de ce Pokémon.`;
 			} else if (status === 'already accepted') {
-				return `This trade has already been completed.`;
+				return `Cet échange a déjà été effectué.`;
 			}
 		}
 	} catch (error) {
@@ -595,12 +574,12 @@ async function handleTradeButtonInteraction(idTrade, interaction) {
 async function buyRune(interaction) {
 	const pokemonName = interaction.options.getString('name').toLowerCase();
 	if (pokemonName === 'mew') {
-		return 'You cannot buy a rune for Mew.';
+		return 'Vous ne pouvez pas acheter de rune pour Mew.';
 	}
 
 	const quantity = interaction.options.getInteger('quantity') ?? 1;
 	if (quantity <= 0) {
-		return 'You must specify a quantity greater than 0.';
+		return 'Vous devez acheter au moins une rune.';
 	}
 
 	const idTrainer = interaction.user.id;
@@ -611,15 +590,15 @@ async function buyRune(interaction) {
 			quantity: quantity,
 		});
 		if (response.data.status === 'noExistPokemon') {
-			return `${upFirstLetter(pokemonName)} is not a Pokemon.`;
+			return `${upFirstLetter(pokemonName)} n'est pas un Pokémon.`;
 		} else if (response.data.status === 'noSell') {
-			return `Only Pokemon available in the wild can be purchased.`;
+			return `Seuls les Pokémon disponibles dans la nature peuvent être achetés.`;
 		} else if (response.data.status === 'noMoney') {
-			return `You don't have enough money.`;
+			return `Vous n'avez pas assez d'argent.`;
 		} else if (response.data.status === 'buy') {
-			return `You bought ${quantity} rune of ${upFirstLetter(
+			return `Vous avez acheté ${quantity} rune de ${upFirstLetter(
 				pokemonName
-			)} for ${formatNombreAvecSeparateur(response.data.priceSend)} Pokedollars.`;
+			)} pour ${formatNombreAvecSeparateur(response.data.priceSend)} Pokedollars.`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -636,11 +615,11 @@ async function quantityPokemon(interaction, isShiny = false) {
 			isShiny: isShiny,
 		});
 		if (response.data.status === 'noExistPokemon') {
-			return `${upFirstLetter(pokemonName)} is not a Pokemon.`;
+			return `${upFirstLetter(pokemonName)} n'est pas un Pokémon.`;
 		} else {
-			return `You have ${response.data.quantity} ${upFirstLetter(pokemonName)}${hasStar(
+			return `Vous avez ${response.data.quantity} ${upFirstLetter(pokemonName)}${hasStar(
 				isShiny
-			)} in your ${isShiny ? 'shiny' : 'poke'}dex.`;
+			)} dans votre ${isShiny ? 'shiny' : 'poke'}dex.`;
 		}
 	} catch (error) {
 		console.error(error);
@@ -651,15 +630,15 @@ async function checkRune(interaction) {
 	try {
 		const response = await API.get(`/rune/` + interaction.user.id);
 		if (response.data.rune.length === 0) {
-			return "You don't have any Pokemon runes.";
+			return "Vous n'avez pas de rune de Pokémon.";
 		}
 		const sumRune = response.data.sumRune;
 		const countRune = response.data.countRune;
 		const items = response.data.rune.map((rune) => `- ${rune.quantity} ${rune.name}`);
-		const title = `You have ${sumRune} Pokemon rune${sumRune > 1 ? 's' : ''}${
-			countRune > 1 ? `, including ${response.data.countRune} different ones.` : '.'
+		const title = `Vous avez ${sumRune} rune${sumRune > 1 ? 's' : ''} de Pokémon${
+			countRune > 1 ? `, dont ${response.data.countRune} différentes.` : '.'
 		}`;
-		const footer = `List of Pokemon runes of ${interaction.user.globalName}`;
+		const footer = `Liste des runes de Pokémon de ${interaction.user.globalName}`;
 		const thumbnailUrl = interaction.user.displayAvatarURL({ format: 'png', dynamic: true });
 
 		let embed = createListEmbed(items, title, footer, thumbnailUrl, null, '#9f53ec');

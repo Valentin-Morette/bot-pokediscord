@@ -32,7 +32,7 @@ async function sendArenaMessage(
 		const button = new ButtonBuilder()
 			.setCustomId(`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`)
 			.setStyle(ButtonStyle.Primary)
-			.setLabel(channelName == '🏠・𝐈𝐧𝐝𝐢𝐠𝐨-𝐏𝐥𝐚𝐭𝐞𝐚𝐮' ? badgeName : `${badgeName} badge`);
+			.setLabel(channelName == '🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨' ? badgeName : `${badgeName} badge`);
 		row.addComponents(button);
 		await channel.send({
 			embeds: [embed],
@@ -59,7 +59,7 @@ async function addBallEmojis(message) {
 }
 
 async function commandesMessage(message) {
-	let channelName = '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬';
+	let channelName = '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const messages = await channel.messages.fetch();
@@ -67,42 +67,43 @@ async function commandesMessage(message) {
 
 		const commandEmbed = new EmbedBuilder()
 			.setColor('#FFFFFF')
-			.setTitle('List of Server Commands')
+			.setTitle('Liste des Commandes du Serveur')
 			.setDescription(
-				'**Search for Pokemon**\n' +
-					'- `/search` : to search for a Pokemon.\n' +
-					'- `/rod` : to fish for a Pokemon with the rod.\n' +
-					'- `/super-rod` : to fish for a Pokemon with the super rod.\n' +
-					'- `/mega-rod` : to fish for a Pokemon with the mega rod.\n\n' +
-					'**Sell Pokemon**\n' +
-					'- `/sell [Pokemon name] [max (optional)] [quantity (optional)]` : to sell a Pokemon.\n' +
-					'- `/sell-shiny [Pokemon name] [max (optional)] [quantity (optional)]` : to sell a shiny Pokemon.\n\n' +
-					'**View Pokemon**\n' +
-					"- `/pokedex [trainer name (optional)]` : to view a trainer's Pokedex.\n" +
-					"- `/shinydex [trainer name (optional)]` : to view a trainer's shiny Pokedex.\n" +
-					'- `/quantity [Pokemon name]` : to view the quantity of a specific Pokemon you own.\n' +
-					'- `/quantity-shiny [Pokemon name]` : to view the quantity of a specific shiny Pokemon you own.\n\n' +
-					'**Pokemon Evolution**\n' +
-					'- `/number-evolution [Pokemon name]` : to see the number of Pokemon required for an evolution.\n' +
-					'- `/evolution [Pokemon name] [max (optional)] [quantity (optional)]` : to evolve a Pokemon.\n' +
-					'- `/evolution-shiny [Pokemon name] [max (optional)] [quantity (optional)]` : to evolve a shiny Pokemon.\n\n' +
-					'**Inventory and Finances**\n' +
-					'- `/money` : to view your money.\n' +
-					'- `/ball` : to view all your Pokeballs.\n' +
-					'- `/price [Pokeball name]` : to see the purchase price of a Pokeball.\n' +
-					'- `/price [Pokemon name]` : to see the selling price of a Pokemon.\n' +
-					'- `/shop` : to open the shop.\n\n' +
-					'**Available Pokemon and Trades**\n' +
-					'- `/available` : to see the Pokemon available in the area.\n' +
-					'- `/trade [number of Pokemon offered] [Pokemon name offered] [number of Pokemon requested] [Pokemon name requested]` : to trade Pokemon with another player.\n' +
-					'- `/zone [Pokemon name]` : to see the zones where a Pokemon appears.\n\n' +
-					'**Rune Usage and Purchase**\n' +
-					'- `/rune-use [Pokemon name]` : to use a Pokemon rune.\n' +
-					'- `/rune-buy [Pokemon name]` : to buy a Pokemon rune.\n' +
-					'- `/rune-price [Pokemon name]` : to see the price of a Pokemon rune.\n' +
-					'- `/rune-inventory` : to view the Pokemon runes in your possession.\n'
+				'**Recherche de Pokémon**\n' +
+					'- `/cherche` : pour chercher un Pokémon.\n' +
+					'- `/canne` : pour pêcher un Pokémon avec la canne.\n' +
+					'- `/super-canne` : pour pêcher un Pokémon avec la super canne.\n' +
+					'- `/mega-canne` : pour pêcher un Pokémon avec la méga canne.\n\n' +
+					'**Vente de Pokémon**\n' +
+					'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
+					'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
+					'**Visualiser les Pokémon**\n' +
+					"- `/pokedex [nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
+					"- `/shinydex [nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
+					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
+					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
+					'**Évolution de Pokémon**\n' +
+					'- `/nombre-evolution [nom du Pokémon]` : pour voir le nombre de Pokémon requis pour une évolution.\n' +
+					'- `/evolution [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon.\n' +
+					'- `/evolution-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon shiny.\n\n' +
+					'**Inventaire et Finances**\n' +
+					'- `/argent` : pour voir votre argent.\n' +
+					'- `/ball` : pour voir toutes vos Pokéballs.\n' +
+					'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
+					'- `/boutique` : pour ouvrir la boutique.\n\n' +
+					'**Pokémon Disponibles et Échanges**\n' +
+					'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
+					'- `/echange [nombre de Pokémon offerts] [nom du Pokémon offert] [nombre de Pokémon demandés] [nom du Pokémon demandé]` : pour échanger des Pokémon avec un autre joueur.\n' +
+					'- `/zone [nom du Pokémon]` : pour voir les zones où apparaît un Pokémon.\n\n' +
+					'**Utilisation et Achat de Runes**\n' +
+					'- `/rune-utiliser [nom du Pokémon]` : pour utiliser une rune de Pokémon.\n' +
+					'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
+					'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
+					'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
+					'**Affiliation**\n' +
+					'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
+					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n\n'
 			);
-
 		await channel.send({ embeds: [commandEmbed] });
 	} else {
 		console.error(`No channel found with the name ${channelName}`);
@@ -110,7 +111,7 @@ async function commandesMessage(message) {
 }
 
 async function globalShopMessage(message) {
-	let channelName = '🛒・𝐒𝐡𝐨𝐩';
+	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 	if (channel) {
 		const messages = await channel.messages.fetch();
@@ -124,7 +125,7 @@ async function globalShopMessage(message) {
 
 		const priceEmbed = new EmbedBuilder()
 			.setColor('#FFFFFF')
-			.setTitle('Welcome, Trainer! Take a look at our Pokeballs!')
+			.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
 			.setDescription(
 				`${pokeballEmoji} Pokeball : 50 $\n\n` +
 					`${superballEmoji} Superball : 80 $\n\n` +
@@ -159,21 +160,21 @@ async function globalShopMessage(message) {
 async function arenaMessages(message) {
 	await sendArenaMessage(
 		message,
-		'🏠・𝐈𝐧𝐝𝐢𝐠𝐨-𝐏𝐥𝐚𝐭𝐞𝐚𝐮',
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Reglisse',
-		'Pokemon Master',
-		'I am Reglisse, the Pokemon League Champion. To become a Pokemon Master, you must have all 151 different Pokemon.',
+		'Maître Pokémon',
+		'Je suis Reglisse, le Champion de la Ligue Pokémon. Pour devenir Maître Pokémon, vous devez posséder les 151 Pokémon différents.',
 		151,
 		151,
-		'Pokemon Master'
+		'Maître Pokémon'
 	);
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐏𝐞𝐰𝐭𝐞𝐫-𝐜𝐢𝐭𝐲',
+		'🏠・𝐀𝐫𝐠𝐞𝐧𝐭𝐚',
 		'Caillou',
-		'Boulder',
-		'I am Caillou, the Rock-type Gym Leader. To earn the Boulder Badge, you need at least 10 Pokemon, including 5 different ones.',
+		'Roche',
+		'Je suis Caillou, le Champion de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents.',
 		10,
 		5,
 		'1 Badge'
@@ -181,10 +182,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐂𝐞𝐫𝐮𝐥𝐞𝐚𝐧-𝐂𝐢𝐭𝐲',
+		'🏠・𝐀𝐳𝐮𝐫𝐢𝐚',
 		'Flaquette',
 		'Cascade',
-		'I am Flaquette, the Water-type Gym Leader. To earn the Cascade Badge, you need at least 33 Pokemon, including 12 different ones.',
+		'Je suis Flaquette, la Championne de type Eau. Pour obtenir le Badge Cascade, vous devez avoir au moins 33 Pokémon, dont 12 différents.',
 		33,
 		12,
 		'2 Badges'
@@ -192,10 +193,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐕𝐞𝐫𝐦𝐢𝐥𝐢𝐨𝐧-𝐂𝐢𝐭𝐲',
+		'🏠・𝐂𝐚𝐫𝐦𝐢𝐧-𝐬𝐮𝐫-𝐦𝐞𝐫',
 		'SergentPile',
-		'Thunder',
-		'I am Sergent Pile, the Electric-type Gym Leader. To earn the Thunder Badge, you need at least 50 Pokemon, including 20 different ones.',
+		'Foudre',
+		'Je suis Sergent Pile, le Champion de type Électrique. Pour obtenir le Badge Foudre, vous devez avoir au moins 50 Pokémon, dont 20 différents.',
 		50,
 		20,
 		'3 Badges'
@@ -203,10 +204,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐂𝐞𝐥𝐚𝐝𝐨𝐧-𝐂𝐢𝐭𝐲',
+		'🏠・𝐂𝐞𝐥𝐚𝐝𝐨𝐩𝐨𝐥𝐞',
 		'Fleurika',
-		'Rainbow',
-		'I am Fleurika, the Grass-type Gym Leader. To earn the Rainbow Badge, you need at least 67 Pokemon, including 23 different ones.',
+		'Prisme',
+		'Je suis Fleurika, la Championne de type Plante. Pour obtenir le Badge Prisme, vous devez avoir au moins 67 Pokémon, dont 23 différents.',
 		67,
 		23,
 		'4 Badges'
@@ -214,10 +215,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐅𝐮𝐜𝐡𝐬𝐢𝐚-𝐂𝐢𝐭𝐲',
+		'🏠・𝐏𝐚𝐫𝐦𝐚𝐧𝐢𝐞',
 		'Kouga',
-		'Soul',
-		'I am Kouga, the Poison-type Gym Leader. To earn the Soul Badge, you need at least 80 Pokemon, including 30 different ones.',
+		'Ame',
+		'Je suis Kouga, le Champion de type Poison. Pour obtenir le Badge Ame, vous devez avoir au moins 80 Pokémon, dont 30 différents.',
 		80,
 		30,
 		'5 Badges'
@@ -225,10 +226,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐒𝐚𝐟𝐟𝐫𝐨𝐧-𝐂𝐢𝐭𝐲',
+		'🏠・𝐒𝐚𝐟𝐫𝐚𝐧𝐢𝐚',
 		'Mordane',
-		'Marsh',
-		'I am Mordane, the Psychic-type Gym Leader. To earn the Marsh Badge, you need at least 99 Pokemon, including 35 different ones.',
+		'Marais',
+		'Je suis Mordane, la Championne de type Psy. Pour obtenir le Badge Marais, vous devez avoir au moins 99 Pokémon, dont 35 différents.',
 		99,
 		35,
 		'6 Badges'
@@ -236,10 +237,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐂𝐢𝐧𝐧𝐚𝐛𝐚𝐫-𝐈𝐬𝐥𝐚𝐧𝐝',
+		'🏠・𝐂𝐫𝐚𝐦𝐨𝐢𝐬-𝐢𝐥𝐞',
 		'Aoutiste',
-		'Volcano',
-		'I am Aoutiste, the Fire-type Gym Leader. To earn the Volcano Badge, you need at least 115 Pokemon, including 48 different ones.',
+		'Volcan',
+		'Je suis Aoutiste, le Champion de type Feu. Pour obtenir le Badge Volcan, vous devez avoir au moins 115 Pokémon, dont 48 différents.',
 		115,
 		48,
 		'7 Badges'
@@ -247,10 +248,10 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐕𝐢𝐫𝐢𝐝𝐢𝐚𝐧-𝐂𝐢𝐭𝐲',
+		'🏠・𝐉𝐚𝐝𝐢𝐞𝐥𝐥𝐞',
 		'Giavonnou',
-		'Earth',
-		'I am Giavonnou, the Ground-type Gym Leader. To earn the Earth Badge, you need at least 150 Pokemon, including 61 different ones.',
+		'Terre',
+		'Je suis Giavonnou, le Champion de type Sol. Pour obtenir le Badge Terre, vous devez avoir au moins 150 Pokémon, dont 61 différents.',
 		150,
 		61,
 		'8 Badges'
@@ -258,13 +259,13 @@ async function arenaMessages(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐈𝐧𝐝𝐢𝐠𝐨-𝐏𝐥𝐚𝐭𝐞𝐚𝐮',
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Shinysse',
-		'Shiny Pokemon Master',
-		'I am Shinysse, the master of shiny Pokemon. To become a Shiny Pokemon Master, you must have all 151 different shiny Pokemon.',
+		'Maître Pokémon Shiny',
+		'Je suis Shinysse, le maître des Pokémon shiny. Pour devenir Maître Pokémon Shiny, vous devez posséder les 151 Pokémon shiny différents.',
 		151,
 		151,
-		'Shiny Pokemon Master'
+		'Maître Pokémon Shiny'
 	);
 }
 
