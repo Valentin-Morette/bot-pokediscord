@@ -606,7 +606,7 @@ async function buyRune(interaction) {
 }
 
 async function quantityPokemon(interaction, isShiny = false) {
-	const pokemonName = interaction.options.getString('name').toLowerCase();
+	const pokemonName = interaction.options.getString('nom').toLowerCase();
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.post(`/pokemon/quantity`, {
