@@ -9,7 +9,6 @@ const embedFunctions = [buyMeACoffeeEmbed, instantGamingEmbed];
 async function findRandomPokemon(interaction, type, followUp = false) {
 	commandCount++;
 	if (!interaction.replied && !interaction.deferred) {
-		console.log('Defering reply');
 		await interaction.deferReply();
 	}
 	try {
