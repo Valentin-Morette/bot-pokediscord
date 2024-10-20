@@ -332,7 +332,7 @@ async function handleCatch(interaction, idPokeball) {
 			break;
 		case 'noExistPokemon':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `Le Pokémon à disparu.`;
+			replyMessage = `Le Pokémon a disparu.`;
 			components = await disabledButtons(interaction);
 			break;
 		default:
@@ -348,10 +348,11 @@ async function handleCatch(interaction, idPokeball) {
 		responseEmbed.embeds.push(newEmbed2);
 	}
 
-	interaction.update(responseEmbed);
+	// Assurez-vous d'attendre l'update avant d'aller plus loin
+	await interaction.update(responseEmbed);
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
-		setTimeout(() => findRandomPokemon(interaction, type, true), 700);
+		await findRandomPokemon(interaction, type, true);
 	} else if (response.status === 'noBall') {
 		const now = Date.now();
 		const cooldownAmount = 10000;
@@ -370,6 +371,8 @@ async function handleCatch(interaction, idPokeball) {
 				shopCooldowns.delete(key);
 			}
 		}
+
+		// Utilisation de setTimeout pour envoyer un message au bon moment, mais assurez-vous que l'interaction est déjà mise à jour avant cela
 		setTimeout(() => shopMessage(interaction), 500);
 	}
 }
@@ -572,12 +575,12 @@ async function handleTradeButtonInteraction(idTrade, interaction) {
 }
 
 async function buyRune(interaction) {
-	const pokemonName = interaction.options.getString('name').toLowerCase();
+	const pokemonName = interaction.options.getString('nom').toLowerCase();
 	if (pokemonName === 'mew') {
 		return 'Vous ne pouvez pas acheter de rune pour Mew.';
 	}
 
-	const quantity = interaction.options.getInteger('quantity') ?? 1;
+	const quantity = interaction.options.getInteger('quantite') ?? 1;
 	if (quantity <= 0) {
 		return 'Vous devez acheter au moins une rune.';
 	}

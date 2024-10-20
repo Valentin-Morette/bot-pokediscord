@@ -154,22 +154,22 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'cherche') {
-				interaction.reply(await findRandomPokemon(interaction, 'herbe'));
+				await findRandomPokemon(interaction, 'herbe');
 				return;
 			}
 
 			if (interaction.commandName === 'mega-canne') {
-				interaction.reply(await findRandomPokemon(interaction, 'megaCanne'));
+				await findRandomPokemon(interaction, 'megaCanne');
 				return;
 			}
 
 			if (interaction.commandName === 'canne') {
-				interaction.reply(await findRandomPokemon(interaction, 'canne'));
+				await findRandomPokemon(interaction, 'canne');
 				return;
 			}
 
 			if (interaction.commandName === 'super-canne') {
-				interaction.reply(await findRandomPokemon(interaction, 'superCanne'));
+				await findRandomPokemon(interaction, 'superCanne');
 				return;
 			}
 

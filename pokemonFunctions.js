@@ -8,15 +8,22 @@ const embedFunctions = [buyMeACoffeeEmbed, instantGamingEmbed];
 
 async function findRandomPokemon(interaction, type, followUp = false) {
 	commandCount++;
+	if (!interaction.replied && !interaction.deferred) {
+		console.log('Defering reply');
+		await interaction.deferReply();
+	}
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: correctNameZone(interaction.channel.name),
 			spawnType: type,
 		});
 		if (randomPokemon.data.length === 0) {
-			return type === 'herbe'
-				? "Il n'y a pas de Pokémon sauvage dans cette zone."
-				: "Il n'y a pas de Pokémon disponible à la pêche dans cette zone.";
+			const noPokemonMessage =
+				type === 'herbe'
+					? "Il n'y a pas de Pokémon sauvage dans cette zone."
+					: "Il n'y a pas de Pokémon disponible à la pêche dans cette zone.";
+
+			return await interaction.editReply({ content: noPokemonMessage, ephemeral: true });
 		}
 		let pokemon = randomPokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
@@ -56,11 +63,16 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 
 		if (followUp) {
 			await interaction.followUp(responseOptions);
-		} else {
-			return responseOptions;
+		} else if (interaction.deferred) {
+			await interaction.editReply(responseOptions);
 		}
 	} catch (error) {
-		console.error(error);
+		console.error('Erreur lors de la recherche du Pokémon.', error);
+		if (followUp) {
+			await interaction.followUp('Erreur lors de la recherche du Pokémon.');
+		} else if (interaction.deferred) {
+			await interaction.editReply('Erreur lors de la recherche du Pokémon.');
+		}
 	}
 }
 
@@ -98,7 +110,7 @@ function instantGamingEmbed(color) {
 
 async function spawnPokemonWithRune(interaction) {
 	const idTrainer = interaction.user.id;
-	const pokemonName = interaction.options.getString('name');
+	const pokemonName = interaction.options.getString('nom');
 	try {
 		const pokemon = await API.post(`/rune/use`, {
 			idTrainer: idTrainer,
