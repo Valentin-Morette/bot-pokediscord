@@ -195,6 +195,7 @@ async function pricePokemon(namePokemon, isRune = false) {
 			namePokemon: namePokemon,
 		});
 		let pokemon = response.data;
+		console.log(pokemon);
 		if (isRune && pokemon.infos.catchRate === -100) {
 			return `${upFirstLetter(
 				namePokemon

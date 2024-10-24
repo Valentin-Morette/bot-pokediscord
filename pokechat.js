@@ -249,7 +249,7 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'prix') {
-				interaction.reply(await getPrice(interaction.options.getString('name')));
+				interaction.reply(await getPrice(interaction.options.getString('nom')));
 				return;
 			}
 
