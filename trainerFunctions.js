@@ -178,6 +178,8 @@ async function useAffiliateCode(idTrainer, affiliateCode) {
 			return "Ce code d'affiliation n'existe pas.";
 		} else if (response.data.status === 'alreadyAffiliate') {
 			return "Vous avez déjà utilisé un code d'affiliation.";
+		} else if (response.data.status === 'sameTrainer') {
+			return "Vous ne pouvez pas utiliser votre propre code d'affiliation.";
 		} else if (response.data.status === 'success') {
 			return (
 				"Vous avez reçu 10 000 pokédollars en utilisant le code d'affiliation de " +
