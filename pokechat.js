@@ -1,7 +1,7 @@
 import {
 	slashCommande,
 	addBallEmojis,
-	arenaMessages,
+	arenaMessagesGen1,
 	commandesMessage,
 	globalShopMessage,
 } from './createServerFunctions.js';
@@ -62,7 +62,7 @@ function pokeChat(client) {
 			member.roles.add(badgeRole).catch(console.error);
 		}
 
-		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐞𝐮𝐢𝐥');
+		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
 		if (welcomeChannel) {
 			welcomeChannel.send(`Bienvenue ${member} sur le serveur !`);
 		}
@@ -90,8 +90,8 @@ function pokeChat(client) {
 		if (message.author.id === process.env.MYDISCORDID) {
 			if (message.content === '!addBallEmojis') {
 				await addBallEmojis(message);
-			} else if (message.content === '!arenaMessages') {
-				await arenaMessages(message);
+			} else if (message.content === '!arenaMessagesGen1') {
+				await arenaMessagesGen1(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {
@@ -148,7 +148,7 @@ function pokeChat(client) {
 
 		// Command interaction
 		if (interaction.isCommand()) {
-			if (interaction.channel.name === '👋・𝐀𝐜𝐜𝐞𝐮𝐢𝐥') {
+			if (interaction.channel.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥') {
 				interaction.reply(`Vous ne pouvez pas utiliser de commandes dans le canal d'accueil.`);
 				return;
 			}

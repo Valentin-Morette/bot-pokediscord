@@ -1,0 +1,3 @@
+
+
+ALTER TABLE `zone` ADD `generation` SMALLINT NOT NULL DEFAULT '1' AFTER `name`;
