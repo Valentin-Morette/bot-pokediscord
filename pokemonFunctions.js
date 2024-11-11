@@ -326,8 +326,8 @@ async function getZoneForPokemon(namePokemon) {
 
 		let allZone = zones.result.map((zone) => `- ${upFirstLetter(zone.name)}`);
 
-		if (namePokemon.toLowerCase() === 'mew') {
-			title = 'Personne ne sait où se trouve Mew.';
+		if (namePokemon.toLowerCase() === 'mew' || namePokemon.toLowerCase() === 'celebi') {
+			title = 'Personne ne sait où se trouve ' + upFirstLetter(namePokemon) + '.';
 			allZone = [];
 		}
 

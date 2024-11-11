@@ -4,6 +4,7 @@ import {
 	arenaMessagesGen1,
 	commandesMessage,
 	globalShopMessage,
+	channelZones,
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -98,6 +99,8 @@ function pokeChat(client) {
 				await globalShopMessage(message);
 			} else if (message.content.startsWith('!kick')) {
 				await kickMember(message);
+			} else if (message.content === '!channelZones') {
+				await channelZones(message);
 			}
 			return;
 		}

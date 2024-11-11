@@ -6,6 +6,7 @@ import {
 	ButtonBuilder,
 	ActionRowBuilder,
 	ButtonStyle,
+	ChannelType,
 } from 'discord.js';
 import { API } from './globalFunctions.js';
 
@@ -269,6 +270,16 @@ async function arenaMessagesGen1(message) {
 	);
 }
 
+async function channelZones(message) {
+	const response = await API.get(`/zone/2`);
+	response.data.forEach(async (zone) => {
+		const channel = await message.guild.channels.create({
+			name: '🌳・' + zone,
+			type: ChannelType.GuildText,
+		});
+	});
+}
+
 function slashCommande(commands) {
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
@@ -287,4 +298,11 @@ function slashCommande(commands) {
 	})();
 }
 
-export { addBallEmojis, slashCommande, arenaMessagesGen1, commandesMessage, globalShopMessage };
+export {
+	addBallEmojis,
+	slashCommande,
+	arenaMessagesGen1,
+	commandesMessage,
+	globalShopMessage,
+	channelZones,
+};
