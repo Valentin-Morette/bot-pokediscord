@@ -107,10 +107,11 @@ async function getBallTrainer(interaction) {
 }
 
 async function getPokedex(interaction, type) {
-	let user = interaction.options.getUser('trainer') ?? interaction.user;
+	let generation = interaction.options.getInteger('generation') ?? 1;
+	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	let sameUser = user.id !== interaction.user.id;
 	try {
-		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + type);
+		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + generation + '/' + type);
 		const pokemons = response.data.pokemon;
 		if (pokemons.length === 0) {
 			return (

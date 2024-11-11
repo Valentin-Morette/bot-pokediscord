@@ -24,6 +24,12 @@ const commandsPokechat = [
 		description: 'Affiche votre Pokédex ou celui d’un dresseur',
 		options: [
 			{
+				name: 'generation',
+				type: 4,
+				description: 'Numéro de la génération de Pokémon',
+				required: false,
+			},
+			{
 				name: 'dresseur',
 				type: 6,
 				description: 'Nom du dresseur',
