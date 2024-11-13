@@ -42,6 +42,12 @@ const commandsPokechat = [
 		description: 'Affiche votre Shinydex ou celui d’un dresseur',
 		options: [
 			{
+				name: 'generation',
+				type: 4,
+				description: 'Numéro de la génération de Pokémon',
+				required: false,
+			},
+			{
 				name: 'dresseur',
 				type: 6,
 				description: 'Nom du dresseur',
@@ -336,7 +342,7 @@ const commandsPokechat = [
 				],
 			},
 			{
-				name: 'quantitte_pokemon_demande',
+				name: 'quantite_pokemon_demande',
 				type: 4,
 				description: 'Quantite de Pokemon que vous demandez',
 				required: true,

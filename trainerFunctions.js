@@ -499,7 +499,7 @@ async function purposeSwapPokemon(interaction) {
 		const button = new ButtonBuilder()
 			.setCustomId('trade|' + response.data.idTrade)
 			.setStyle(ButtonStyle.Primary)
-			.setLabel('Accept');
+			.setLabel('Accepter');
 
 		row.addComponents(button);
 

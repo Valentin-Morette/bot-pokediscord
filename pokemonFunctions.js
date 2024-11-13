@@ -245,6 +245,8 @@ async function nbPokemon(namePokemon) {
 				`- Voltali : La Centrale.\n` +
 				`- Pyroli : La Route Victoire.\n` +
 				`- Aquali : Les Îles Écume.\n` +
+				`- Mentali : La Tour Cendrée.\n` +
+				`- Noctali : L'Antre noir.\n` +
 				`- Aléatoire : autres zones.`;
 		} else {
 			title =
