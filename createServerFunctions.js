@@ -18,7 +18,8 @@ async function sendArenaMessage(
 	arenaDescription,
 	nbPokemon,
 	nbPokemonDiff,
-	newRole
+	newRole,
+	generation
 ) {
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
 
@@ -31,7 +32,7 @@ async function sendArenaMessage(
 			.setThumbnail(`attachment://${arenaChampion.toLowerCase()}.png`);
 		let row = new ActionRowBuilder();
 		const button = new ButtonBuilder()
-			.setCustomId(`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}`)
+			.setCustomId(`badge|${nbPokemon}|${nbPokemonDiff}|${badgeName}|${newRole}|${generation}`)
 			.setStyle(ButtonStyle.Primary)
 			.setLabel(channelName == '🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨' ? badgeName : `${badgeName} badge`);
 		row.addComponents(button);
@@ -164,10 +165,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Reglisse',
 		'Maître Pokémon',
-		'Je suis Reglisse, le Champion de la Ligue Pokémon. Pour devenir Maître Pokémon, vous devez posséder les 151 Pokémon différents.',
+		'Je suis Reglisse, le Champion de la Ligue Pokémon. Pour devenir Maître Pokémon, vous devez posséder les 151 Pokémon différents de la génération 2.',
 		151,
 		151,
-		'Maître Pokémon'
+		'Maître Pokémon',
+		1
 	);
 
 	sendArenaMessage(
@@ -175,10 +177,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐀𝐫𝐠𝐞𝐧𝐭𝐚',
 		'Caillou',
 		'Roche',
-		'Je suis Caillou, le Champion de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents.',
+		'Je suis Caillou, le Champion de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 1',
 		10,
 		5,
-		'1 Badge'
+		'1 Badge G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -186,10 +189,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐀𝐳𝐮𝐫𝐢𝐚',
 		'Flaquette',
 		'Cascade',
-		'Je suis Flaquette, la Championne de type Eau. Pour obtenir le Badge Cascade, vous devez avoir au moins 33 Pokémon, dont 12 différents.',
+		'Je suis Flaquette, la Championne de type Eau. Pour obtenir le Badge Cascade, vous devez avoir au moins 33 Pokémon, dont 12 différents de la génération 1',
 		33,
 		12,
-		'2 Badges'
+		'2 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -197,10 +201,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐂𝐚𝐫𝐦𝐢𝐧-𝐬𝐮𝐫-𝐦𝐞𝐫',
 		'SergentPile',
 		'Foudre',
-		'Je suis Sergent Pile, le Champion de type Électrique. Pour obtenir le Badge Foudre, vous devez avoir au moins 50 Pokémon, dont 20 différents.',
+		'Je suis Sergent Pile, le Champion de type Électrique. Pour obtenir le Badge Foudre, vous devez avoir au moins 50 Pokémon, dont 20 différents de la génération 1',
 		50,
 		20,
-		'3 Badges'
+		'3 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -208,10 +213,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐂𝐞𝐥𝐚𝐝𝐨𝐩𝐨𝐥𝐞',
 		'Fleurika',
 		'Prisme',
-		'Je suis Fleurika, la Championne de type Plante. Pour obtenir le Badge Prisme, vous devez avoir au moins 67 Pokémon, dont 23 différents.',
+		'Je suis Fleurika, la Championne de type Plante. Pour obtenir le Badge Prisme, vous devez avoir au moins 67 Pokémon, dont 23 différents de la génération 1',
 		67,
 		23,
-		'4 Badges'
+		'4 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -219,10 +225,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐏𝐚𝐫𝐦𝐚𝐧𝐢𝐞',
 		'Kouga',
 		'Ame',
-		'Je suis Kouga, le Champion de type Poison. Pour obtenir le Badge Ame, vous devez avoir au moins 80 Pokémon, dont 30 différents.',
+		'Je suis Kouga, le Champion de type Poison. Pour obtenir le Badge Ame, vous devez avoir au moins 80 Pokémon, dont 30 différents de la génération 1',
 		80,
 		30,
-		'5 Badges'
+		'5 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -230,10 +237,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐒𝐚𝐟𝐫𝐚𝐧𝐢𝐚',
 		'Mordane',
 		'Marais',
-		'Je suis Mordane, la Championne de type Psy. Pour obtenir le Badge Marais, vous devez avoir au moins 99 Pokémon, dont 35 différents.',
+		'Je suis Mordane, la Championne de type Psy. Pour obtenir le Badge Marais, vous devez avoir au moins 99 Pokémon, dont 35 différents de la génération 1',
 		99,
 		35,
-		'6 Badges'
+		'6 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -241,10 +249,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐂𝐫𝐚𝐦𝐨𝐢𝐬-𝐢𝐥𝐞',
 		'Aoutiste',
 		'Volcan',
-		'Je suis Aoutiste, le Champion de type Feu. Pour obtenir le Badge Volcan, vous devez avoir au moins 115 Pokémon, dont 48 différents.',
+		'Je suis Aoutiste, le Champion de type Feu. Pour obtenir le Badge Volcan, vous devez avoir au moins 115 Pokémon, dont 48 différents de la génération 1',
 		115,
 		48,
-		'7 Badges'
+		'7 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -252,10 +261,11 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐉𝐚𝐝𝐢𝐞𝐥𝐥𝐞',
 		'Giavonnou',
 		'Terre',
-		'Je suis Giavonnou, le Champion de type Sol. Pour obtenir le Badge Terre, vous devez avoir au moins 150 Pokémon, dont 61 différents.',
+		'Je suis Giavonnou, le Champion de type Sol. Pour obtenir le Badge Terre, vous devez avoir au moins 150 Pokémon, dont 61 différents de la génération 1',
 		150,
 		61,
-		'8 Badges'
+		'8 Badges G1',
+		1
 	);
 
 	sendArenaMessage(
@@ -263,10 +273,133 @@ async function arenaMessagesGen1(message) {
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Shinysse',
 		'Maître Pokémon Shiny',
-		'Je suis Shinysse, le maître des Pokémon shiny. Pour devenir Maître Pokémon Shiny, vous devez posséder les 151 Pokémon shiny différents.',
+		'Je suis Shinysse, le maître des Pokémon shiny. Pour devenir Maître Pokémon Shiny, vous devez posséder les 151 Pokémon shiny différents de la génération 1',
 		151,
 		151,
-		'Maître Pokémon Shiny'
+		'Maître Pokémon Shiny',
+		2
+	);
+}
+
+async function arenaMessagesGen2(message) {
+	await sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Gold',
+		'Maître Pokémon',
+		'Je suis Gold, le Champion de la Ligue Pokémon. Pour devenir Maître Pokémon, vous devez posséder les 151 Pokémon différents de la génération 2.',
+		151,
+		151,
+		'Maître Pokémon',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐌𝐚𝐮𝐯𝐢𝐥𝐥𝐞',
+		'Aile-bert',
+		'Zéphyr',
+		'Je suis Aile-bert, le Champion de type Vol. Pour obtenir le Badge Zéphyr, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 2.',
+		10,
+		5,
+		'1 Badge G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐄𝐜𝐨𝐫𝐜𝐢𝐚',
+		'Insektor',
+		'Nymphe',
+		'Je suis Insektor, la Championne de type Insecte. Pour obtenir le Badge Nymphe, vous devez avoir au moins 33 Pokémon, dont 12 différents de la génération 2.',
+		33,
+		12,
+		'2 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐃𝐨𝐮𝐛𝐥𝐨𝐧𝐯𝐢𝐥𝐥𝐞',
+		'Rouge',
+		'Plaine',
+		'Je suis Rouge, le Champion de type Normal. Pour obtenir le Badge Plaine, vous devez avoir au moins 50 Pokémon, dont 20 différents de la génération 2.',
+		50,
+		20,
+		'3 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐑𝐨𝐬𝐚𝐥𝐢𝐚',
+		'Mortimystère',
+		'Brume',
+		'Je suis Mortimystère, la Championne de type Spectre. Pour obtenir le Badge Brume, vous devez avoir au moins 67 Pokémon, dont 23 différents de la génération 2.',
+		67,
+		23,
+		'4 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐈𝐫𝐢𝐬𝐢𝐚',
+		'Chique',
+		'Choc',
+		'Je suis Chique, le Champion de type Combat. Pour obtenir le Badge Choc, vous devez avoir au moins 80 Pokémon, dont 30 différents de la génération 2.',
+		80,
+		30,
+		'5 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐎𝐥𝐢𝐯𝐢𝐥𝐥𝐞',
+		'Ferasmine',
+		'Minéral',
+		'Je suis Ferasmine, la Championne de type Acier. Pour obtenir le Badge Minéral, vous devez avoir au moins 99 Pokémon, dont 35 différents de la génération 2.',
+		99,
+		35,
+		'6 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐀𝐜𝐚𝐣𝐨𝐮',
+		'Frigo',
+		'Glacier',
+		'Je suis Frigo, le Champion de type Glace. Pour obtenir le Badge Glacier, vous devez avoir au moins 115 Pokémon, dont 48 différents de la génération 2.',
+		115,
+		48,
+		'7 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐄𝐛𝐞𝐧𝐞𝐥𝐥𝐞',
+		'Salamandra',
+		'Levant',
+		'Je suis Salamandra, le Champion de type Dragon. Pour obtenir le Badge Levant, vous devez avoir au moins 150 Pokémon, dont 61 différents de la génération 2.',
+		150,
+		61,
+		'8 Badges G2',
+		2
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Shinysse',
+		'Maître Pokémon Shiny',
+		'Je suis Shinysse, le maître des Pokémon shiny. Pour devenir Maître Pokémon Shiny, vous devez posséder les 151 Pokémon shiny différents de la génération 2.',
+		151,
+		151,
+		'Maître Pokémon Shiny',
+		2
 	);
 }
 
