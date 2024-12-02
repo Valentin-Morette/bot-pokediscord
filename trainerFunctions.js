@@ -111,7 +111,16 @@ async function getPokedex(interaction, type) {
 		1: 151,
 		2: 100,
 	};
-	let generation = interaction.options.getInteger('generation') ?? 1;
+
+	let generation = interaction.options.getInteger('generation');
+	if (generation == null) {
+		const categoryNameForGeneration = {
+			'𝐊𝐀𝐍𝐓𝐎': 1,
+			'𝐉𝐎𝐇𝐓𝐎': 2,
+		};
+		generation = categoryNameForGeneration[interaction.channel.parent.name] ?? 1;
+	}
+
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	let sameUser = user.id !== interaction.user.id;
 	try {
