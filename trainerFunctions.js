@@ -107,6 +107,10 @@ async function getBallTrainer(interaction) {
 }
 
 async function getPokedex(interaction, type) {
+	const numberPokemonByGeneration = {
+		1: 151,
+		2: 100,
+	};
 	let generation = interaction.options.getInteger('generation') ?? 1;
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	let sameUser = user.id !== interaction.user.id;
@@ -132,7 +136,8 @@ async function getPokedex(interaction, type) {
 			user.globalName +
 			' - ' +
 			response.data.countPokemon +
-			'/151';
+			'/' +
+			numberPokemonByGeneration[generation];
 
 		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
 
