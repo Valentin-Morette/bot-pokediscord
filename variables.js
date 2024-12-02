@@ -38,6 +38,10 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'pokedex-liste',
+		description: 'Affiche la liste des vos Pokédex',
+	},
+	{
 		name: 'shinydex',
 		description: 'Affiche votre Shinydex ou celui d’un dresseur',
 		options: [

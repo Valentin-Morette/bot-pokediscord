@@ -106,6 +106,42 @@ async function getBallTrainer(interaction) {
 	}
 }
 
+async function getPokedexList(interaction, type) {
+	const generationList = [1, 2];
+	const numberPokemonByGeneration = {
+		1: { name: 'Kanto', number: 151 },
+		2: { name: 'Johto', number: 100 },
+	};
+	let user = interaction.options.getUser('dresseur') ?? interaction.user;
+	let pokedexList = [];
+	for (let i = 0; i < generationList.length; i++) {
+		let response = await API.get(`/pokemon/trainer/` + user.id + '/' + generationList[i] + '/' + type);
+		pokedexList.push(
+			'- ' +
+				numberPokemonByGeneration[generationList[i]].name +
+				' : ' +
+				response.data.countPokemon +
+				'/' +
+				numberPokemonByGeneration[generationList[i]].number
+		);
+	}
+
+	const title = `Test`;
+	const footer = `Test`;
+	const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
+
+	let embed = createListEmbed(
+		pokedexList,
+		title,
+		footer,
+		thumbnailUrl,
+		null,
+		type === 'shiny' ? '#FFED00' : '#FF0000'
+	);
+
+	return { embeds: [embed] };
+}
+
 async function getPokedex(interaction, type) {
 	const numberPokemonByGeneration = {
 		1: 151,
@@ -681,6 +717,7 @@ export {
 	addTrainer,
 	getBallTrainer,
 	getPokedex,
+	getPokedexList,
 	getMoney,
 	getAffiliateCode,
 	useAffiliateCode,

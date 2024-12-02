@@ -12,6 +12,7 @@ import {
 	getBallTrainer,
 	sellPokemon,
 	getPokedex,
+	getPokedexList,
 	getMoney,
 	getAffiliateCode,
 	useAffiliateCode,
@@ -204,6 +205,11 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'pokedex') {
 				interaction.reply(await getPokedex(interaction, 'regular'));
+				return;
+			}
+
+			if (interaction.commandName === 'pokedex-liste') {
+				interaction.reply(await getPokedexList(interaction));
 				return;
 			}
 
