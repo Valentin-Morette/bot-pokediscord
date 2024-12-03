@@ -94,6 +94,8 @@ function pokeChat(client) {
 				await addBallEmojis(message);
 			} else if (message.content === '!arenaMessagesGen1') {
 				await arenaMessagesGen1(message);
+			} else if (message.content === '!arenaMessagesGen2') {
+				await arenaMessagesGen2(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {

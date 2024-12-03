@@ -288,11 +288,11 @@ async function arenaMessagesGen2(message) {
 		message,
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Gold',
-		'Maître Pokémon',
+		'Maître Pokémon G2',
 		'Je suis Gold, le Champion de la Ligue Pokémon. Pour devenir Maître Pokémon, vous devez posséder les 151 Pokémon différents de la génération 2.',
 		151,
 		151,
-		'Maître Pokémon',
+		'Maître Pokémon G2',
 		2
 	);
 
@@ -395,12 +395,12 @@ async function arenaMessagesGen2(message) {
 	sendArenaMessage(
 		message,
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
-		'Shinysse',
-		'Maître Pokémon Shiny',
+		'Goldysse',
+		'Maître Pokémon Shiny G2',
 		'Je suis Shinysse, le maître des Pokémon shiny. Pour devenir Maître Pokémon Shiny, vous devez posséder les 151 Pokémon shiny différents de la génération 2.',
 		151,
 		151,
-		'Maître Pokémon Shiny',
+		'Maître Pokémon Shiny G2',
 		2
 	);
 }
