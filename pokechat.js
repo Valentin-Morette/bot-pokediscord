@@ -209,12 +209,17 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'pokedex-liste') {
-				interaction.reply(await getPokedexList(interaction));
+				interaction.reply(await getPokedexList(interaction, 'regular'));
 				return;
 			}
 
 			if (interaction.commandName === 'shinydex') {
 				interaction.reply(await getPokedex(interaction, 'shiny'));
+				return;
+			}
+
+			if (interaction.commandName === 'shinydex-liste') {
+				interaction.reply(await getPokedexList(interaction, 'shiny'));
 				return;
 			}
 

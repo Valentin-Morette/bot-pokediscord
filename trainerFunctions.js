@@ -126,8 +126,8 @@ async function getPokedexList(interaction, type) {
 		);
 	}
 
-	const title = `Test`;
-	const footer = `Test`;
+	const title = `Votre liste de ${type === 'shiny' ? 'Shiny' : 'Poke'}dex.`;
+	const footer = `Pokedex de ${user.globalName}`;
 	const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
 
 	let embed = createListEmbed(
