@@ -142,6 +142,20 @@ async function getPokedexList(interaction, type) {
 	return { embeds: [embed] };
 }
 
+async function dailyGift(interaction) {
+	const idTrainer = interaction.user.id;
+	try {
+		const response = await API.get(`/trainer/gift/` + idTrainer);
+		if (response.data.status === 'success') {
+			return `Vous avez reçu ${response.data.amount} pokédollars.`;
+		} else if (response.data.status === 'alreadyDaily') {
+			return `Vous avez déjà reçu un cadeau il y a moins de 12H.`;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function getPokedex(interaction, type) {
 	const numberPokemonByGeneration = {
 		1: 151,
@@ -296,7 +310,7 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 
 async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
 	let idTrainer = message.member.id;
-	let pokemonType = nameBadge === 'Maître Pokémon Shiny' ? 'shiny' : 'regular';
+	let pokemonType = (nameBadge === 'Maître Pokémon Shiny' || nameBadge === 'Maître Pokémon Shiny Gen 2') ? 'shiny' : 'regular';
 	try {
 		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/' + pokemonType);
 		if (response.data.sumPokemon < nbPokemon) {
@@ -715,6 +729,7 @@ async function kickMember(message) {
 
 export {
 	addTrainer,
+	dailyGift,
 	getBallTrainer,
 	getPokedex,
 	getPokedexList,

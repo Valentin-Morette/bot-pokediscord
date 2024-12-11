@@ -68,6 +68,10 @@ const commandsPokechat = [
 		description: 'Affiche vos Pokéballs',
 	},
 	{
+		name: 'cadeau',
+		description: 'Ouvre un cadeau, disponible toutes les 12h',
+	},
+	{
 		name: 'evolution',
 		description: 'Fait évoluer un Pokémon',
 		options: [

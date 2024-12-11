@@ -28,6 +28,7 @@ import {
 	kickMember,
 	shopMessage,
 	quantityPokemon,
+	dailyGift,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -181,6 +182,12 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'argent') {
 				interaction.reply(await getMoney(interaction.user.id));
+				return;
+			}
+
+			if (interaction.commandName === 'cadeau') {
+				console.log('cadeau');
+				interaction.reply(await dailyGift(interaction));
 				return;
 			}
 

@@ -28,3 +28,5 @@ UPDATE `pokemon` SET `idEvolution` = '237' WHERE `pokemon`.`id` = 106;
 UPDATE `pokemon` SET `numberEvolution` = '10' WHERE `pokemon`.`id` = 106;
 UPDATE `pokemon` SET `idEvolution` = '242' WHERE `pokemon`.`id` = 113;
 UPDATE `pokemon` SET `numberEvolution` = '3' WHERE `pokemon`.`id` = 113;
+
+ALTER TABLE `trainer` ADD `lastGift` DATE NULL AFTER `affiliateCodeUse`;
