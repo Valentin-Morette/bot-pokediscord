@@ -2,6 +2,7 @@ import {
 	slashCommande,
 	addBallEmojis,
 	arenaMessagesGen1,
+	arenaMessagesGen2,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
@@ -136,9 +137,11 @@ function pokeChat(client) {
 					)
 				);
 			} else if (customId.startsWith('badge')) {
-				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole] = customId.split('|');
+				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole, generation] = customId.split('|');
 				await interaction.deferUpdate();
-				interaction.user.send(await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole));
+				interaction.user.send(
+					await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation)
+				);
 			} else if (customId.startsWith('trade')) {
 				const args = customId.split('|');
 				const idTrade = args[1];

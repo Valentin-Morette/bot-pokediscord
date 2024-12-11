@@ -437,6 +437,7 @@ export {
 	addBallEmojis,
 	slashCommande,
 	arenaMessagesGen1,
+	arenaMessagesGen2,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,

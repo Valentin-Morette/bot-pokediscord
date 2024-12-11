@@ -308,9 +308,12 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	}
 }
 
-async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge) {
+async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge, generation) {
 	let idTrainer = message.member.id;
-	let pokemonType = (nameBadge === 'Maître Pokémon Shiny' || nameBadge === 'Maître Pokémon Shiny Gen 2') ? 'shiny' : 'regular';
+	let pokemonType =
+		nameBadge === 'Maître Pokémon Shiny' || nameBadge === 'Maître Pokémon Shiny Gen 2'
+			? 'shiny'
+			: 'regular';
 	try {
 		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/' + pokemonType);
 		if (response.data.sumPokemon < nbPokemon) {
