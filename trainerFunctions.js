@@ -146,9 +146,17 @@ async function dailyGift(interaction) {
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.get(`/trainer/gift/` + idTrainer);
-		if (response.data.status === 'success') {
+		console.log(response.data);
+		if (response.data.status === 'successMoney') {
 			return `Vous avez reçu ${response.data.amount} pokédollars.`;
-		} else if (response.data.status === 'alreadyDaily') {
+		} else if (response.data.status === 'successBall') {
+			const emojiBall = interaction.guild.emojis.cache.find(
+				(emoji) => emoji.name === response.data.pokeball.name
+			);
+			return `Vous avez reçu ${response.data.quantity}${emojiBall}.`;
+		} else if (response.data.status === 'successPokemon') {
+			return `Vous avez reçu un ${response.data.pokemon.name} ${hasStar(response.data.isShiny)}.`;
+		} else if (response.data.status === 'alreadyGift') {
 			return `Vous avez déjà reçu un cadeau il y a moins de 12H.`;
 		}
 	} catch (error) {
@@ -157,6 +165,7 @@ async function dailyGift(interaction) {
 }
 
 async function getPokedex(interaction, type) {
+	// UPDATEGENERATION: Update the number of pokemons by generation
 	const numberPokemonByGeneration = {
 		1: 151,
 		2: 100,
@@ -164,6 +173,7 @@ async function getPokedex(interaction, type) {
 
 	let generation = interaction.options.getInteger('generation');
 	if (generation == null) {
+		// UPDATEGENERATION: Update the category name for each generation
 		const categoryNameForGeneration = {
 			'𝐊𝐀𝐍𝐓𝐎': 1,
 			'𝐉𝐎𝐇𝐓𝐎': 2,
