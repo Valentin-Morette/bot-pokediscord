@@ -76,6 +76,7 @@ function pokeChat(client) {
 		const title = `Bienvenue sur le serveur !`;
 		const description =
 			`L'objectif de ce serveur est de capturer tous les Pokémon.\n` +
+			`Vous pouvez jouer seul ou avec d'autres joueurs pour échanger des Pokémon.\n` +
 			`Chaque canal correspond à une zone de capture dans le jeu, et chaque zone contient des Pokémon différents.\n` +
 			`Pour essayer de capturer un Pokémon, vous devez taper **\`${'/cherche'}\`** dans un canal (Exemple : <#${
 				route1Channel.id
@@ -115,6 +116,7 @@ function pokeChat(client) {
 		// Button interaction
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
+			console.log(customId);
 			if (customId.startsWith('pokeball')) {
 				handleCatch(interaction, 1);
 			} else if (customId.startsWith('hyperball')) {
@@ -138,6 +140,7 @@ function pokeChat(client) {
 				);
 			} else if (customId.startsWith('badge')) {
 				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole, generation] = customId.split('|');
+				console.log(nbPokemon, nbPokemonDiff, badgeName, newRole, generation);
 				await interaction.deferUpdate();
 				interaction.user.send(
 					await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation)

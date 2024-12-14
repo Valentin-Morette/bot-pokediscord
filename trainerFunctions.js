@@ -315,7 +315,9 @@ async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge,
 			? 'shiny'
 			: 'regular';
 	try {
-		const response = await API.get(`/pokemon/trainer/` + idTrainer + '/' + pokemonType);
+		const response = await API.get(
+			`/pokemon/trainer/` + idTrainer + '/' + generation + '/' + pokemonType
+		);
 		if (response.data.sumPokemon < nbPokemon) {
 			return `Vous n'avez pas assez de Pokémon pour obtenir le badge ${nameBadge}.`;
 		}
