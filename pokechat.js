@@ -116,7 +116,6 @@ function pokeChat(client) {
 		// Button interaction
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
-			console.log(customId);
 			if (customId.startsWith('pokeball')) {
 				handleCatch(interaction, 1);
 			} else if (customId.startsWith('hyperball')) {
@@ -140,7 +139,6 @@ function pokeChat(client) {
 				);
 			} else if (customId.startsWith('badge')) {
 				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole, generation] = customId.split('|');
-				console.log(nbPokemon, nbPokemonDiff, badgeName, newRole, generation);
 				await interaction.deferUpdate();
 				interaction.user.send(
 					await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation)
