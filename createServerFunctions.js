@@ -80,10 +80,10 @@ async function commandesMessage(message) {
 					'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
 					'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
 					'**Visualiser les Pokémon**\n' +
-					"- `/pokedex [nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
-					"- `/shinydex [nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
-					'- `/pokedex-liste : pour voir le résumé de tous les Pokédex.\n' +
-					'- `/shinydex-liste : pour voir le résumé de tous les Shinydex.\n\n' +
+					"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
+					"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
+					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
+					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n\n' +
 					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
 					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
 					'**Évolution de Pokémon**\n' +
