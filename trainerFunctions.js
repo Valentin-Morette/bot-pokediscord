@@ -146,18 +146,32 @@ async function dailyGift(interaction) {
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.get(`/trainer/gift/` + idTrainer);
+		if (response.data.status === 'alreadyGift') {
+			return `Vous avez déjà reçu un cadeau il y a moins de 12H.`;
+		}
+
+		const attachment = new AttachmentBuilder(`./assets/gift.png`);
+		const embed = new EmbedBuilder()
+			.setColor('#B8860B')
+			.setTitle('Vous avez reçu un cadeau !')
+			.setThumbnail(`attachment://gift.png`);
+
+		let content = '';
 		if (response.data.status === 'successMoney') {
-			return `Vous avez reçu ${response.data.amount} pokédollars.`;
+			content = `Vous avez reçu ${response.data.amount} pokédollars.`;
 		} else if (response.data.status === 'successBall') {
 			const emojiBall = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === response.data.pokeball.name
 			);
-			return `Vous avez reçu ${response.data.quantity}${emojiBall}.`;
+			content = `Vous avez reçu ${response.data.quantity} ${emojiBall}.`;
 		} else if (response.data.status === 'successPokemon') {
-			return `Vous avez reçu un ${response.data.pokemon.name} ${hasStar(response.data.isShiny)}.`;
-		} else if (response.data.status === 'alreadyGift') {
-			return `Vous avez déjà reçu un cadeau il y a moins de 12H.`;
+			content = `Vous avez reçu un ${response.data.pokemon.name} ${hasStar(response.data.isShiny)}.`;
+			embed.setImage(response.data.isShiny ? response.data.pokemon.imgShiny : response.data.pokemon.img);
 		}
+
+		embed.setDescription(content);
+
+		return { embeds: [embed], files: [attachment] };
 	} catch (error) {
 		console.error(error);
 	}

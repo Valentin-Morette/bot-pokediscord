@@ -94,6 +94,7 @@ async function commandesMessage(message) {
 					'- `/argent` : pour voir votre argent.\n' +
 					'- `/ball` : pour voir toutes vos Pokéballs.\n' +
 					'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
+					'- `/cadeau` : pour recevoir votre cadeau toutes les 12 heures.\n' +
 					'- `/boutique` : pour ouvrir la boutique.\n\n' +
 					'**Pokémon Disponibles et Échanges**\n' +
 					'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
