@@ -190,7 +190,6 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'cadeau') {
-				console.log('cadeau');
 				interaction.reply(await dailyGift(interaction));
 				return;
 			}

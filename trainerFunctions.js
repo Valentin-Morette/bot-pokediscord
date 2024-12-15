@@ -146,7 +146,6 @@ async function dailyGift(interaction) {
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.get(`/trainer/gift/` + idTrainer);
-		console.log(response.data);
 		if (response.data.status === 'successMoney') {
 			return `Vous avez reçu ${response.data.amount} pokédollars.`;
 		} else if (response.data.status === 'successBall') {
