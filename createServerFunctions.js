@@ -83,7 +83,7 @@ async function commandesMessage(message) {
 					"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
 					"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
 					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
-					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n\n' +
+					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
 					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
 					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
 					'**Évolution de Pokémon**\n' +
