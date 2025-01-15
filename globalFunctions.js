@@ -25,6 +25,14 @@ function createButtons(message, idPokemonWild) {
 	return row;
 }
 
+function formatRemainingTime(milliseconds) {
+	const totalMinutes = Math.floor(milliseconds / 60000);
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+
+	return `${hours}h${minutes.toString().padStart(2, '0')}min`;
+}
+
 function createListEmbed(
 	items = null,
 	title = null,
@@ -101,5 +109,6 @@ export {
 	heartbeat,
 	createListEmbed,
 	correctNameZone,
+	formatRemainingTime,
 	API,
 };

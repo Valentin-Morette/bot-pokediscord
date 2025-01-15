@@ -5,7 +5,13 @@ import {
 	ButtonStyle,
 	AttachmentBuilder,
 } from 'discord.js';
-import { upFirstLetter, formatNombreAvecSeparateur, createListEmbed, API } from './globalFunctions.js';
+import {
+	upFirstLetter,
+	formatNombreAvecSeparateur,
+	createListEmbed,
+	API,
+	formatRemainingTime,
+} from './globalFunctions.js';
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
 
@@ -147,7 +153,9 @@ async function dailyGift(interaction) {
 	try {
 		const response = await API.get(`/trainer/gift/` + idTrainer);
 		if (response.data.status === 'alreadyGift') {
-			return `Vous avez déjà reçu un cadeau il y a moins de 12H.`;
+			return `Vous avez déjà reçu votre cadeau. Vous pourrez en recevoir un nouveau dans ${formatRemainingTime(
+				response.data.remainning
+			)}.`;
 		}
 
 		const attachment = new AttachmentBuilder(`./assets/gift.png`);
@@ -390,7 +398,7 @@ async function handleCatch(interaction, idPokeball) {
 	switch (response.status) {
 		case 'noCatch':
 			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `Le ${response.pokemonName} s'est échappé, réessayez !`;
+			replyMessage = `${response.pokemonName} s'est échappé, réessayez !`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
 		case 'catch':
@@ -401,7 +409,7 @@ async function handleCatch(interaction, idPokeball) {
 			if (secondOriginalEmbed !== null) {
 				newEmbed2.setColor('#3aa12f');
 			}
-			replyMessage = `Le ${response.pokemonName} a été attrapé par <@${interaction.user.id}>.`;
+			replyMessage = `${response.pokemonName} a été attrapé par <@${interaction.user.id}>.`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
@@ -410,7 +418,7 @@ async function handleCatch(interaction, idPokeball) {
 			if (secondOriginalEmbed !== null) {
 				newEmbed2.setColor('#c71a28');
 			}
-			replyMessage = `Le ${response.pokemonName} s'est échappé! dommage`;
+			replyMessage = `${response.pokemonName} s'est échappé! dommage`;
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			components = await disabledButtons(interaction);
 			break;
