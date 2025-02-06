@@ -1,10 +1,11 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
+import { XEmbed, GamsGoEmbed } from './adsEmbed.js';
 
 let commandCount = 0;
 let embedIndex = 0;
 
-const embedFunctions = [buyMeACoffeeEmbed, instantGamingEmbed];
+const embedFunctions = [XEmbed, GamsGoEmbed];
 
 async function findRandomPokemon(interaction, type, followUp = false) {
 	commandCount++;
@@ -49,7 +50,7 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 50 === 0) {
+		if (commandCount % 40 === 0) {
 			const { embed: extraEmbed, attachment: extraAttachment } =
 				embedFunctions[embedIndex % embedFunctions.length](color);
 			responseOptions.embeds.push(extraEmbed);
@@ -73,38 +74,6 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 			await interaction.editReply('Erreur lors de la recherche du Pokémon.');
 		}
 	}
-}
-
-function buyMeACoffeeEmbed(color) {
-	const embed = new EmbedBuilder()
-		.setTitle('🌟 Soutenez le serveur sur Buy Me a Coffee ! 🌟')
-		.setDescription(
-			'Maintenir le bot actif implique des coûts. En achetant un café sur Buy Me a Coffee, vous contribuez à couvrir ces dépenses et à continuer de proposer un jeu gratuit et de qualité. Chaque café compte ! Merci pour votre soutien ! ☕'
-		)
-		.addFields({
-			name: '🔗 Lien Buy Me a Coffee',
-			value: 'https://buymeacoffee.com/birious',
-		})
-		.setColor(color)
-		.setThumbnail(
-			'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGI4ZWsxaWl2MTc1enF1cnZ4cnAydWlraWFpMXl2bXg2dTc3bGxyZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/TDQOtnWgsBx99cNoyH/giphy.gif'
-		);
-	return { embed, attachment: null };
-}
-
-function instantGamingEmbed(color) {
-	const embed = new EmbedBuilder()
-		.setTitle('🎮 Instant Gaming 🎮')
-		.setDescription(
-			'Vous cherchez des jeux à petits prix ? Instant Gaming propose des jeux PC, PS4, Xbox, et bien plus, à des prix imbattables. En achetant vos jeux via ce lien, vous soutenez le serveur et le bot. Merci pour votre soutien ! 🎮'
-		)
-		.addFields({
-			name: '🔗 Lien Instant Gaming',
-			value: 'https://www.instant-gaming.com/?igr=seriousnintendo',
-		})
-		.setColor(color)
-		.setThumbnail('https://seeklogo.com/images/I/instant-gaming-logo-5931E64B57-seeklogo.com.png');
-	return { embed, attachment: null };
 }
 
 async function spawnPokemonWithRune(interaction) {
