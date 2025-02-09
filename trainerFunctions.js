@@ -11,8 +11,9 @@ import {
 	createListEmbed,
 	API,
 	formatRemainingTime,
+	correctNameZone,
 } from './globalFunctions.js';
-import { balls } from './variables.js';
+import { balls, authorizeZone } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
 
 const shopCooldowns = new Map();
@@ -373,6 +374,20 @@ async function handleCatch(interaction, idPokeball) {
 	const idPokemonWild = interaction.customId.split('|')[1];
 	const type = interaction.customId.split('|')[2];
 	const idTrainer = interaction.user.id;
+
+	const roleNames = interaction.member.roles.cache.map((role) => role.name);
+	const channelName = correctNameZone(interaction.channel.name);
+	const requiredRole = authorizeZone[channelName];
+	const hasAccess = roleNames.includes(requiredRole);
+
+	if (!hasAccess) {
+		await interaction.reply({
+			content: `Vous n'avez pas accès à cette zone. Vous devez avoir le rôle ${requiredRole}.`,
+			ephemeral: true,
+		});
+		return;
+	}
+
 	const response = await catchPokemon(idPokemonWild, idTrainer, idPokeball);
 	let replyMessage;
 	let components;
