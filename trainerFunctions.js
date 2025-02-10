@@ -328,7 +328,7 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 				`Vous n'avez pas assez d'argent, vous avez ${formatNombreAvecSeparateur(
 					response.data.money
 				)}$ et il vous faut ${formatNombreAvecSeparateur(response.data.price)}$. \n` +
-				`Pour obtenir plus d'argent, vendez des Pokémon en utilisant les commandes **\`/sell\`** ou **\`/sell-shiny\`**`
+				`Pour obtenir plus d'argent, vendez des Pokémon en utilisant les commandes **\`/vendre\`** ou **\`/vendre-shiny\`**`
 			);
 		} else if (response.data.status === 'buy') {
 			return `Vous avez acheté ${quantity} ${upFirstLetter(nameBall)} pour ${formatNombreAvecSeparateur(

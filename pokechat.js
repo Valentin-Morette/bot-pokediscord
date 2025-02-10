@@ -128,21 +128,21 @@ function pokeChat(client) {
 				const args = customId.split('|');
 				let numberBall = args[1];
 				let nameBall = args[2];
-				await interaction.deferUpdate();
-				interaction.user.send(
-					await buyBall(
+				interaction.reply({
+					content: await buyBall(
 						interaction.user.id,
 						balls.find((ball) => ball.name === nameBall).id,
 						numberBall,
 						nameBall
-					)
-				);
+					),
+					ephemeral: true,
+				});
 			} else if (customId.startsWith('badge')) {
 				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole, generation] = customId.split('|');
-				await interaction.deferUpdate();
-				interaction.user.send(
-					await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation)
-				);
+				interaction.reply({
+					content: await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation),
+					ephemeral: true,
+				});
 			} else if (customId.startsWith('trade')) {
 				const args = customId.split('|');
 				const idTrade = args[1];
@@ -160,7 +160,10 @@ function pokeChat(client) {
 		// Command interaction
 		if (interaction.isCommand()) {
 			if (interaction.channel.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥') {
-				interaction.reply(`Vous ne pouvez pas utiliser de commandes dans le canal d'accueil.`);
+				interaction.reply({
+					content: `Vous ne pouvez pas utiliser de commandes dans le canal d'accueil.`,
+					ephemeral: true,
+				});
 				return;
 			}
 
