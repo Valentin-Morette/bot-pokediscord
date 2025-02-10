@@ -316,7 +316,7 @@ async function arenaMessagesGen2(message) {
 		'Nymphe',
 		'Je suis Insektor, la Championne de type Insecte. Pour obtenir le Badge Nymphe, vous devez avoir au moins 33 Pokémon, dont 12 différents de la génération 2.',
 		33,
-		12,
+		9,
 		'2 Badges Gen2',
 		2
 	);
@@ -328,7 +328,7 @@ async function arenaMessagesGen2(message) {
 		'Plaine',
 		'Je suis Rouge, le Champion de type Normal. Pour obtenir le Badge Plaine, vous devez avoir au moins 50 Pokémon, dont 20 différents de la génération 2.',
 		50,
-		20,
+		16,
 		'3 Badges Gen2',
 		2
 	);
@@ -340,7 +340,7 @@ async function arenaMessagesGen2(message) {
 		'Brume',
 		'Je suis Mortimystère, la Championne de type Spectre. Pour obtenir le Badge Brume, vous devez avoir au moins 67 Pokémon, dont 23 différents de la génération 2.',
 		67,
-		23,
+		19,
 		'4 Badges Gen2',
 		2
 	);
@@ -352,7 +352,7 @@ async function arenaMessagesGen2(message) {
 		'Choc',
 		'Je suis Chique, le Champion de type Combat. Pour obtenir le Badge Choc, vous devez avoir au moins 80 Pokémon, dont 30 différents de la génération 2.',
 		80,
-		30,
+		26,
 		'5 Badges Gen2',
 		2
 	);
@@ -364,7 +364,7 @@ async function arenaMessagesGen2(message) {
 		'Minéral',
 		'Je suis Ferasmine, la Championne de type Acier. Pour obtenir le Badge Minéral, vous devez avoir au moins 99 Pokémon, dont 35 différents de la génération 2.',
 		99,
-		35,
+		31,
 		'6 Badges Gen2',
 		2
 	);
@@ -376,7 +376,7 @@ async function arenaMessagesGen2(message) {
 		'Glacier',
 		'Je suis Frigo, le Champion de type Glace. Pour obtenir le Badge Glacier, vous devez avoir au moins 115 Pokémon, dont 48 différents de la génération 2.',
 		115,
-		48,
+		38,
 		'7 Badges Gen2',
 		2
 	);
@@ -388,7 +388,7 @@ async function arenaMessagesGen2(message) {
 		'Levant',
 		'Je suis Salamandra, le Champion de type Dragon. Pour obtenir le Badge Levant, vous devez avoir au moins 150 Pokémon, dont 61 différents de la génération 2.',
 		150,
-		61,
+		49,
 		'8 Badges Gen2',
 		2
 	);
@@ -398,7 +398,7 @@ async function arenaMessagesGen2(message) {
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Goldysse',
 		'Maitre Pokémon Shiny Gen2',
-		'Je suis Shinysse, le maitre des Pokémon shiny. Pour devenir Maitre Pokémon Shiny, vous devez posséder les 100 Pokémon shiny différents de la génération 2.',
+		'Je suis Goldysse, le maitre des Pokémon shiny. Pour devenir Maitre Pokémon Shiny Gen 2, vous devez posséder les 100 Pokémon shiny différents de la génération 2.',
 		100,
 		100,
 		'Maitre Pokémon Shiny Gen2',
