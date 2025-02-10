@@ -280,7 +280,7 @@ async function arenaMessagesGen1(message) {
 		151,
 		151,
 		'Maitre Pokémon Shiny',
-		2
+		1
 	);
 }
 
