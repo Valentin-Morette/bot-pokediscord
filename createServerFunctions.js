@@ -406,6 +406,128 @@ async function arenaMessagesGen2(message) {
 	);
 }
 
+async function arenaMessagesGen3(message) {
+	await sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Marc',
+		'Maitre Pokémon Gen3',
+		'Je suis Marc, le Champion de la Ligue Pokémon. Pour devenir Maitre Pokémon, vous devez posséder les 135 Pokémon différents de la génération 3.',
+		100,
+		100,
+		'Maitre Pokémon Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐌𝐞𝐫𝐨𝐮𝐯𝐢𝐥𝐥𝐞',
+		'Roxanne',
+		'Roche',
+		'Je suis Roxanne, la Championne de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 3.',
+		10,
+		5,
+		'1 Badge Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐌𝐲𝐨𝐤𝐚𝐫𝐚',
+		'Bastien',
+		'Poing',
+		'Je suis Bastien, le Champion de type Combat. Pour obtenir le Badge Poing, vous devez avoir au moins 33 Pokémon, dont 9 différents de la génération 3.',
+		33,
+		9,
+		'2 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐋𝐚𝐯𝐚𝐧𝐝𝐢𝐚',
+		'Voltere',
+		'Dynamo',
+		'Je suis Voltere, le Champion de type Electrique. Pour obtenir le Badge Dynamo, vous devez avoir au moins 50 Pokémon, dont 16 différents de la génération 3.',
+		50,
+		16,
+		'3 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐕𝐞𝐫𝐦𝐢𝐥𝐚𝐯𝐚',
+		'Adriane',
+		'Chaleur',
+		'Je suis Adriane, la Championne de type feu. Pour obtenir le Badge Chaleur, vous devez avoir au moins 67 Pokémon, dont 19 différents de la génération 3.',
+		67,
+		19,
+		'4 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐂𝐥𝐞𝐦𝐞𝐧𝐭𝐢-𝐯𝐢𝐥𝐥𝐞',
+		'Norman',
+		'Balancier',
+		'Je suis Norman, le Champion de type Normal. Pour obtenir le Badge Balancier, vous devez avoir au moins 80 Pokémon, dont 26 différents de la génération 3.',
+		80,
+		26,
+		'5 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐂𝐢𝐦𝐞𝐭𝐫𝐨𝐧𝐞𝐥𝐥𝐞',
+		'Alizee',
+		'Plume',
+		'Je suis Alizee, la Championne de type Vol. Pour obtenir le Badge Plume, vous devez avoir au moins 99 Pokémon, dont 31 différents de la génération 3.',
+		99,
+		31,
+		'6 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐀𝐥𝐠𝐚𝐭𝐢𝐚',
+		'Tatia',
+		'Esprit',
+		'Je suis Tatia, le Champion de type Psy. Pour obtenir le Badge Esprit, vous devez avoir au moins 115 Pokémon, dont 38 différents de la génération 3.',
+		115,
+		38,
+		'7 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐀𝐭𝐚𝐥𝐚𝐧𝐨𝐩𝐨𝐥𝐢𝐬',
+		'Juan',
+		'Pluie',
+		'Je suis Juan, le Champion de type Eau. Pour obtenir le Badge Pluie, vous devez avoir au moins 150 Pokémon, dont 49 différents de la génération 3.',
+		150,
+		49,
+		'8 Badges Gen3',
+		3
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Marcysse',
+		'Maitre Pokémon Shiny Gen3',
+		'Je suis Marcysse, le maitre des Pokémon shiny. Pour devenir Maitre Pokémon Shiny Gen 3, vous devez posséder les 135 Pokémon shiny différents de la génération 3.',
+		135,
+		135,
+		'Maitre Pokémon Shiny Gen3',
+		3
+	);
+}
+
 async function channelZones(message) {
 	const response = await API.get(`/zone/3`);
 	response.data.forEach(async (zone) => {
@@ -439,6 +561,7 @@ export {
 	slashCommande,
 	arenaMessagesGen1,
 	arenaMessagesGen2,
+	arenaMessagesGen3,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,

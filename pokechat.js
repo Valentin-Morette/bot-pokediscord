@@ -3,6 +3,7 @@ import {
 	addBallEmojis,
 	arenaMessagesGen1,
 	arenaMessagesGen2,
+	arenaMessagesGen3,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
@@ -99,6 +100,8 @@ function pokeChat(client) {
 				await arenaMessagesGen1(message);
 			} else if (message.content === '!arenaMessagesGen2') {
 				await arenaMessagesGen2(message);
+			} else if (message.content === '!arenaMessagesGen3') {
+				await arenaMessagesGen3(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {
