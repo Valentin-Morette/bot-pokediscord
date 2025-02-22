@@ -200,9 +200,9 @@ async function getPokedex(interaction, type) {
 	if (generation == null) {
 		// UPDATEGENERATION: Update the category name for each generation
 		const categoryNameForGeneration = {
-			'𝐊𝐀𝐍𝐓𝐎': 1,
-			'𝐉𝐎𝐇𝐓𝐎': 2,
-			'𝐇𝐎𝐄𝐍𝐍': 3,
+			'𝗞𝗔𝗡𝗧𝗢': 1,
+			'𝗝𝗢𝗛𝗧𝗢': 2,
+			'𝗛𝗢𝗘𝗡𝗡': 3,
 		};
 		generation = categoryNameForGeneration[interaction.channel.parent.name] ?? 1;
 	}
