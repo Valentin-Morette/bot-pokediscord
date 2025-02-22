@@ -114,10 +114,12 @@ async function getBallTrainer(interaction) {
 }
 
 async function getPokedexList(interaction, type) {
-	const generationList = [1, 2];
+	// UPDATEGENERATION: Update the number of pokemons by generation
+	const generationList = [1, 2, 3];
 	const numberPokemonByGeneration = {
 		1: { name: 'Kanto', number: 151 },
 		2: { name: 'Johto', number: 100 },
+		3: { name: 'Hoenn', number: 135 },
 	};
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	let pokedexList = [];
@@ -191,6 +193,7 @@ async function getPokedex(interaction, type) {
 	const numberPokemonByGeneration = {
 		1: 151,
 		2: 100,
+		3: 135,
 	};
 
 	let generation = interaction.options.getInteger('generation');
@@ -199,6 +202,7 @@ async function getPokedex(interaction, type) {
 		const categoryNameForGeneration = {
 			'𝐊𝐀𝐍𝐓𝐎': 1,
 			'𝐉𝐎𝐇𝐓𝐎': 2,
+			'𝐇𝐎𝐄𝐍𝐍': 3,
 		};
 		generation = categoryNameForGeneration[interaction.channel.parent.name] ?? 1;
 	}

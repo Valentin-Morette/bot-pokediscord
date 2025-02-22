@@ -407,7 +407,7 @@ async function arenaMessagesGen2(message) {
 }
 
 async function channelZones(message) {
-	const response = await API.get(`/zone/2`);
+	const response = await API.get(`/zone/3`);
 	response.data.forEach(async (zone) => {
 		const channel = await message.guild.channels.create({
 			name: '🌳・' + zone,

@@ -1,0 +1,7 @@
+Pour la création d'une nouvelle génération :
+
+- Insert l'ensemble des zones (demander à chatGPT la liste des zones dans l'ordre de passage du joueur + corrections à la main).
+- Ajouter les Pokémon, prendre le JSON de la gen sur https://tyradex.vercel.app/ et l'ajouter en fichier dans notre API.
+- Faire les pokémon par zones.
+- Créer les roles sur discord.
+- Faire les modifications qui on le commmentaire "UPDATEGENERATION" dans le code.
