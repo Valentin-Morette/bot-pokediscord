@@ -836,7 +836,7 @@ const authorizeZone = {
 	'route-38': '4 Badges Gen2',
 	'route-39': '4 Badges Gen2',
 	'tour-cendree': '4 Badges Gen2',
-	'tour-feraille': '4 Badges Gen2',
+	'tour-ferraille': '4 Badges Gen2',
 	'route-40': '5 Badges Gen2',
 	'route-41': '5 Badges Gen2',
 	'tourb-iles': '5 Badges Gen2',
