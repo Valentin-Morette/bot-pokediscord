@@ -33,6 +33,14 @@ async function addTrainer(member) {
 						id: 1,
 						quantity: 50,
 					},
+					{
+						id: 2,
+						quantity: 30,
+					},
+					{
+						id: 3,
+						quantity: 10,
+					},
 				],
 			});
 		}
