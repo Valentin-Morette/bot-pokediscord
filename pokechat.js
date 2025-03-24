@@ -71,23 +71,6 @@ function pokeChat(client) {
 		if (welcomeChannel) {
 			welcomeChannel.send(`Bienvenue ${member} sur le serveur !`);
 		}
-
-		const route1Channel = member.guild.channels.cache.find((ch) => ch.name === '🌳・𝐑𝐨𝐮𝐭𝐞-𝟏');
-
-		const title = `Bienvenue sur le serveur !`;
-		const description =
-			`L'objectif de ce serveur est de capturer tous les Pokémon.\n` +
-			`Vous pouvez jouer seul ou avec d'autres joueurs pour échanger des Pokémon.\n` +
-			`Chaque canal correspond à une zone de capture dans le jeu, et chaque zone contient des Pokémon différents.\n` +
-			`Pour essayer de capturer un Pokémon, vous devez taper **\`${'/cherche'}\`** dans un canal (Exemple : <#${
-				route1Channel.id
-			}>).`;
-		const footer = 'Tutoriel - 1/2';
-		const thumbnailUrl = member.user.displayAvatarURL();
-
-		const embed = createListEmbed(description, title, footer, thumbnailUrl, null, '#0099ff');
-
-		member.send({ embeds: [embed] });
 	});
 
 	client.on('messageCreate', async (message) => {

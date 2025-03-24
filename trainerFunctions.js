@@ -429,9 +429,6 @@ async function handleCatch(interaction, idPokeball) {
 			addFieldsValue = parseInt(addFieldsValue) + 1;
 			break;
 		case 'catch':
-			if (response.sendTuto) {
-				sendSecondaryTutorialMessage(interaction);
-			}
 			newEmbed.setColor('#3aa12f');
 			if (secondOriginalEmbed !== null) {
 				newEmbed2.setColor('#3aa12f');
@@ -556,21 +553,6 @@ async function shopMessage(interaction, needReply = false) {
 	} else {
 		await channel.send({ embeds: [priceEmbed], files: [attachment], components: rows });
 	}
-}
-
-async function sendSecondaryTutorialMessage(interaction) {
-	const title = '🎉 Premier Pokémon Capturé ! 🎉';
-	const footer = 'Tutoriel - 2/2';
-	const description =
-		`Vous pouvez voir vos Pokémon capturés en tapant **\`/pokedex\`** dans n'importe quel canal.\n\n` +
-		`Vous avez utilisé quelques Pokéballs, rendez-vous dans le canal 🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞 pour en acheter davantage.\n\n` +
-		`Pour voir la liste de vos Pokéballs, tapez **\`/ball\`**.\n` +
-		`Pour vérifier votre argent, tapez **\`/argent\`**.\n\n` +
-		`Pour voir la liste des commandes, rendez-vous dans le canal 🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬.`;
-
-	const tutorialEmbed = createListEmbed(description, title, footer, null, null, '#0099ff');
-
-	await interaction.user.send({ embeds: [tutorialEmbed] });
 }
 
 async function disabledButtons(interaction) {
