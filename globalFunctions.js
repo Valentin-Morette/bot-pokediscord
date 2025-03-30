@@ -95,6 +95,11 @@ function heartbeat(client) {
 	}, 300000);
 }
 
+function removeAccents(str) {
+	if (typeof str !== 'string') return '';
+	return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 const API = axios.create({
 	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:5000',
 	headers: {
@@ -110,5 +115,6 @@ export {
 	createListEmbed,
 	correctNameZone,
 	formatRemainingTime,
+	removeAccents,
 	API,
 };

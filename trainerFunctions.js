@@ -279,21 +279,21 @@ async function getAffiliateCode(idTrainer) {
 
 async function useAffiliateCode(idTrainer, affiliateCode) {
 	try {
-		const response = await API.post(`/trainer/affiliate`, {
-			idTrainer: idTrainer,
-			affiliateCode: affiliateCode,
-		});
-		if (response.data.status === 'noExistCode') {
-			return "Ce code d'affiliation n'existe pas.";
-		} else if (response.data.status === 'alreadyAffiliate') {
-			return "Vous avez déjà utilisé un code d'affiliation.";
-		} else if (response.data.status === 'sameTrainer') {
-			return "Vous ne pouvez pas utiliser votre propre code d'affiliation.";
-		} else if (response.data.status === 'success') {
-			return (
-				"Vous avez reçu 10 000 pokédollars en utilisant le code d'affiliation de " +
-				upFirstLetter(response.data.name)
-			);
+		const { data } = await API.post(`/trainer/affiliate`, { idTrainer, affiliateCode });
+
+		switch (data.status) {
+			case 'noExistCode':
+				return "Ce code d'affiliation n'existe pas.";
+			case 'alreadyAffiliate':
+				return "Vous avez déjà utilisé un code d'affiliation.";
+			case 'sameTrainer':
+				return "Vous ne pouvez pas utiliser votre propre code d'affiliation.";
+			case 'success':
+				return `Vous avez reçu 10 000 pokédollars en utilisant le code d'affiliation de ${upFirstLetter(
+					data.name
+				)}`;
+			default:
+				return 'Une erreur est survenue.';
 		}
 	} catch (error) {
 		console.error(error);
@@ -322,10 +322,6 @@ async function pricePokemon(namePokemon, isRune = false) {
 	} catch (error) {
 		console.error("Ce Pokemon n'existe pas.");
 	}
-}
-
-async function getPrice(item) {
-	return await pricePokemon(item);
 }
 
 async function buyBall(idTrainer, idBall, quantity, nameBall) {
@@ -783,7 +779,6 @@ export {
 	useAffiliateCode,
 	buyBall,
 	getBadge,
-	getPrice,
 	sellPokemon,
 	handleCatch,
 	purposeSwapPokemon,

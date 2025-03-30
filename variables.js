@@ -386,6 +386,7 @@ const balls = [
 	{ name: 'hyperball', id: 3 },
 	{ name: 'masterball', id: 4 },
 ];
+
 const pokemons = [
 	'Bulbizarre',
 	'Herbizarre',

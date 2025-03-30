@@ -19,7 +19,6 @@ import {
 	getAffiliateCode,
 	useAffiliateCode,
 	buyBall,
-	getPrice,
 	getBadge,
 	handleCatch,
 	purposeSwapPokemon,
@@ -42,7 +41,7 @@ import {
 	spawnPokemonWithRune,
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { heartbeat, createListEmbed } from './globalFunctions.js';
+import { heartbeat, removeAccents } from './globalFunctions.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
@@ -154,89 +153,73 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'cherche') {
-				await findRandomPokemon(interaction, 'herbe');
-				return;
+				return await findRandomPokemon(interaction, 'herbe');
 			}
 
 			if (interaction.commandName === 'mega-canne') {
-				await findRandomPokemon(interaction, 'megaCanne');
-				return;
+				return await findRandomPokemon(interaction, 'megaCanne');
 			}
 
 			if (interaction.commandName === 'canne') {
-				await findRandomPokemon(interaction, 'canne');
-				return;
+				return await findRandomPokemon(interaction, 'canne');
 			}
 
 			if (interaction.commandName === 'super-canne') {
-				await findRandomPokemon(interaction, 'superCanne');
-				return;
+				return await findRandomPokemon(interaction, 'superCanne');
 			}
 
 			if (interaction.commandName === 'argent') {
-				interaction.reply(await getMoney(interaction.user.id));
-				return;
+				return interaction.reply(await getMoney(interaction.user.id));
 			}
 
 			if (interaction.commandName === 'cadeau') {
-				interaction.reply(await dailyGift(interaction));
-				return;
+				return interaction.reply(await dailyGift(interaction));
 			}
 
 			if (interaction.commandName === 'quantite') {
-				interaction.reply(await quantityPokemon(interaction));
-				return;
+				return interaction.reply(await quantityPokemon(interaction));
 			}
 
 			if (interaction.commandName === 'quantite-shiny') {
-				interaction.reply(await quantityPokemon(interaction, true));
-				return;
+				return interaction.reply(await quantityPokemon(interaction, true));
 			}
 
 			if (interaction.commandName === 'disponible') {
 				const channelName = client.channels.cache.get(interaction.channelId).name;
-				interaction.reply(await getAvailable(channelName));
-				return;
+				return interaction.reply(await getAvailable(channelName));
 			}
 
 			if (interaction.commandName === 'zone') {
-				interaction.reply(await getZoneForPokemon(interaction.options.getString('nom')));
-				return;
+				return interaction.reply(await getZoneForPokemon(interaction.options.getString('nom')));
 			}
 
 			if (interaction.commandName === 'pokedex') {
-				interaction.reply(await getPokedex(interaction, 'regular'));
-				return;
+				return interaction.reply(await getPokedex(interaction, 'regular'));
 			}
 
 			if (interaction.commandName === 'pokedex-liste') {
-				interaction.reply(await getPokedexList(interaction, 'regular'));
-				return;
+				return interaction.reply(await getPokedexList(interaction, 'regular'));
 			}
 
 			if (interaction.commandName === 'shinydex') {
-				interaction.reply(await getPokedex(interaction, 'shiny'));
-				return;
+				return interaction.reply(await getPokedex(interaction, 'shiny'));
 			}
 
 			if (interaction.commandName === 'shinydex-liste') {
-				interaction.reply(await getPokedexList(interaction, 'shiny'));
-				return;
+				return interaction.reply(await getPokedexList(interaction, 'shiny'));
 			}
 
 			if (interaction.commandName === 'boutique') {
-				interaction.reply(await shopMessage(interaction, true));
-				return;
+				return interaction.reply(await shopMessage(interaction, true));
 			}
 
 			if (interaction.commandName === 'ball') {
-				interaction.reply(await getBallTrainer(interaction));
-				return;
+				return interaction.reply(await getBallTrainer(interaction));
 			}
 
 			if (interaction.commandName === 'evolution' || interaction.commandName === 'evolution-shiny') {
 				const isShiny = interaction.commandName === 'evolution-shiny';
-				interaction.reply(
+				return interaction.reply(
 					await evolvePokemon(
 						interaction.user.id,
 						interaction.options.getString('nom'),
@@ -246,12 +229,11 @@ function pokeChat(client) {
 						interaction.options.getString('max') === 'true'
 					)
 				);
-				return;
 			}
 
 			if (interaction.commandName === 'vendre' || interaction.commandName === 'vendre-shiny') {
 				const isShiny = interaction.commandName === 'vendre-shiny';
-				interaction.reply(
+				return interaction.reply(
 					await sellPokemon(
 						interaction.user.id,
 						interaction.options.getString('nom'),
@@ -260,70 +242,59 @@ function pokeChat(client) {
 						interaction.options.getString('max') === 'true'
 					)
 				);
-				return;
 			}
 
 			if (interaction.commandName === 'prix') {
-				interaction.reply(await getPrice(interaction.options.getString('nom')));
-				return;
+				return interaction.reply(await pricePokemon(interaction.options.getString('nom')));
 			}
 
 			if (interaction.commandName === 'rune-utiliser') {
-				interaction.reply(await spawnPokemonWithRune(interaction));
-				return;
+				return interaction.reply(await spawnPokemonWithRune(interaction));
 			}
 
 			if (interaction.commandName === 'rune-acheter') {
-				interaction.reply(await buyRune(interaction));
-				return;
+				return interaction.reply(await buyRune(interaction));
 			}
 
 			if (interaction.commandName === 'rune-inventaire') {
-				interaction.reply(await checkRune(interaction));
-				return;
+				return interaction.reply(await checkRune(interaction));
 			}
 
 			if (interaction.commandName === 'rune-prix') {
-				interaction.reply(await pricePokemon(interaction.options.getString('nom'), true));
-				return;
+				return interaction.reply(await pricePokemon(interaction.options.getString('nom'), true));
 			}
 
 			if (interaction.commandName === 'nombre-evolution') {
-				interaction.reply(await nbPokemon(interaction.options.getString('nom')));
-				return;
+				return interaction.reply(await nbPokemon(interaction.options.getString('nom')));
 			}
 
 			if (interaction.commandName === 'echange') {
-				interaction.reply(await purposeSwapPokemon(interaction));
-				return;
+				return interaction.reply(await purposeSwapPokemon(interaction));
 			}
 
 			if (interaction.commandName === 'code-affiliation') {
-				interaction.reply(await getAffiliateCode(interaction.user.id));
-				return;
+				return interaction.reply(await getAffiliateCode(interaction.user.id));
 			}
 
 			if (interaction.commandName === 'utiliser-code-affiliation') {
-				interaction.reply(
+				return interaction.reply(
 					await useAffiliateCode(interaction.user.id, interaction.options.getString('code'))
 				);
-				return;
 			}
 		}
 
 		// Autocomplete interaction
 		if (interaction.isAutocomplete()) {
 			const focusedOption = interaction.options.getFocused(true);
+			const value = removeAccents(focusedOption.value.toLowerCase());
 
-			if (focusedOption.value === '') {
-				return;
-			}
+			if (!value) return;
 
 			const name = focusedOption.name;
-			if (name === 'nom' || name === 'nom_pokemon_demande' || name === 'nom_pokemon_propose') {
-				const filtered = pokemons.filter((pokemon) =>
-					pokemon.toLowerCase().startsWith(focusedOption.value.toLowerCase())
-				);
+			if (['nom', 'nom_pokemon_demande', 'nom_pokemon_propose'].includes(name)) {
+				const filtered = pokemons
+					.filter((pokemon) => removeAccents(pokemon.toLowerCase()).startsWith(value))
+					.slice(0, 25);
 
 				await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
 			}
