@@ -133,10 +133,10 @@ async function premiumDisplay(discordId) {
 }
 
 async function getPokedexList(interaction, type) {
-	if (getIsPremium(interaction.user.id)) {
-		const { embeds, files } = await premiumEmbed(interaction.user.id);
-		return { embeds, files };
-	}
+	// if (getIsPremium(interaction.user.id)) {
+	// 	const { embeds, files } = await premiumEmbed(interaction.user.id);
+	// 	return { embeds, files };
+	// }
 	// UPDATEGENERATION: Update the number of pokemons by generation
 	const generationList = [1, 2, 3];
 	const numberPokemonByGeneration = {

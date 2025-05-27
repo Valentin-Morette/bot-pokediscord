@@ -102,8 +102,8 @@ async function commandesMessage(message) {
 					'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
 					'**Autres**\n' +
 					'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
-					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n\n' +
-					'- `/premium` : pour devenir membre premium du serveur.\n' +
+					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
+					'- `/premium` : pour devenir membre premium du serveur.\n\n' +
 					'**💎 Premium 💎**\n' +
 					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
 					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +

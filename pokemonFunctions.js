@@ -317,7 +317,7 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 }
 
 async function shinyLuck(trainerId, pokemonName) {
-	return "cette commande sera disponible avec l'implementation de l'abonnement premium.";
+	return "Cette commande sera disponible avec l'implémentation de l'abonnement premium.";
 	try {
 		const response = await API.post(`/pokemon/shiny-luck`, {
 			idDiscord: trainerId,
