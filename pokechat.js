@@ -63,7 +63,7 @@ function pokeChat(client) {
 
 	client.on('guildMemberAdd', (member) => {
 		addTrainer(member);
-		let badgeRole = member.guild.roles.cache.find((role) => role.name === '0 Badge');
+		let badgeRole = member.guild.roles.cache.find((role) => role.name === 'Dresseur Pokémon');
 
 		if (badgeRole) {
 			member.roles.add(badgeRole).catch(console.error);
