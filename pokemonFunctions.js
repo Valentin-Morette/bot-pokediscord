@@ -1,13 +1,14 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
-import { XEmbed, GamsGoEmbed } from './adsEmbed.js';
+import { getIsPremium } from './trainerFunctions.js';
+import { XEmbed, GamsGoEmbed, premiumEmbed } from './listEmbed.js';
 
 let commandCount = 0;
 let embedIndex = 0;
 
 const embedFunctions = [XEmbed, GamsGoEmbed];
 
-async function findRandomPokemon(interaction, type, followUp = false) {
+async function findRandomPokemon(interaction, followUp = false) {
 	commandCount++;
 	if (!interaction.replied && !interaction.deferred) {
 		await interaction.deferReply();
@@ -15,15 +16,12 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: correctNameZone(interaction.channel.name),
-			spawnType: type,
 		});
 		if (randomPokemon.data.length === 0) {
-			const noPokemonMessage =
-				type === 'herbe'
-					? "Il n'y a pas de Pokémon sauvage dans cette zone."
-					: "Il n'y a pas de Pokémon disponible à la pêche dans cette zone.";
-
-			return await interaction.editReply({ content: noPokemonMessage, ephemeral: true });
+			return await interaction.editReply({
+				content: "Il n'y a pas de Pokémon sauvage dans cette zone.",
+				ephemeral: true,
+			});
 		}
 		let pokemon = randomPokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
@@ -31,7 +29,7 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemon.idPokemonWild + '|' + type)
+				.setCustomId(ball + '|' + pokemon.idPokemonWild)
 				.setStyle(ButtonStyle.Secondary);
 			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
 
@@ -51,14 +49,16 @@ async function findRandomPokemon(interaction, type, followUp = false) {
 		};
 
 		if (commandCount % 40 === 0) {
-			const { embed: extraEmbed, attachment: extraAttachment } =
-				embedFunctions[embedIndex % embedFunctions.length](color);
-			responseOptions.embeds.push(extraEmbed);
-			if (extraAttachment) {
-				if (!responseOptions.files) responseOptions.files = [];
-				responseOptions.files.push(extraAttachment);
+			if (!(await getIsPremium(interaction.user.id))) {
+				const { embed: extraEmbed, attachment: extraAttachment } =
+					embedFunctions[embedIndex % embedFunctions.length](color);
+				responseOptions.embeds.push(extraEmbed);
+				if (extraAttachment) {
+					if (!responseOptions.files) responseOptions.files = [];
+					responseOptions.files.push(extraAttachment);
+				}
+				embedIndex++;
 			}
-			embedIndex++;
 		}
 
 		if (followUp) {
@@ -233,58 +233,51 @@ async function nbPokemon(namePokemon) {
 	}
 }
 
-async function getAvailable(channelName) {
+async function getAvailable(interaction, channelName) {
 	try {
 		const response = await API.post(`/pokemon/zone`, {
 			nameZone: correctNameZone(channelName),
 		});
 
-		const pokemonsBySpawnType = response.data.reduce((acc, pokemon) => {
-			if (!acc[pokemon.spawnType]) {
-				acc[pokemon.spawnType] = [];
-			}
-			acc[pokemon.spawnType].push(pokemon.name);
-			return acc;
-		}, {});
+		const isPremium = await getIsPremium(interaction.user.id);
+		const pokemonList = response.data;
 
-		const spawnOrder = ['herbe', 'canne', 'superCanne', 'megaCanne'];
-		const messages = [];
-
-		for (const spawnType of spawnOrder) {
-			if (pokemonsBySpawnType[spawnType]) {
-				messages.push(
-					`Les Pokémon suivants sont disponibles ${spawnTypeTranslation(
-						spawnType
-					)} :\n- ${pokemonsBySpawnType[spawnType].join('\n- ')}.`
-				);
-			}
+		if (pokemonList.length === 0) {
+			return `Il n'y a pas de Pokémon disponible dans cette zone.`;
 		}
 
-		return messages.join('\n\n');
+		const title = `Les Pokémon disponibles dans cette zone.`;
+		let footer = ``;
+		if (!isPremium) {
+			footer = `💎 Pour obtenir les taux de spawn précis, devenez membre Premium ! 💎`;
+		}
+		const thumbnailUrl = interaction.user.displayAvatarURL({ format: 'png', dynamic: true });
+
+		let embed = createListEmbed(
+			pokemonList.map(
+				(pokemon) => `- ${upFirstLetter(pokemon.name)} : ${isPremium ? pokemon.spawnChance / 10 : '??'}%`
+			),
+			title,
+			footer,
+			thumbnailUrl,
+			null,
+			'#6B8E23',
+			false
+		);
+
+		return { embeds: [embed] };
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-function spawnTypeTranslation(type) {
-	switch (type) {
-		case 'herbe':
-			return 'dans les herbes';
-		case 'canne':
-			return 'avec la canne';
-		case 'superCanne':
-			return 'avec la super canne';
-		case 'megaCanne':
-			return 'avec la méga canne';
-		default:
-			return type;
-	}
-}
-
-async function getZoneForPokemon(namePokemon) {
+async function getZoneForPokemon(trainerId, namePokemon) {
 	try {
 		const response = await API.get(`/zone/pokemon/${namePokemon}`);
 		let zones = response.data;
+
+		const isPremium = await getIsPremium(trainerId);
+		console.log('isPremium:', isPremium);
 
 		if (zones.status === 'noExistPokemon') {
 			return `${upFirstLetter(namePokemon)} n’est pas un Pokémon.`;
@@ -295,20 +288,66 @@ async function getZoneForPokemon(namePokemon) {
 				? `${upFirstLetter(zones.pokemon.name)} est seulement disponible par évolution.`
 				: `Liste des zones pour ${upFirstLetter(zones.pokemon.name)}`;
 
-		let allZone = zones.result.map((zone) => `- ${upFirstLetter(zone.name)}`);
+		let allZone = zones.result.map(
+			(zone) => `- ${upFirstLetter(zone.name)} : ${isPremium ? zone.spawnChance / 10 : '??'}%`
+		);
 
-		if (namePokemon.toLowerCase() === 'mew' || namePokemon.toLowerCase() === 'celebi') {
+		// UPDATEGENERATION
+		if (
+			namePokemon.toLowerCase() === 'mew' ||
+			namePokemon.toLowerCase() === 'celebi' ||
+			namePokemon.toLowerCase() === 'jirachi' ||
+			namePokemon.toLowerCase() === 'phione'
+		) {
 			title = 'Personne ne sait où se trouve ' + upFirstLetter(namePokemon) + '.';
 			allZone = [];
 		}
 
-		const footer = upFirstLetter(zones.pokemon.name);
+		let footer = ``;
+		if (!isPremium) {
+			footer = ` 💎 Pour obtenir les taux de spawn précis, devenez membre Premium ! 💎`;
+		}
 		const thumbnailUrl = zones.pokemon.img;
 
-		let embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23');
+		let embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23', false);
 		return { embeds: [embed] };
 	} catch (error) {
 		console.error('Error retrieving zones.');
+	}
+}
+
+async function shinyLuck(trainerId, pokemonName) {
+	try {
+		const response = await API.post(`/pokemon/shiny-luck`, {
+			idDiscord: trainerId,
+			pokemonName: pokemonName,
+		});
+		if (await !getIsPremium(trainerId)) {
+			const { embeds, files } = await premiumEmbed(trainerId);
+			return { embeds, files };
+		}
+		if (response.data.status === 'noExistPokemon') {
+			return `${upFirstLetter(pokemonName)} n’est pas un Pokémon.`;
+		}
+		if (response.data.status === 'noShinyRate') {
+			return `${upFirstLetter(
+				pokemonName
+			)} n'est pas un Pokémon sauvage, il n'a donc pas de taux de chance d'être shiny.`;
+		}
+		if (response.data.status === 'shiny') {
+			console.log('Shiny rate:', response.data.imgShiny);
+			let embed = createListEmbed(
+				`${upFirstLetter(pokemonName)} a ${response.data.shinyRate / 10}% de chance d'être shiny. ✨`,
+				`Chance de shiny :`,
+				null,
+				response.data.imgShiny,
+				null,
+				'#ffed00'
+			);
+			return { embeds: [embed] };
+		}
+	} catch (error) {
+		console.error('Error retrieving shiny luck.');
 	}
 }
 
@@ -320,4 +359,5 @@ export {
 	getAvailable,
 	getZoneForPokemon,
 	spawnPokemonWithRune,
+	shinyLuck,
 };

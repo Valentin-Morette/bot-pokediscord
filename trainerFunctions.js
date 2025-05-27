@@ -11,10 +11,10 @@ import {
 	createListEmbed,
 	API,
 	formatRemainingTime,
-	correctNameZone,
 } from './globalFunctions.js';
-import { balls, authorizeZone } from './variables.js';
+import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
+import { premiumEmbed, alsoPremiumEmbed } from './listEmbed.js';
 
 const shopCooldowns = new Map();
 
@@ -121,13 +121,29 @@ async function getBallTrainer(interaction) {
 	}
 }
 
+async function premiumDisplay(discordId) {
+	return "L'abonnement premium n'est pas encore disponible pour le moment. Veuillez patienter.";
+	// if (await getIsPremium(discordId)) {
+	// 	const { embeds, files } = await alsoPremiumEmbed();
+	// 	return { embeds, files };
+	// } else {
+	// 	const { embeds, files } = await premiumEmbed(discordId, true);
+	// 	return { embeds, files };
+	// }
+}
+
 async function getPokedexList(interaction, type) {
+	if (getIsPremium(interaction.user.id)) {
+		const { embeds, files } = await premiumEmbed(interaction.user.id);
+		return { embeds, files };
+	}
 	// UPDATEGENERATION: Update the number of pokemons by generation
 	const generationList = [1, 2, 3];
 	const numberPokemonByGeneration = {
 		1: { name: 'Kanto', number: 151 },
 		2: { name: 'Johto', number: 100 },
 		3: { name: 'Hoenn', number: 135 },
+		4: { name: 'Sinnoh', number: 107 },
 	};
 	let user = interaction.options.getUser('dresseur') ?? interaction.user;
 	let pokedexList = [];
@@ -202,6 +218,7 @@ async function getPokedex(interaction, type) {
 		1: 151,
 		2: 100,
 		3: 135,
+		4: 107,
 	};
 
 	let generation = interaction.options.getInteger('generation');
@@ -211,6 +228,7 @@ async function getPokedex(interaction, type) {
 			'𝗞𝗔𝗡𝗧𝗢': 1,
 			'𝗝𝗢𝗛𝗧𝗢': 2,
 			'𝗛𝗢𝗘𝗡𝗡': 3,
+			'𝗦𝗜𝗡𝗡𝗢𝗛': 4,
 		};
 		generation = categoryNameForGeneration[interaction.channel.parent.name] ?? 1;
 	}
@@ -272,6 +290,15 @@ async function getAffiliateCode(idTrainer) {
 	try {
 		const response = await API.get(`/trainer/` + idTrainer);
 		return 'Votre code affilié est : ' + response.data.affiliateCode;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function getIsPremium(idTrainer) {
+	try {
+		const response = await API.get(`/trainer/` + idTrainer);
+		return response.data.isPremium;
 	} catch (error) {
 		console.error(error);
 	}
@@ -380,21 +407,7 @@ async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge,
 
 async function handleCatch(interaction, idPokeball) {
 	const idPokemonWild = interaction.customId.split('|')[1];
-	const type = interaction.customId.split('|')[2];
 	const idTrainer = interaction.user.id;
-
-	const roleNames = interaction.member.roles.cache.map((role) => role.name);
-	const channelName = correctNameZone(interaction.channel.name);
-	const requiredRole = authorizeZone[channelName];
-	const hasAccess = roleNames.includes(requiredRole);
-
-	if (!hasAccess) {
-		await interaction.reply({
-			content: `Vous n'avez pas accès à cette zone. Vous devez avoir le rôle ${requiredRole}.`,
-			ephemeral: true,
-		});
-		return;
-	}
 
 	const response = await catchPokemon(idPokemonWild, idTrainer, idPokeball);
 	let replyMessage;
@@ -475,7 +488,7 @@ async function handleCatch(interaction, idPokeball) {
 	await interaction.update(responseEmbed);
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
-		await findRandomPokemon(interaction, type, true);
+		await findRandomPokemon(interaction, true);
 	} else if (response.status === 'noBall') {
 		const now = Date.now();
 		const cooldownAmount = 10000;
@@ -790,4 +803,6 @@ export {
 	kickMember,
 	shopMessage,
 	quantityPokemon,
+	getIsPremium,
+	premiumDisplay,
 };

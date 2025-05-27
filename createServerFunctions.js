@@ -73,17 +73,12 @@ async function commandesMessage(message) {
 			.setDescription(
 				'**Recherche de Pokémon**\n' +
 					'- `/cherche` : pour chercher un Pokémon.\n' +
-					'- `/canne` : pour pêcher un Pokémon avec la canne.\n' +
-					'- `/super-canne` : pour pêcher un Pokémon avec la super canne.\n' +
-					'- `/mega-canne` : pour pêcher un Pokémon avec la méga canne.\n\n' +
 					'**Vente de Pokémon**\n' +
 					'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
 					'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
 					'**Visualiser les Pokémon**\n' +
 					"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
 					"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
-					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
-					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
 					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
 					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
 					'**Évolution de Pokémon**\n' +
@@ -105,11 +100,45 @@ async function commandesMessage(message) {
 					'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
 					'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
 					'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
-					'**Affiliation**\n' +
+					'**Autres**\n' +
 					'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
-					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n\n'
+					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n\n' +
+					'- `/premium` : pour devenir membre premium du serveur.\n' +
+					'**💎 Premium 💎**\n' +
+					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
+					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
+					'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n'
 			);
 		await channel.send({ embeds: [commandEmbed] });
+	} else {
+		console.error(`No channel found with the name ${channelName}`);
+	}
+}
+
+async function premiumMessage(message) {
+	let channelName = '💎・𝐏𝐫𝐞𝐦𝐢𝐮𝐦';
+	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
+	if (channel) {
+		const messages = await channel.messages.fetch();
+		await channel.bulkDelete(messages);
+		const attachment = new AttachmentBuilder('./assets/premium.png');
+		const commandEmbed = new EmbedBuilder()
+			.setColor('#3eb0ed')
+			.setTitle('💎 Devenez Membre Premium 💎')
+			.setDescription(
+				`Profitez d'avantages exclusifs en soutenant le serveur !\n\n` +
+					`**Avantages Premium :**\n` +
+					`- Accès à \`/chance-shiny\`, \`/pokedex-list\` et \`/shinydex-list\`\n` +
+					`- Commande \`/cadeau\` toutes les **4h** (au lieu de 12h)\n` +
+					`- Plus aucune publicité lors de l'utilisation du bot\n` +
+					`- Commandes \`/zone\` et \`/disponible\` enrichies avec les **taux de spawn**\n\n` +
+					`Rejoignez les membres les plus engagés et débloquez l'expérience complète du bot.\n\n` +
+					`Utilisez la commande \`/premium\` pour devenir Premium !\n\n` +
+					`**Prix :** 3,49€ en une fois.`
+			)
+			.setThumbnail('attachment://premium.png');
+
+		await channel.send({ embeds: [commandEmbed], files: [attachment] });
 	} else {
 		console.error(`No channel found with the name ${channelName}`);
 	}
@@ -177,102 +206,6 @@ async function arenaMessagesGen1(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐀𝐫𝐠𝐞𝐧𝐭𝐚',
-		'Caillou',
-		'Roche',
-		'Je suis Caillou, le Champion de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 1',
-		10,
-		5,
-		'1 Badge',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐀𝐳𝐮𝐫𝐢𝐚',
-		'Flaquette',
-		'Cascade',
-		'Je suis Flaquette, la Championne de type Eau. Pour obtenir le Badge Cascade, vous devez avoir au moins 33 Pokémon, dont 12 différents de la génération 1',
-		33,
-		12,
-		'2 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐂𝐚𝐫𝐦𝐢𝐧-𝐬𝐮𝐫-𝐦𝐞𝐫',
-		'SergentPile',
-		'Foudre',
-		'Je suis Sergent Pile, le Champion de type Électrique. Pour obtenir le Badge Foudre, vous devez avoir au moins 50 Pokémon, dont 20 différents de la génération 1',
-		50,
-		20,
-		'3 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐂𝐞𝐥𝐚𝐝𝐨𝐩𝐨𝐥𝐞',
-		'Fleurika',
-		'Prisme',
-		'Je suis Fleurika, la Championne de type Plante. Pour obtenir le Badge Prisme, vous devez avoir au moins 67 Pokémon, dont 23 différents de la génération 1',
-		67,
-		23,
-		'4 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐏𝐚𝐫𝐦𝐚𝐧𝐢𝐞',
-		'Kouga',
-		'Ame',
-		'Je suis Kouga, le Champion de type Poison. Pour obtenir le Badge Ame, vous devez avoir au moins 80 Pokémon, dont 30 différents de la génération 1',
-		80,
-		30,
-		'5 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐒𝐚𝐟𝐫𝐚𝐧𝐢𝐚',
-		'Mordane',
-		'Marais',
-		'Je suis Mordane, la Championne de type Psy. Pour obtenir le Badge Marais, vous devez avoir au moins 99 Pokémon, dont 35 différents de la génération 1',
-		99,
-		35,
-		'6 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐂𝐫𝐚𝐦𝐨𝐢𝐬-𝐢𝐥𝐞',
-		'Aoutiste',
-		'Volcan',
-		'Je suis Aoutiste, le Champion de type Feu. Pour obtenir le Badge Volcan, vous devez avoir au moins 115 Pokémon, dont 48 différents de la génération 1',
-		115,
-		48,
-		'7 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐉𝐚𝐝𝐢𝐞𝐥𝐥𝐞',
-		'Giavonnou',
-		'Terre',
-		'Je suis Giavonnou, le Champion de type Sol. Pour obtenir le Badge Terre, vous devez avoir au moins 150 Pokémon, dont 61 différents de la génération 1',
-		150,
-		61,
-		'8 Badges',
-		1
-	);
-
-	sendArenaMessage(
-		message,
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Shinysse',
 		'Maitre Pokémon Shiny',
@@ -294,102 +227,6 @@ async function arenaMessagesGen2(message) {
 		100,
 		100,
 		'Maitre Pokémon Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐌𝐚𝐮𝐯𝐢𝐥𝐥𝐞',
-		'Aile-bert',
-		'Zéphyr',
-		'Je suis Aile-bert, le Champion de type Vol. Pour obtenir le Badge Zéphyr, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 2.',
-		10,
-		5,
-		'1 Badge Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐄𝐜𝐨𝐫𝐜𝐢𝐚',
-		'Insektor',
-		'Nymphe',
-		'Je suis Insektor, la Championne de type Insecte. Pour obtenir le Badge Nymphe, vous devez avoir au moins 33 Pokémon, dont 9 différents de la génération 2.',
-		33,
-		9,
-		'2 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐃𝐨𝐮𝐛𝐥𝐨𝐧𝐯𝐢𝐥𝐥𝐞',
-		'Rouge',
-		'Plaine',
-		'Je suis Rouge, le Champion de type Normal. Pour obtenir le Badge Plaine, vous devez avoir au moins 50 Pokémon, dont 16 différents de la génération 2.',
-		50,
-		16,
-		'3 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐑𝐨𝐬𝐚𝐥𝐢𝐚',
-		'Mortimystere',
-		'Brume',
-		'Je suis Mortimystère, la Championne de type Spectre. Pour obtenir le Badge Brume, vous devez avoir au moins 67 Pokémon, dont 19 différents de la génération 2.',
-		67,
-		19,
-		'4 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐈𝐫𝐢𝐬𝐢𝐚',
-		'Chique',
-		'Choc',
-		'Je suis Chique, le Champion de type Combat. Pour obtenir le Badge Choc, vous devez avoir au moins 80 Pokémon, dont 26 différents de la génération 2.',
-		80,
-		26,
-		'5 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐎𝐥𝐢𝐯𝐢𝐥𝐥𝐞',
-		'Ferasmine',
-		'Minéral',
-		'Je suis Ferasmine, la Championne de type Acier. Pour obtenir le Badge Minéral, vous devez avoir au moins 99 Pokémon, dont 31 différents de la génération 2.',
-		99,
-		31,
-		'6 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐀𝐜𝐚𝐣𝐨𝐮',
-		'Frigo',
-		'Glacier',
-		'Je suis Frigo, le Champion de type Glace. Pour obtenir le Badge Glacier, vous devez avoir au moins 115 Pokémon, dont 38 différents de la génération 2.',
-		115,
-		38,
-		'7 Badges Gen2',
-		2
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐄𝐛𝐞𝐧𝐞𝐥𝐥𝐞',
-		'Salamandra',
-		'Levant',
-		'Je suis Salamandra, le Champion de type Dragon. Pour obtenir le Badge Levant, vous devez avoir au moins 150 Pokémon, dont 49 différents de la génération 2.',
-		150,
-		49,
-		'8 Badges Gen2',
 		2
 	);
 
@@ -421,102 +258,6 @@ async function arenaMessagesGen3(message) {
 
 	sendArenaMessage(
 		message,
-		'🏠・𝐌𝐞𝐫𝐨𝐮𝐯𝐢𝐥𝐥𝐞',
-		'Roxanne',
-		'Roche',
-		'Je suis Roxanne, la Championne de type Roche. Pour obtenir le Badge Roche, vous devez avoir au moins 10 Pokémon, dont 5 différents de la génération 3.',
-		10,
-		5,
-		'1 Badge Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐌𝐲𝐨𝐤𝐚𝐫𝐚',
-		'Bastien',
-		'Poing',
-		'Je suis Bastien, le Champion de type Combat. Pour obtenir le Badge Poing, vous devez avoir au moins 33 Pokémon, dont 9 différents de la génération 3.',
-		33,
-		9,
-		'2 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐋𝐚𝐯𝐚𝐧𝐝𝐢𝐚',
-		'Voltere',
-		'Dynamo',
-		'Je suis Voltere, le Champion de type Electrique. Pour obtenir le Badge Dynamo, vous devez avoir au moins 50 Pokémon, dont 16 différents de la génération 3.',
-		50,
-		16,
-		'3 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐕𝐞𝐫𝐦𝐢𝐥𝐚𝐯𝐚',
-		'Adriane',
-		'Chaleur',
-		'Je suis Adriane, la Championne de type feu. Pour obtenir le Badge Chaleur, vous devez avoir au moins 67 Pokémon, dont 19 différents de la génération 3.',
-		67,
-		19,
-		'4 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐂𝐥𝐞𝐦𝐞𝐧𝐭𝐢-𝐯𝐢𝐥𝐥𝐞',
-		'Norman',
-		'Balancier',
-		'Je suis Norman, le Champion de type Normal. Pour obtenir le Badge Balancier, vous devez avoir au moins 80 Pokémon, dont 26 différents de la génération 3.',
-		80,
-		26,
-		'5 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐂𝐢𝐦𝐞𝐭𝐫𝐨𝐧𝐞𝐥𝐥𝐞',
-		'Alizee',
-		'Plume',
-		'Je suis Alizee, la Championne de type Vol. Pour obtenir le Badge Plume, vous devez avoir au moins 99 Pokémon, dont 31 différents de la génération 3.',
-		99,
-		31,
-		'6 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐀𝐥𝐠𝐚𝐭𝐢𝐚',
-		'Tatia',
-		'Esprit',
-		'Je suis Tatia, le Champion de type Psy. Pour obtenir le Badge Esprit, vous devez avoir au moins 115 Pokémon, dont 38 différents de la génération 3.',
-		115,
-		38,
-		'7 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
-		'🏠・𝐀𝐭𝐚𝐥𝐚𝐧𝐨𝐩𝐨𝐥𝐢𝐬',
-		'Juan',
-		'Pluie',
-		'Je suis Juan, le Champion de type Eau. Pour obtenir le Badge Pluie, vous devez avoir au moins 150 Pokémon, dont 49 différents de la génération 3.',
-		150,
-		49,
-		'8 Badges Gen3',
-		3
-	);
-
-	sendArenaMessage(
-		message,
 		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
 		'Marcysse',
 		'Maitre Pokémon Shiny Gen3',
@@ -528,8 +269,34 @@ async function arenaMessagesGen3(message) {
 	);
 }
 
+async function arenaMessagesGen4(message) {
+	await sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Cynthia',
+		'Maitre Pokémon Gen4',
+		'Je suis Cynthia, la Championne de la Ligue Pokémon. Pour devenir Maitre Pokémon, vous devez posséder les 107 Pokémon différents de la génération 4.',
+		107,
+		107,
+		'Maitre Pokémon Gen4',
+		4
+	);
+
+	sendArenaMessage(
+		message,
+		'🏠・𝐏𝐥𝐚𝐭𝐞𝐚𝐮-𝐈𝐧𝐝𝐢𝐠𝐨',
+		'Shinthya',
+		'Maitre Pokémon Shiny Gen4',
+		'Je suis Shinthya, la maitre des Pokémon shiny. Pour devenir Maitre Pokémon Shiny Gen 4, vous devez posséder les 107 Pokémon shiny différents de la génération 4.',
+		107,
+		107,
+		'Maitre Pokémon Shiny Gen4',
+		4
+	);
+}
+
 async function channelZones(message) {
-	const response = await API.get(`/zone/3`);
+	const response = await API.get(`/zone/4`);
 	response.data.forEach(async (zone) => {
 		const channel = await message.guild.channels.create({
 			name: '🌳・' + zone,
@@ -559,10 +326,11 @@ function slashCommande(commands) {
 export {
 	addBallEmojis,
 	slashCommande,
-	arenaMessagesGen1,
-	arenaMessagesGen2,
-	arenaMessagesGen3,
+	// arenaMessagesGen1,
+	// arenaMessagesGen2,
+	// arenaMessagesGen3,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
+	premiumMessage,
 };

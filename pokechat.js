@@ -1,12 +1,13 @@
 import {
 	slashCommande,
 	addBallEmojis,
-	arenaMessagesGen1,
-	arenaMessagesGen2,
-	arenaMessagesGen3,
+	// arenaMessagesGen1,
+	// arenaMessagesGen2,
+	// arenaMessagesGen3,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
+	premiumMessage,
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -30,6 +31,7 @@ import {
 	shopMessage,
 	quantityPokemon,
 	dailyGift,
+	premiumDisplay,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -39,6 +41,7 @@ import {
 	getAvailable,
 	getZoneForPokemon,
 	spawnPokemonWithRune,
+	shinyLuck,
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { heartbeat, removeAccents } from './globalFunctions.js';
@@ -92,6 +95,8 @@ function pokeChat(client) {
 				await kickMember(message);
 			} else if (message.content === '!channelZones') {
 				await channelZones(message);
+			} else if (message.content === '!premiumMessage') {
+				await premiumMessage(message);
 			}
 			return;
 		}
@@ -153,19 +158,7 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'cherche') {
-				return await findRandomPokemon(interaction, 'herbe');
-			}
-
-			if (interaction.commandName === 'mega-canne') {
-				return await findRandomPokemon(interaction, 'megaCanne');
-			}
-
-			if (interaction.commandName === 'canne') {
-				return await findRandomPokemon(interaction, 'canne');
-			}
-
-			if (interaction.commandName === 'super-canne') {
-				return await findRandomPokemon(interaction, 'superCanne');
+				return await findRandomPokemon(interaction);
 			}
 
 			if (interaction.commandName === 'argent') {
@@ -186,11 +179,13 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'disponible') {
 				const channelName = client.channels.cache.get(interaction.channelId).name;
-				return interaction.reply(await getAvailable(channelName));
+				return interaction.reply(await getAvailable(interaction, channelName));
 			}
 
 			if (interaction.commandName === 'zone') {
-				return interaction.reply(await getZoneForPokemon(interaction.options.getString('nom')));
+				return interaction.reply(
+					await getZoneForPokemon(interaction.user.id, interaction.options.getString('nom'))
+				);
 			}
 
 			if (interaction.commandName === 'pokedex') {
@@ -244,6 +239,12 @@ function pokeChat(client) {
 				);
 			}
 
+			if (interaction.commandName === 'chance-shiny') {
+				return interaction.reply(
+					await shinyLuck(interaction.user.id, interaction.options.getString('nom'))
+				);
+			}
+
 			if (interaction.commandName === 'prix') {
 				return interaction.reply(await pricePokemon(interaction.options.getString('nom')));
 			}
@@ -270,6 +271,10 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'echange') {
 				return interaction.reply(await purposeSwapPokemon(interaction));
+			}
+
+			if (interaction.commandName === 'premium') {
+				return interaction.reply(await premiumDisplay(interaction.user.id));
 			}
 
 			if (interaction.commandName === 'code-affiliation') {

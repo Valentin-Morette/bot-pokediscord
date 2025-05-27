@@ -39,7 +39,8 @@ function createListEmbed(
 	footer = null,
 	thumbnailUrl = null,
 	img = null,
-	color = '#FFFFFF'
+	color = '#FFFFFF',
+	needTimestamp = true
 ) {
 	let embed = new EmbedBuilder().setColor(color);
 
@@ -51,7 +52,9 @@ function createListEmbed(
 	}
 	if (footer) {
 		embed.setFooter({ text: footer });
-		embed.setTimestamp();
+		if (needTimestamp) {
+			embed.setTimestamp();
+		}
 	}
 	if (img) {
 		embed.setImage(img);
