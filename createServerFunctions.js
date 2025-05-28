@@ -326,9 +326,10 @@ function slashCommande(commands) {
 export {
 	addBallEmojis,
 	slashCommande,
-	// arenaMessagesGen1,
-	// arenaMessagesGen2,
-	// arenaMessagesGen3,
+	arenaMessagesGen1,
+	arenaMessagesGen2,
+	arenaMessagesGen3,
+	arenaMessagesGen4,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,

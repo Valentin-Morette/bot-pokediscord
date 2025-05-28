@@ -1,9 +1,10 @@
 import {
 	slashCommande,
 	addBallEmojis,
-	// arenaMessagesGen1,
-	// arenaMessagesGen2,
-	// arenaMessagesGen3,
+	arenaMessagesGen1,
+	arenaMessagesGen2,
+	arenaMessagesGen3,
+	arenaMessagesGen4,
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
@@ -87,6 +88,8 @@ function pokeChat(client) {
 				await arenaMessagesGen2(message);
 			} else if (message.content === '!arenaMessagesGen3') {
 				await arenaMessagesGen3(message);
+			} else if (message.content === '!arenaMessagesGen4') {
+				await arenaMessagesGen4(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {
