@@ -216,6 +216,8 @@ async function nbPokemon(namePokemon) {
 				`- Aquali : Les Îles Écume.\n` +
 				`- Mentali : La Tour Cendrée.\n` +
 				`- Noctali : L'Antre noir.\n` +
+				`- Phyllali : La Forêt Vestigion.\n` +
+				`- Givrali : Le Temple Frimapic.\n` +
 				`- Aléatoire : autres zones.`;
 		} else {
 			title =
