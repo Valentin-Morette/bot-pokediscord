@@ -64,6 +64,42 @@ const commandsPokechat = [
 		description: 'Affiche la liste des vos Shinydex',
 	},
 	{
+		name: 'pokedex-inverse',
+		description: 'Affiche les Pokémon que vous n’avez pas dans votre Pokédex',
+		options: [
+			{
+				name: 'generation',
+				type: 4,
+				description: 'Numéro de la génération de Pokémon',
+				required: false,
+			},
+			{
+				name: 'dresseur',
+				type: 6,
+				description: 'Nom du dresseur',
+				required: false,
+			},
+		],
+	},
+	{
+		name: 'shinydex-inverse',
+		description: 'Affiche les Pokémon que vous n’avez pas dans votre Shinydex',
+		options: [
+			{
+				name: 'generation',
+				type: 4,
+				description: 'Numéro de la génération de Pokémon',
+				required: false,
+			},
+			{
+				name: 'dresseur',
+				type: 6,
+				description: 'Nom du dresseur',
+				required: false,
+			},
+		],
+	},
+	{
 		name: 'ball',
 		description: 'Affiche vos Pokéballs',
 	},

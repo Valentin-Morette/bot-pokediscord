@@ -279,7 +279,6 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 		let zones = response.data;
 
 		const isPremium = await getIsPremium(trainerId);
-		console.log('isPremium:', isPremium);
 
 		if (zones.status === 'noExistPokemon') {
 			return `${upFirstLetter(namePokemon)} n’est pas un Pokémon.`;
@@ -338,7 +337,6 @@ async function shinyLuck(trainerId, pokemonName) {
 			)} n'est pas un Pokémon sauvage, il n'a donc pas de taux de chance d'être shiny.`;
 		}
 		if (response.data.status === 'shiny') {
-			console.log('Shiny rate:', response.data.imgShiny);
 			let embed = createListEmbed(
 				`${upFirstLetter(pokemonName)} a ${response.data.shinyRate / 10}% de chance d'être shiny. ✨`,
 				`Chance de shiny :`,
