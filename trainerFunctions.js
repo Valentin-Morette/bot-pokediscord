@@ -137,7 +137,7 @@ async function getPokedexList(interaction, type) {
 		return { embeds, files };
 	}
 	// UPDATEGENERATION: Update the number of pokemons by generation
-	const generationList = [1, 2, 3];
+	const generationList = [1, 2, 3, , 4];
 	const numberPokemonByGeneration = {
 		1: { name: 'Kanto', number: 151 },
 		2: { name: 'Johto', number: 100 },
