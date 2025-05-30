@@ -220,6 +220,9 @@ async function getPokedex(interaction, type) {
 		4: 107,
 	};
 
+	let isReverse = type.endsWith('-reverse');
+	let isShiny = type.startsWith('shiny');
+
 	let generation = interaction.options.getInteger('generation');
 	if (generation == null) {
 		// UPDATEGENERATION: Update the category name for each generation
@@ -237,37 +240,43 @@ async function getPokedex(interaction, type) {
 	try {
 		const response = await API.get(`/pokemon/trainer/` + user.id + '/' + generation + '/' + type);
 		const pokemons = response.data.pokemon;
+		let items = pokemons.map((pokemon) => `- ${!isReverse ? pokemon.quantity : ''} ${pokemon.name}`);
+		let title = '';
+		let footer = '';
+
 		if (pokemons.length === 0) {
-			return (
-				`${sameUser ? `${user.globalName} n'a` : `Vous n'avez`} pas encore de Pokémon` +
-				(type === 'shiny' ? ' shiny' : '') +
-				'.'
-			);
+			if (!isReverse) {
+				return (
+					`${sameUser ? `${user.globalName} n'a` : `Vous n'avez`} pas encore de Pokémon` +
+					(isShiny ? ' shiny' : '') +
+					'.'
+				);
+			} else {
+				return `Vous avez déjà tous les Pokémon` + (isShiny ? ' shiny ' : ' ') + 'de cette génération.';
+			}
 		}
 
-		const items = pokemons.map((pokemon) => `- ${pokemon.quantity} ${pokemon.name}`);
-		const title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${
-			response.data.sumPokemon
-		} Pokémon${hasStar(type === 'shiny')}, dont ${response.data.countPokemon} différents.`;
-
-		const footer =
-			(type === 'shiny' ? 'Shiny' : 'Poke') +
-			'dex de ' +
-			user.globalName +
-			' - ' +
-			response.data.countPokemon +
-			'/' +
-			numberPokemonByGeneration[generation];
-
-		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
+		if (!isReverse) {
+			title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${
+				response.data.sumPokemon
+			} Pokémon${hasStar(isShiny)}, dont ${response.data.countPokemon} différents.`;
+			footer = `${isShiny ? 'Shiny' : 'Poke'}dex de ${user.globalName} - ${response.data.countPokemon}/${
+				numberPokemonByGeneration[generation]
+			}`;
+		} else {
+			title = `Il vous manque ${response.data.countPokemon} Pokémon${hasStar(isShiny)}.`;
+			footer = `${isShiny ? 'Shiny' : 'Poke'}dex inversé de ${user.globalName} - ${
+				response.data.countPokemon
+			}/${numberPokemonByGeneration[generation]}`;
+		}
 
 		let embed = createListEmbed(
 			items,
 			title,
 			footer,
-			thumbnailUrl,
+			user.displayAvatarURL({ format: 'png', dynamic: true }),
 			null,
-			type === 'shiny' ? '#FFED00' : '#FF0000'
+			isShiny ? '#FFED00' : '#FF0000'
 		);
 
 		return { embeds: [embed] };

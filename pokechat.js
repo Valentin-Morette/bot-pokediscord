@@ -199,12 +199,20 @@ function pokeChat(client) {
 				return interaction.reply(await getPokedexList(interaction, 'regular'));
 			}
 
+			if (interaction.commandName === 'pokedex-inverse') {
+				return interaction.reply(await getPokedex(interaction, 'regular-reverse'));
+			}
+
 			if (interaction.commandName === 'shinydex') {
 				return interaction.reply(await getPokedex(interaction, 'shiny'));
 			}
 
 			if (interaction.commandName === 'shinydex-liste') {
 				return interaction.reply(await getPokedexList(interaction, 'shiny'));
+			}
+
+			if (interaction.commandName === 'shinydex-inverse') {
+				return interaction.reply(await getPokedex(interaction, 'shiny-reverse'));
 			}
 
 			if (interaction.commandName === 'boutique') {

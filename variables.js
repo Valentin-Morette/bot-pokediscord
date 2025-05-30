@@ -73,12 +73,6 @@ const commandsPokechat = [
 				description: 'Numéro de la génération de Pokémon',
 				required: false,
 			},
-			{
-				name: 'dresseur',
-				type: 6,
-				description: 'Nom du dresseur',
-				required: false,
-			},
 		],
 	},
 	{
@@ -89,12 +83,6 @@ const commandsPokechat = [
 				name: 'generation',
 				type: 4,
 				description: 'Numéro de la génération de Pokémon',
-				required: false,
-			},
-			{
-				name: 'dresseur',
-				type: 6,
-				description: 'Nom du dresseur',
 				required: false,
 			},
 		],
