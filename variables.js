@@ -105,7 +105,7 @@ const commandsPokechat = [
 	},
 	{
 		name: 'cadeau',
-		description: 'Ouvre un cadeau, disponible toutes les 12h',
+		description: 'Ouvre un cadeau, disponible toutes les 12h (4h pour les comptes premium)',
 	},
 	{
 		name: 'evolution',
