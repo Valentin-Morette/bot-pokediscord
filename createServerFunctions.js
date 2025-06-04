@@ -79,8 +79,6 @@ async function commandesMessage(message) {
 					'**Visualiser les Pokémon**\n' +
 					"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
 					"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
-					'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
-					'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
 					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
 					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
 					'**Évolution de Pokémon**\n' +
@@ -91,7 +89,7 @@ async function commandesMessage(message) {
 					'- `/argent` : pour voir votre argent.\n' +
 					'- `/ball` : pour voir toutes vos Pokéballs.\n' +
 					'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
-					'- `/cadeau` : pour recevoir votre cadeau toutes les 12 heures.\n' +
+					'- `/cadeau` : pour recevoir un cadeau.\n' +
 					'- `/boutique` : pour ouvrir la boutique.\n\n' +
 					'**Pokémon Disponibles et Échanges**\n' +
 					'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
@@ -109,6 +107,8 @@ async function commandesMessage(message) {
 					'**💎 Premium 💎**\n' +
 					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
 					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
+					'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
+					'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
 					'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n'
 			);
 		await channel.send({ embeds: [commandEmbed] });
@@ -130,13 +130,13 @@ async function premiumMessage(message) {
 			.setDescription(
 				`Profitez d'avantages exclusifs en soutenant le serveur !\n\n` +
 					`**Avantages Premium :**\n` +
-					`- Accès à \`/chance-shiny\`, \`/pokedex-list\` et \`/shinydex-list\`\n` +
+					`- Accès à \`/chance-shiny\`, \`/pokedex-list\`, \`/shinydex-list\`, \`/pokedex-inverse\` et \`/shinydex-inverse\`\n` +
 					`- Commande \`/cadeau\` toutes les **4h** (au lieu de 12h)\n` +
 					`- Plus aucune publicité lors de l'utilisation du bot\n` +
 					`- Commandes \`/zone\` et \`/disponible\` enrichies avec les **taux de spawn**\n\n` +
 					`Rejoignez les membres les plus engagés et débloquez l'expérience complète du bot.\n\n` +
 					`Utilisez la commande \`/premium\` pour devenir Premium !\n\n` +
-					`**Prix :** 3,49€ en une fois.`
+					`**Prix :** 3,99€ en une fois.`
 			)
 			.setThumbnail('attachment://premium.png');
 

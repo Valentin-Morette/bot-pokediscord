@@ -319,14 +319,14 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 
 async function shinyLuck(trainerId, pokemonName) {
 	try {
+		if (!(await getIsPremium(trainerId))) {
+			const { embeds, files } = await premiumEmbed(trainerId);
+			return { embeds, files };
+		}
 		const response = await API.post(`/pokemon/shiny-luck`, {
 			idDiscord: trainerId,
 			pokemonName: pokemonName,
 		});
-		if (await !getIsPremium(trainerId)) {
-			const { embeds, files } = await premiumEmbed(trainerId);
-			return { embeds, files };
-		}
 		if (response.data.status === 'noExistPokemon') {
 			return `${upFirstLetter(pokemonName)} n’est pas un Pokémon.`;
 		}

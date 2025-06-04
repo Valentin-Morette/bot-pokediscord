@@ -132,7 +132,7 @@ async function premiumDisplay(discordId) {
 }
 
 async function getPokedexList(interaction, type) {
-	if (!getIsPremium(interaction.user.id)) {
+	if (!(await getIsPremium(interaction.user.id))) {
 		const { embeds, files } = await premiumEmbed(interaction.user.id);
 		return { embeds, files };
 	}
@@ -222,6 +222,11 @@ async function getPokedex(interaction, type) {
 
 	let isReverse = type.endsWith('-reverse');
 	let isShiny = type.startsWith('shiny');
+
+	if (isReverse && !(await getIsPremium(interaction.user.id))) {
+		const { embeds, files } = await premiumEmbed(interaction.user.id);
+		return { embeds, files };
+	}
 
 	let generation = interaction.options.getInteger('generation');
 	if (generation == null) {
@@ -516,12 +521,13 @@ async function handleCatch(interaction, idPokeball) {
 			}
 		}
 
-		// Utilisation de setTimeout pour envoyer un message au bon moment, mais assurez-vous que l'interaction est déjà mise à jour avant cela
 		setTimeout(() => shopMessage(interaction), 500);
 	}
 }
 
 async function shopMessage(interaction, needReply = false) {
+	const response = await API.get(`/trainer/` + interaction.user.id);
+
 	const channel = interaction.channel;
 
 	const attachment = new AttachmentBuilder(`./assets/shop.png`);
@@ -539,7 +545,8 @@ async function shopMessage(interaction, needReply = false) {
 		.setColor('#FFFFFF')
 		.setTitle(title)
 		.setDescription(
-			`${pokeballEmoji} Pokeball : 50 $\n\n` +
+			`Vous avez actuellement : ${formatNombreAvecSeparateur(response.data.money)} $.\n\n` +
+				`${pokeballEmoji} Pokeball : 50 $\n\n` +
 				`${superballEmoji} Superball : 80 $\n\n` +
 				`${hyperballEmoji} Hyperball : 150 $\n\n` +
 				`${masterballEmoji} Masterball : 100 000 $\n\n`

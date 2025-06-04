@@ -86,7 +86,7 @@ async function premiumEmbed(discordId, isCmd = false) {
 				'- Plus de contenus avec certaines commandes.\n' +
 				'- Pas de publicités sur vos commandes.\n' +
 				'- Commande /cadeau disponible toute les 4h au lieu de 12h.\n\n' +
-				'Et ce pour seulement **3,49€ en une fois** !\n\n'
+				'Et ce pour seulement **3,99€ en une fois** !\n\n'
 		)
 		.addFields({
 			name: `🔗 Lien de paiement ( ⚠️ Lien valable pour l'utilisateur de la commande )`,
