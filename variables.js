@@ -352,6 +352,19 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'chance-capture',
+		description: 'Affiche votre chance de capturer un Pokémon avec chaque Pokéball',
+		options: [
+			{
+				name: 'nom',
+				type: 3,
+				description: 'Nom du Pokémon',
+				required: true,
+				autocomplete: true,
+			},
+		],
+	},
+	{
 		name: 'premium',
 		description: 'Affiche les avantages du compte premium et le lien de paiement',
 	},

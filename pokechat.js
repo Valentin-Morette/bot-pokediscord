@@ -43,6 +43,7 @@ import {
 	getZoneForPokemon,
 	spawnPokemonWithRune,
 	shinyLuck,
+	catchLuck,
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { heartbeat, removeAccents } from './globalFunctions.js';
@@ -72,7 +73,9 @@ function pokeChat(client) {
 
 		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
 		if (welcomeChannel) {
-			welcomeChannel.send(`Bienvenue ${member} sur le serveur !`);
+			welcomeChannel.send(
+				`Bienvenue ${member} sur le serveur ! Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles. Amuse-toi bien !`
+			);
 		}
 	});
 
@@ -254,6 +257,10 @@ function pokeChat(client) {
 				return interaction.reply(
 					await shinyLuck(interaction.user.id, interaction.options.getString('nom'))
 				);
+			}
+
+			if (interaction.commandName === 'chance-capture') {
+				return interaction.reply(await catchLuck(interaction));
 			}
 
 			if (interaction.commandName === 'prix') {

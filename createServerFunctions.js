@@ -109,7 +109,8 @@ async function commandesMessage(message) {
 					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
 					'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
 					'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
-					'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n'
+					'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n' +
+					'- `/chance-capture [nom du Pokémon]` : pour connaître le pourcentage de chance de capturer un Pokémon par type de Pokéball.\n'
 			);
 		await channel.send({ embeds: [commandEmbed] });
 	} else {

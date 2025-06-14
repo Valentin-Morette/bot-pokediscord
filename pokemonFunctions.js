@@ -324,7 +324,6 @@ async function shinyLuck(trainerId, pokemonName) {
 			return { embeds, files };
 		}
 		const response = await API.post(`/pokemon/shiny-luck`, {
-			idDiscord: trainerId,
 			pokemonName: pokemonName,
 		});
 		if (response.data.status === 'noExistPokemon') {
@@ -351,6 +350,56 @@ async function shinyLuck(trainerId, pokemonName) {
 	}
 }
 
+async function catchLuck(interaction) {
+	try {
+		if (!(await getIsPremium(interaction.user.id))) {
+			const { embeds, files } = await premiumEmbed(interaction.user.id);
+			return { embeds, files };
+		}
+		const pokemonName = interaction.options.getString('nom').toLowerCase();
+		const response = await API.post(`/pokemon/catch-luck`, {
+			pokemonName: pokemonName,
+		});
+		if (response.data.status === 'noExistPokemon') {
+			return `${upFirstLetter(pokemonName)} n’est pas un Pokémon.`;
+		}
+		if (response.data.status === 'noCatchRate') {
+			return `${upFirstLetter(
+				pokemonName
+			)} n'est pas un Pokémon sauvage, il n'a donc pas de taux de chance d'être capturé.`;
+		}
+		let message = '';
+		const pokeballData = response.data.pokeballData;
+		const pokemonData = response.data.pokemonData;
+		for (let i = 0; i < pokeballData.length; i++) {
+			const customEmoji = interaction.guild.emojis.cache.find(
+				(emoji) => emoji.name === pokeballData[i].name
+			);
+			message += `- ${customEmoji ? customEmoji.toString() : ''} ${upFirstLetter(
+				pokeballData[i].name
+			)} : ${
+				pokemonData.catchRate + pokeballData[i].catchBonus > 100
+					? 100
+					: pokemonData.catchRate + pokeballData[i].catchBonus <= 0
+					? 1
+					: pokemonData.catchRate + pokeballData[i].catchBonus
+			}%\n`;
+		}
+		message += '- 🏃 Fuites : ' + pokemonData.escapeRate + '%';
+		let embed = createListEmbed(
+			message,
+			`Chances de capture pour ${upFirstLetter(pokemonName)} :`,
+			null,
+			pokemonData.img,
+			null,
+			'#6B8E23'
+		);
+		return { embeds: [embed] };
+	} catch (error) {
+		console.error('Error retrieving catch luck.');
+	}
+}
+
 export {
 	findRandomPokemon,
 	evolvePokemon,
@@ -360,4 +409,5 @@ export {
 	getZoneForPokemon,
 	spawnPokemonWithRune,
 	shinyLuck,
+	catchLuck,
 };
