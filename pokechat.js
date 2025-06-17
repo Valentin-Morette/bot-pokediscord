@@ -33,6 +33,7 @@ import {
 	quantityPokemon,
 	dailyGift,
 	premiumDisplay,
+	welcomeTrainer,
 } from './trainerFunctions.js';
 import {
 	findRandomPokemon,
@@ -73,9 +74,7 @@ function pokeChat(client) {
 
 		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
 		if (welcomeChannel) {
-			welcomeChannel.send(
-				`Bienvenue ${member} sur le serveur ! Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles. Amuse-toi bien !`
-			);
+			welcomeChannel.send(welcomeTrainer(member));
 		}
 	});
 

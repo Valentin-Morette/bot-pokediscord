@@ -49,6 +49,24 @@ async function addTrainer(member) {
 	}
 }
 
+function welcomeTrainer(member) {
+	try {
+		const embed = new EmbedBuilder()
+			.setColor('#0099ff')
+			.setTitle('Bienvenue sur le serveur PokéDiscord !')
+			.setDescription(
+				`Salut ${member.user.username} !\n\n` +
+					`Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles.`
+			)
+			.setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+			.setFooter({ text: 'Amuse-toi bien !' });
+
+		return { embeds: [embed] };
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 async function catchPokemon(idPokemonWild, idTrainer, idPokeball) {
 	try {
 		const catchPokemon = await API.post(`/pokemon/catch`, {
@@ -820,4 +838,5 @@ export {
 	quantityPokemon,
 	getIsPremium,
 	premiumDisplay,
+	welcomeTrainer,
 };
