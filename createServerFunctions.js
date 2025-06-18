@@ -72,45 +72,45 @@ async function commandesMessage(message) {
 			.setTitle('Liste des Commandes du Serveur')
 			.setDescription(
 				'**Recherche de Pokémon**\n' +
-					'- `/cherche` : pour chercher un Pokémon.\n' +
-					'**Vente de Pokémon**\n' +
-					'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
-					'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
-					'**Visualiser les Pokémon**\n' +
-					"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
-					"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
-					'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
-					'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
-					'**Évolution de Pokémon**\n' +
-					'- `/nombre-evolution [nom du Pokémon]` : pour voir le nombre de Pokémon requis pour une évolution.\n' +
-					'- `/evolution [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon.\n' +
-					'- `/evolution-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon shiny.\n\n' +
-					'**Inventaire et Finances**\n' +
-					'- `/argent` : pour voir votre argent.\n' +
-					'- `/ball` : pour voir toutes vos Pokéballs.\n' +
-					'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
-					'- `/cadeau` : pour recevoir un cadeau.\n' +
-					'- `/boutique` : pour ouvrir la boutique.\n\n' +
-					'**Pokémon Disponibles et Échanges**\n' +
-					'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
-					'- `/echange [nombre de Pokémon offerts] [nom du Pokémon offert] [nombre de Pokémon demandés] [nom du Pokémon demandé]` : pour échanger des Pokémon avec un autre joueur.\n' +
-					'- `/zone [nom du Pokémon]` : pour voir les zones où apparaît un Pokémon.\n\n' +
-					'**Utilisation et Achat de Runes**\n' +
-					'- `/rune-utiliser [nom du Pokémon]` : pour utiliser une rune de Pokémon.\n' +
-					'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
-					'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
-					'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
-					'**Autres**\n' +
-					'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
-					'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
-					'- `/premium` : pour devenir membre premium du serveur.\n\n' +
-					'**💎 Premium 💎**\n' +
-					'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
-					'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
-					'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
-					'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
-					'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n' +
-					'- `/chance-capture [nom du Pokémon]` : pour connaître le pourcentage de chance de capturer un Pokémon par type de Pokéball.\n'
+				'- `/cherche` : pour chercher un Pokémon.\n\n' +
+				'**Vente de Pokémon**\n' +
+				'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
+				'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
+				'**Visualiser les Pokémon**\n' +
+				"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
+				"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
+				'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
+				'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
+				'**Évolution de Pokémon**\n' +
+				'- `/nombre-evolution [nom du Pokémon]` : pour voir le nombre de Pokémon requis pour une évolution.\n' +
+				'- `/evolution [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon.\n' +
+				'- `/evolution-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon shiny.\n\n' +
+				'**Inventaire et Finances**\n' +
+				'- `/argent` : pour voir votre argent.\n' +
+				'- `/ball` : pour voir toutes vos Pokéballs.\n' +
+				'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
+				'- `/cadeau` : pour recevoir un cadeau.\n' +
+				'- `/boutique` : pour ouvrir la boutique.\n\n' +
+				'**Pokémon Disponibles et Échanges**\n' +
+				'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
+				'- `/echange [nombre de Pokémon offerts] [nom du Pokémon offert] [nombre de Pokémon demandés] [nom du Pokémon demandé]` : pour échanger des Pokémon avec un autre joueur.\n' +
+				'- `/zone [nom du Pokémon]` : pour voir les zones où apparaît un Pokémon.\n\n' +
+				'**Utilisation et Achat de Runes**\n' +
+				'- `/rune-utiliser [nom du Pokémon]` : pour utiliser une rune de Pokémon.\n' +
+				'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
+				'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
+				'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
+				'**Autres**\n' +
+				'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
+				'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
+				'- `/premium` : pour devenir membre premium du serveur.\n\n' +
+				'**💎 Premium 💎**\n' +
+				'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
+				'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
+				'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
+				'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
+				'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n' +
+				'- `/chance-capture [nom du Pokémon]` : pour connaître le pourcentage de chance de capturer un Pokémon par type de Pokéball.\n'
 			);
 		await channel.send({ embeds: [commandEmbed] });
 	} else {
@@ -130,14 +130,14 @@ async function premiumMessage(message) {
 			.setTitle('💎 Devenez Membre Premium 💎')
 			.setDescription(
 				`Profitez d'avantages exclusifs en soutenant le serveur !\n\n` +
-					`**Avantages Premium :**\n` +
-					`- Accès à \`/chance-shiny\`, \`/pokedex-list\`, \`/shinydex-list\`, \`/pokedex-inverse\` et \`/shinydex-inverse\`\n` +
-					`- Commande \`/cadeau\` toutes les **4h** (au lieu de 12h)\n` +
-					`- Plus aucune publicité lors de l'utilisation du bot\n` +
-					`- Commandes \`/zone\` et \`/disponible\` enrichies avec les **taux de spawn**\n\n` +
-					`Rejoignez les membres les plus engagés et débloquez l'expérience complète du bot.\n\n` +
-					`Utilisez la commande \`/premium\` pour devenir Premium !\n\n` +
-					`**Prix :** 3,99€ en une fois.`
+				`**Avantages Premium :**\n` +
+				`- Accès à \`/chance-shiny\`, \`/pokedex-list\`, \`/shinydex-list\`, \`/pokedex-inverse\` et \`/shinydex-inverse\`\n` +
+				`- Commande \`/cadeau\` toutes les **4h** (au lieu de 12h)\n` +
+				`- Plus aucune publicité lors de l'utilisation du bot\n` +
+				`- Commandes \`/zone\` et \`/disponible\` enrichies avec les **taux de spawn**\n\n` +
+				`Rejoignez les membres les plus engagés et débloquez l'expérience complète du bot.\n\n` +
+				`Utilisez la commande \`/premium\` pour devenir Premium !\n\n` +
+				`**Prix :** 3,99€ en une fois.`
 			)
 			.setThumbnail('attachment://premium.png');
 
@@ -165,9 +165,9 @@ async function globalShopMessage(message) {
 			.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
 			.setDescription(
 				`${pokeballEmoji} Pokeball : 50 $\n\n` +
-					`${superballEmoji} Superball : 80 $\n\n` +
-					`${hyperballEmoji} Hyperball : 150 $\n\n` +
-					`${masterballEmoji} Masterball : 100 000 $\n\n`
+				`${superballEmoji} Superball : 80 $\n\n` +
+				`${hyperballEmoji} Hyperball : 150 $\n\n` +
+				`${masterballEmoji} Masterball : 100 000 $\n\n`
 			)
 			.setThumbnail(`attachment://shop.png`);
 		await channel.send({ embeds: [priceEmbed], files: [attachment] });
