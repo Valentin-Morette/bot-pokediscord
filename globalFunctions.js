@@ -104,7 +104,7 @@ function removeAccents(str) {
 }
 
 const API = axios.create({
-	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:5000',
+	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:6000',
 	headers: {
 		'X-API-KEY': process.env.API_KEY,
 	},
