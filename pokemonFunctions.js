@@ -8,73 +8,83 @@ let embedIndex = 0;
 
 const embedFunctions = [XEmbed, GamsGoEmbed];
 
-async function findRandomPokemon(interaction, followUp = false) {
-	commandCount++;
-	if (!interaction.replied && !interaction.deferred) {
-		await interaction.deferReply();
-	}
-	try {
-		const randomPokemon = await API.post(`/pokemon/wild`, {
-			nameZone: correctNameZone(interaction.channel.name),
-		});
-		if (randomPokemon.data.length === 0) {
-			return await interaction.editReply({
-				content: "Il n'y a pas de Pokémon sauvage dans cette zone.",
-				ephemeral: true,
-			});
-		}
-		let pokemon = randomPokemon.data;
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-		let row = new ActionRowBuilder();
-		balls.forEach((ball) => {
-			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
-			const button = new ButtonBuilder()
-				.setCustomId(ball + '|' + pokemon.idPokemonWild)
-				.setStyle(ButtonStyle.Secondary);
-			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+async function spawnRandomPokemon(context, followUp = false) {
+	const isInteraction = !!context?.reply;
+	const channel = isInteraction ? context.channel : context;
 
-			row.addComponents(button);
+	try {
+		const zoneName = correctNameZone(channel.name);
+
+		const { data: pokemons } = await API.post(`/pokemon/wild`, {
+			nameZone: zoneName,
 		});
-		let star = pokemon.isShiny ? '✨' : '';
-		const color = pokemon.isShiny ? '#ffed00' : '#FFFFFF';
+
+		if (!pokemons || pokemons.length === 0) {
+			const message = "Il n'y a pas de Pokémon sauvage dans cette zone.";
+			if (isInteraction) {
+				if (!context.replied && !context.deferred) await context.deferReply();
+				return context.editReply({ content: message, ephemeral: true });
+			} else {
+				return channel.send(message);
+			}
+		}
+
+		const pokemon = pokemons;
+		const balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		const row = new ActionRowBuilder();
+
+		balls.forEach((ball) => {
+			const emoji = channel.guild.emojis.cache.find((e) => e.name === ball);
+			const btn = new ButtonBuilder()
+				.setCustomId(`${ball}|${pokemon.idPokemonWild}`)
+				.setStyle(ButtonStyle.Secondary);
+			btn[emoji ? 'setEmoji' : 'setLabel'](emoji ? emoji.id : ball);
+			row.addComponents(btn);
+		});
+
+		const isShiny = pokemon.isShiny;
+		const star = isShiny ? '✨' : '';
 		const embed = new EmbedBuilder()
 			.setTitle(`Un ${pokemon.name + star} sauvage apparaît !`)
-			.setDescription('Attrape-le !')
-			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
-			.setColor(color);
+			.setDescription("Attrape-le !")
+			.setThumbnail(isShiny ? pokemon.imgShiny : pokemon.img)
+			.setColor(isShiny ? '#ffed00' : '#ffffff');
 
 		const responseOptions = {
 			embeds: [embed],
 			components: [row],
 		};
 
-		if (commandCount % 40 === 0) {
-			if (!(await getIsPremium(interaction.user.id))) {
-				const { embed: extraEmbed, attachment: extraAttachment } =
-					embedFunctions[embedIndex % embedFunctions.length](color);
+		if (++commandCount % 40 === 0 && isInteraction) {
+			if (!(await getIsPremium(context.user.id))) {
+				const { embed: extraEmbed, attachment } =
+					embedFunctions[embedIndex % embedFunctions.length](embed.data.color);
 				responseOptions.embeds.push(extraEmbed);
-				if (extraAttachment) {
-					if (!responseOptions.files) responseOptions.files = [];
-					responseOptions.files.push(extraAttachment);
+				if (attachment) {
+					responseOptions.files = responseOptions.files || [];
+					responseOptions.files.push(attachment);
 				}
 				embedIndex++;
 			}
 		}
 
-		if (followUp) {
-			await interaction.followUp(responseOptions);
-		} else if (interaction.deferred) {
-			await interaction.editReply(responseOptions);
+		if (isInteraction) {
+			if (!context.replied && !context.deferred) await context.deferReply();
+			return context.editReply(responseOptions);
+		} else {
+			return channel.send(responseOptions);
 		}
 	} catch (error) {
-		console.error('Erreur lors de la recherche du Pokémon.', error);
-		if (followUp) {
-			await interaction.followUp('Erreur lors de la recherche du Pokémon.');
-		} else if (interaction.deferred) {
-			await interaction.editReply('Erreur lors de la recherche du Pokémon.');
+		console.error("❌ Erreur lors du spawn de Pokémon :", error);
+		if (isInteraction) {
+			if (!context.replied && !context.deferred) await context.deferReply();
+			return context.editReply("Erreur lors de la recherche du Pokémon.");
+		} else {
+			return channel.send("Erreur lors de la recherche du Pokémon.");
 		}
 	}
 }
+
 
 async function spawnPokemonWithRune(interaction) {
 	const idTrainer = interaction.user.id;
@@ -151,17 +161,16 @@ async function evolvePokemon(idTrainer, namePokemon, nameZone, quantity, isShiny
 			let star = pokemon.isShiny ? '✨' : '';
 			const embed = new EmbedBuilder()
 				.setTitle(
-					`Vous avez fait évoluer ${pokemon.quantity * pokemon.pokemonPreEvolve.numberEvolution} ${
-						upFirstLetter(namePokemon) + star
+					`Vous avez fait évoluer ${pokemon.quantity * pokemon.pokemonPreEvolve.numberEvolution} ${upFirstLetter(namePokemon) + star
 					} en ${pokemon.quantity} ${pokemon.pokemonEvolve.name + star}!`
 				)
 				.setDescription(
 					'Félicitation! Vous avez obtenu ' +
-						pokemon.quantity +
-						(pokemon.quantity > 1 ? ' nouveaux ' : ' nouveau ') +
-						pokemon.pokemonEvolve.name +
-						star +
-						'.'
+					pokemon.quantity +
+					(pokemon.quantity > 1 ? ' nouveaux ' : ' nouveau ') +
+					pokemon.pokemonEvolve.name +
+					star +
+					'.'
 				)
 				.setThumbnail(pokemon.isShiny ? pokemon.pokemonEvolve.imgShiny : pokemon.pokemonEvolve.img)
 				.setFooter({
@@ -224,8 +233,8 @@ async function nbPokemon(namePokemon) {
 				pokemon.infos.numberEvolution === null
 					? `${upFirstLetter(namePokemon)} ne peut pas évoluer.`
 					: `Vous avez besoin de ${pokemon.infos.numberEvolution} ${upFirstLetter(
-							namePokemon
-					  )} pour obtenir un ${upFirstLetter(pokemon.infos.evolution.name)}.`;
+						namePokemon
+					)} pour obtenir un ${upFirstLetter(pokemon.infos.evolution.name)}.`;
 		}
 		const footer = 'Nombre de ' + upFirstLetter(namePokemon);
 		const embed = createListEmbed(description, title, footer, pokemon.infos.img);
@@ -377,13 +386,12 @@ async function catchLuck(interaction) {
 			);
 			message += `- ${customEmoji ? customEmoji.toString() : ''} ${upFirstLetter(
 				pokeballData[i].name
-			)} : ${
-				pokemonData.catchRate + pokeballData[i].catchBonus > 100
-					? 100
-					: pokemonData.catchRate + pokeballData[i].catchBonus <= 0
+			)} : ${pokemonData.catchRate + pokeballData[i].catchBonus > 100
+				? 100
+				: pokemonData.catchRate + pokeballData[i].catchBonus <= 0
 					? 1
 					: pokemonData.catchRate + pokeballData[i].catchBonus
-			}%\n`;
+				}%\n`;
 		}
 		message += '- 🏃 Fuites : ' + pokemonData.escapeRate + '%';
 		let embed = createListEmbed(
@@ -401,7 +409,6 @@ async function catchLuck(interaction) {
 }
 
 export {
-	findRandomPokemon,
 	evolvePokemon,
 	clearOldWildPokemon,
 	nbPokemon,
@@ -410,4 +417,5 @@ export {
 	spawnPokemonWithRune,
 	shinyLuck,
 	catchLuck,
+	spawnRandomPokemon,
 };

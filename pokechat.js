@@ -36,7 +36,7 @@ import {
 	welcomeTrainer,
 } from './trainerFunctions.js';
 import {
-	findRandomPokemon,
+	spawnRandomPokemon,
 	evolvePokemon,
 	clearOldWildPokemon,
 	nbPokemon,
@@ -48,6 +48,7 @@ import {
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { heartbeat, removeAccents } from './globalFunctions.js';
+import { ChannelType } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
@@ -62,6 +63,47 @@ function pokeChat(client) {
 				client.login(process.env.TOKEN);
 			}, 5000);
 		});
+
+		// Lancer une tâche toutes les 30 minutes
+		setInterval(async () => {
+			const guild = client.guilds.cache.get(process.env.IDSERVER);
+			if (!guild) return console.log("❌ Serveur introuvable");
+
+			await guild.channels.fetch(); // Important pour bien charger les channels
+
+			const categories = guild.channels.cache.filter(
+				(c) =>
+					c.type === ChannelType.GuildCategory &&
+					(c.name === "𝗞𝗔𝗡𝗧𝗢" || c.name === "𝗝𝗢𝗛𝗧𝗢" || c.name === "𝗛𝗢𝗘𝗡𝗡" || c.name === "𝗦𝗜𝗡𝗡𝗢𝗛")
+			);
+
+			for (const category of categories.values()) {
+				const channels = guild.channels.cache.filter(
+					(c) => c.parentId === category.id && c.type === ChannelType.GuildText
+				);
+
+				for (const channel of channels.values()) {
+					try {
+						const lastMessages = await channel.messages.fetch({ limit: 1 });
+						const lastMessage = lastMessages.first();
+
+						if (
+							lastMessage &&
+							lastMessage.author.id === client.user.id &&
+							lastMessage.embeds.length > 0 &&
+							lastMessage.embeds[0].title?.includes("sauvage apparaît")
+						) {
+							continue;
+						}
+
+						// Lancer le spawn
+						await spawnRandomPokemon(channel);
+					} catch (err) {
+						console.error(`❌ Erreur dans le salon ${channel.name}`, err);
+					}
+				}
+			}
+		}, 30 * 60 * 1000); // 30 minutes
 	});
 
 	client.on('guildMemberAdd', (member) => {
@@ -163,7 +205,7 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'cherche') {
-				return await findRandomPokemon(interaction);
+				return await spawnRandomPokemon(interaction);
 			}
 
 			if (interaction.commandName === 'argent') {
@@ -218,6 +260,25 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'boutique') {
+				const guild = interaction.guild;
+
+				const category = guild.channels.cache.find(
+					(channel) => channel.type === 4 && channel.name === '𝐊𝐀𝐍𝐓𝐎'
+				);
+
+				if (!category) {
+					console.log('❌ Catégorie non trouvée');
+					return;
+				}
+
+				const childChannels = guild.channels.cache.filter(
+					(channel) => channel.parentId === category.id
+				);
+
+				console.log(`📁 Catégorie "${category.name}" contient :`);
+				childChannels.forEach((ch) => {
+					console.log(`- ${ch.name} (${ch.type})`);
+				});
 				return interaction.reply(await shopMessage(interaction, true));
 			}
 
