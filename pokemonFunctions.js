@@ -8,6 +8,74 @@ let embedIndex = 0;
 
 const embedFunctions = [XEmbed, GamsGoEmbed];
 
+async function findRandomPokemon(interaction, followUp = false) {
+	commandCount++;
+	if (!interaction.replied && !interaction.deferred) {
+		await interaction.deferReply();
+	}
+	try {
+		const randomPokemon = await API.post(`/pokemon/wild`, {
+			nameZone: correctNameZone(interaction.channel.name),
+		});
+		if (randomPokemon.data.length === 0) {
+			return await interaction.editReply({
+				content: "Il n'y a pas de Pokémon sauvage dans cette zone.",
+				ephemeral: true,
+			});
+		}
+		let pokemon = randomPokemon.data;
+		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+		let row = new ActionRowBuilder();
+		balls.forEach((ball) => {
+			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
+			const button = new ButtonBuilder()
+				.setCustomId(ball + '|' + pokemon.idPokemonWild)
+				.setStyle(ButtonStyle.Secondary);
+			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+
+			row.addComponents(button);
+		});
+		let star = pokemon.isShiny ? '✨' : '';
+		const color = pokemon.isShiny ? '#ffed00' : '#FFFFFF';
+		const embed = new EmbedBuilder()
+			.setTitle(`Un ${pokemon.name + star} sauvage apparaît !`)
+			.setDescription('Attrape-le !')
+			.setThumbnail(pokemon.isShiny ? pokemon.imgShiny : pokemon.img)
+			.setColor(color);
+
+		const responseOptions = {
+			embeds: [embed],
+			components: [row],
+		};
+
+		if (commandCount % 40 === 0) {
+			if (!(await getIsPremium(interaction.user.id))) {
+				const { embed: extraEmbed, attachment: extraAttachment } =
+					embedFunctions[embedIndex % embedFunctions.length](color);
+				responseOptions.embeds.push(extraEmbed);
+				if (extraAttachment) {
+					if (!responseOptions.files) responseOptions.files = [];
+					responseOptions.files.push(extraAttachment);
+				}
+				embedIndex++;
+			}
+		}
+
+		if (followUp) {
+			await interaction.followUp(responseOptions);
+		} else if (interaction.deferred) {
+			await interaction.editReply(responseOptions);
+		}
+	} catch (error) {
+		console.error('Erreur lors de la recherche du Pokémon.', error);
+		if (followUp) {
+			await interaction.followUp('Erreur lors de la recherche du Pokémon.');
+		} else if (interaction.deferred) {
+			await interaction.editReply('Erreur lors de la recherche du Pokémon.');
+		}
+	}
+}
+
 async function spawnRandomPokemon(context, followUp = false) {
 	const isInteraction = !!context?.reply;
 	const channel = isInteraction ? context.channel : context;
@@ -409,6 +477,7 @@ async function catchLuck(interaction) {
 }
 
 export {
+	findRandomPokemon,
 	evolvePokemon,
 	clearOldWildPokemon,
 	nbPokemon,

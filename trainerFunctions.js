@@ -56,7 +56,7 @@ function welcomeTrainer(member) {
 			.setTitle('Bienvenue sur le serveur PokéDiscord !')
 			.setDescription(
 				`Salut ${member.user.username} !\n\n` +
-					`Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles.`
+				`Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles.`
 			)
 			.setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
 			.setFooter({ text: 'Amuse-toi bien !' });
@@ -168,11 +168,11 @@ async function getPokedexList(interaction, type) {
 		let response = await API.get(`/pokemon/trainer/` + user.id + '/' + generationList[i] + '/' + type);
 		pokedexList.push(
 			'- ' +
-				numberPokemonByGeneration[generationList[i]].name +
-				' : ' +
-				response.data.countPokemon +
-				'/' +
-				numberPokemonByGeneration[generationList[i]].number
+			numberPokemonByGeneration[generationList[i]].name +
+			' : ' +
+			response.data.countPokemon +
+			'/' +
+			numberPokemonByGeneration[generationList[i]].number
 		);
 	}
 
@@ -280,17 +280,14 @@ async function getPokedex(interaction, type) {
 		}
 
 		if (!isReverse) {
-			title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${
-				response.data.sumPokemon
-			} Pokémon${hasStar(isShiny)}, dont ${response.data.countPokemon} différents.`;
-			footer = `${isShiny ? 'Shiny' : 'Poke'}dex de ${user.globalName} - ${response.data.countPokemon}/${
-				numberPokemonByGeneration[generation]
-			}`;
+			title = `${sameUser ? `${user.globalName} a` : 'Vous avez'} ${response.data.sumPokemon
+				} Pokémon${hasStar(isShiny)}, dont ${response.data.countPokemon} différents.`;
+			footer = `${isShiny ? 'Shiny' : 'Poke'}dex de ${user.globalName} - ${response.data.countPokemon}/${numberPokemonByGeneration[generation]
+				}`;
 		} else {
 			title = `Il vous manque ${response.data.countPokemon} Pokémon${hasStar(isShiny)}.`;
-			footer = `${isShiny ? 'Shiny' : 'Poke'}dex inversé de ${user.globalName} - ${
-				response.data.countPokemon
-			}/${numberPokemonByGeneration[generation]}`;
+			footer = `${isShiny ? 'Shiny' : 'Poke'}dex inversé de ${user.globalName} - ${response.data.countPokemon
+				}/${numberPokemonByGeneration[generation]}`;
 		}
 
 		let embed = createListEmbed(
@@ -564,10 +561,10 @@ async function shopMessage(interaction, needReply = false) {
 		.setTitle(title)
 		.setDescription(
 			`Vous avez actuellement : ${formatNombreAvecSeparateur(response.data.money)} $.\n\n` +
-				`${pokeballEmoji} Pokeball : 50 $\n\n` +
-				`${superballEmoji} Superball : 80 $\n\n` +
-				`${hyperballEmoji} Hyperball : 150 $\n\n` +
-				`${masterballEmoji} Masterball : 100 000 $\n\n`
+			`${pokeballEmoji} Pokeball : 50 $\n\n` +
+			`${superballEmoji} Superball : 80 $\n\n` +
+			`${hyperballEmoji} Hyperball : 150 $\n\n` +
+			`${masterballEmoji} Masterball : 100 000 $\n\n`
 		)
 		.setThumbnail(`attachment://shop.png`);
 
@@ -659,8 +656,7 @@ async function purposeSwapPokemon(interaction) {
 			.setImage(response.data.imgPokemonPropose)
 			.setColor('#D3D3D3')
 			.setDescription(
-				`**${upFirstLetter(interaction.user.username)} veux échanger ${quantityPokemonPropose} ${
-					upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)
+				`**${upFirstLetter(interaction.user.username)} veux échanger ${quantityPokemonPropose} ${upFirstLetter(pokemonPropose) + hasStar(pokemonProposeShiny)
 				} contre ${quantityPokemonRequest} ${upFirstLetter(
 					pokemonRequest + hasStar(pokemonRequestShiny)
 				)}**`
@@ -792,9 +788,8 @@ async function checkRune(interaction) {
 		const sumRune = response.data.sumRune;
 		const countRune = response.data.countRune;
 		const items = response.data.rune.map((rune) => `- ${rune.quantity} ${rune.name}`);
-		const title = `Vous avez ${sumRune} rune${sumRune > 1 ? 's' : ''} de Pokémon${
-			countRune > 1 ? `, dont ${response.data.countRune} différentes.` : '.'
-		}`;
+		const title = `Vous avez ${sumRune} rune${sumRune > 1 ? 's' : ''} de Pokémon${countRune > 1 ? `, dont ${response.data.countRune} différentes.` : '.'
+			}`;
 		const footer = `Liste des runes de Pokémon de ${interaction.user.globalName}`;
 		const thumbnailUrl = interaction.user.displayAvatarURL({ format: 'png', dynamic: true });
 
