@@ -131,17 +131,25 @@ async function premiumMessage(message) {
 			.setDescription(
 				`Profitez d'avantages exclusifs en soutenant le serveur !\n\n` +
 				`**Avantages Premium :**\n` +
-				`- Accès à \`/chance-shiny\`, \`/pokedex-list\`, \`/shinydex-list\`, \`/pokedex-inverse\` et \`/shinydex-inverse\`\n` +
+				`- Accès à \`/chance-shiny\`, \`/chance-capture\`, \`/pokedex-list\`, \`/shinydex-list\`, \`/pokedex-inverse\` et \`/shinydex-inverse\`\n` +
 				`- Commande \`/cadeau\` toutes les **4h** (au lieu de 12h)\n` +
 				`- Plus aucune publicité lors de l'utilisation du bot\n` +
 				`- Commandes \`/zone\` et \`/disponible\` enrichies avec les **taux de spawn**\n\n` +
 				`Rejoignez les membres les plus engagés et débloquez l'expérience complète du bot.\n\n` +
-				`Utilisez la commande \`/premium\` pour devenir Premium !\n\n` +
+				`Utilisez la commande \`/premium\` ou cliquez sur le bouton ci-dessous pour devenir Premium !\n\n` +
 				`**Prix :** 3,99€ en une fois.`
 			)
 			.setThumbnail('attachment://premium.png');
 
-		await channel.send({ embeds: [commandEmbed], files: [attachment] });
+		let row = new ActionRowBuilder();
+		const button = new ButtonBuilder()
+			.setCustomId('premium')
+			.setStyle(ButtonStyle.Primary)
+			.setEmoji('💎')
+			.setLabel('Devenir Premium');
+		row.addComponents(button);
+
+		await channel.send({ embeds: [commandEmbed], files: [attachment], components: [row] });
 	} else {
 		console.error(`No channel found with the name ${channelName}`);
 	}

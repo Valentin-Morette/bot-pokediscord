@@ -34,6 +34,7 @@ import {
 	dailyGift,
 	premiumDisplay,
 	welcomeTrainer,
+	premiumUrl
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -71,6 +72,7 @@ function pokeChat(client) {
 
 			await guild.channels.fetch(); // Important pour bien charger les channels
 
+			// UPDATEGENERATION: Add the new categories for the new generation
 			const categories = guild.channels.cache.filter(
 				(c) =>
 					c.type === ChannelType.GuildCategory &&
@@ -189,6 +191,19 @@ function pokeChat(client) {
 					await interaction.reply(responseMessage);
 				} else {
 					await interaction.followUp(`The trade was successfully completed.`);
+				}
+			} else if (customId.startsWith('premium')) {
+				let url = await premiumUrl(interaction.user.id);
+				if (url != null) {
+					interaction.reply({
+						content: `Pour devenir Premium, veuillez visiter ce lien : [Lien Premium](${url})`,
+						ephemeral: true,
+					});
+				} else {
+					interaction.reply({
+						content: `Vous êtes déjà Premium, merci pour votre soutien !`,
+						ephemeral: true,
+					});
 				}
 			}
 			return;

@@ -55,8 +55,8 @@ function welcomeTrainer(member) {
 			.setColor('#0099ff')
 			.setTitle('Bienvenue sur le serveur PokéDiscord !')
 			.setDescription(
-				`Salut ${member.user.username} !\n\n` +
-				`Pour commencer, utilise la commande \`/cherche\` dans un canal qui représente une zone d'une région Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles.`
+				`Salut <@${member.id}> !\n\n` +
+				`Pour commencer, dirige-toi dans un canal qui représente une zone d'une région pour capturer tes premiers Pokémon. Par la suite, tu pourras visiter le canal \`#📜・commandes\` pour découvrir toutes les commandes disponibles.`
 			)
 			.setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
 			.setFooter({ text: 'Amuse-toi bien !' });
@@ -146,6 +146,21 @@ async function premiumDisplay(discordId) {
 	} else {
 		const { embeds, files } = await premiumEmbed(discordId, true);
 		return { embeds, files };
+	}
+}
+
+async function premiumUrl(discordId) {
+	if (await getIsPremium(discordId)) {
+		return null;
+	}
+	try {
+		const response = await API.post(`/payment/create-checkout-session`, {
+			discordId: discordId,
+		});
+		return response.data.url;
+	} catch (error) {
+		console.error(error);
+		return null;
 	}
 }
 
@@ -834,4 +849,5 @@ export {
 	getIsPremium,
 	premiumDisplay,
 	welcomeTrainer,
+	premiumUrl
 };
