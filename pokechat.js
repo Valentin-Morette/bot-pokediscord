@@ -260,25 +260,6 @@ function pokeChat(client) {
 			}
 
 			if (interaction.commandName === 'boutique') {
-				const guild = interaction.guild;
-
-				const category = guild.channels.cache.find(
-					(channel) => channel.type === 4 && channel.name === '𝐊𝐀𝐍𝐓𝐎'
-				);
-
-				if (!category) {
-					console.log('❌ Catégorie non trouvée');
-					return;
-				}
-
-				const childChannels = guild.channels.cache.filter(
-					(channel) => channel.parentId === category.id
-				);
-
-				console.log(`📁 Catégorie "${category.name}" contient :`);
-				childChannels.forEach((ch) => {
-					console.log(`- ${ch.name} (${ch.type})`);
-				});
 				return interaction.reply(await shopMessage(interaction, true));
 			}
 
