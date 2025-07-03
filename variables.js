@@ -183,8 +183,8 @@ const commandsPokechat = [
 				description: 'Vendre le maximum de Pokémon possible, en laissant 1',
 				required: false,
 				choices: [
-					{ name: 'Non', value: 'false' },
 					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
 				],
 			},
 			{
@@ -212,8 +212,8 @@ const commandsPokechat = [
 				description: 'Vendre le maximum de Pokémon shiny possible, en laissant 1',
 				required: false,
 				choices: [
-					{ name: 'Non', value: 'false' },
 					{ name: 'Oui', value: 'true' },
+					{ name: 'Non', value: 'false' },
 				],
 			},
 			{
@@ -875,6 +875,7 @@ const pokemons = [
 	'Griknot',
 	'Carmache',
 	'Carchacrok',
+	'Goinfrex',
 	'Riolu',
 	'Lucario',
 	'Hipopotas',
@@ -884,7 +885,6 @@ const pokemons = [
 	'Cradopaud',
 	'Coatox',
 	'Vortente',
-	'Togekiss',
 	'Ecayon',
 	'Lumiméon',
 	'Babimanta',
@@ -893,9 +893,11 @@ const pokemons = [
 	'Dimoret',
 	'Magnézone',
 	'Coudlangue',
+	'Rhinastoc',
 	'Bouldeneu',
 	'Elékable',
 	'Maganon',
+	'Togekiss',
 	'Yanmega',
 	'Phyllali',
 	'Givrali',
@@ -919,8 +921,8 @@ const pokemons = [
 	'Phione',
 	'Manaphy',
 	'Darkrai',
-	'Arceus',
 	'Shaymin',
+	'Arceus',
 ];
 
 export { commandsPokechat, balls, pokemons };

@@ -356,41 +356,56 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 		let zones = response.data;
 
 		const isPremium = await getIsPremium(trainerId);
+		console.dir(zones, { depth: null, colors: true });
 
 		if (zones.status === 'noExistPokemon') {
 			return `${upFirstLetter(namePokemon)} n’est pas un Pokémon.`;
 		}
 
-		let title =
-			zones.result.length === 0
-				? `${upFirstLetter(zones.pokemon.name)} est seulement disponible par évolution.`
-				: `Liste des zones pour ${upFirstLetter(zones.pokemon.name)}`;
-
-		let allZone = zones.result.map(
-			(zone) => `- ${upFirstLetter(zone.name)} : ${isPremium ? zone.spawnChance / 10 : '??'}%`
-		);
-
-		// UPDATEGENERATION
+		// Cas Pokémon introuvables
 		if (
-			namePokemon.toLowerCase() === 'mew' ||
-			namePokemon.toLowerCase() === 'celebi' ||
-			namePokemon.toLowerCase() === 'jirachi' ||
-			namePokemon.toLowerCase() === 'phione'
+			['mew', 'celebi', 'jirachi', 'phione'].includes(namePokemon.toLowerCase())
 		) {
-			title = 'Personne ne sait où se trouve ' + upFirstLetter(namePokemon) + '.';
-			allZone = [];
+			const title = 'Personne ne sait où se trouve ' + upFirstLetter(namePokemon) + '.';
+			const embed = createListEmbed([], title, '', zones.pokemon.img, null, '#6B8E23', false);
+			return { embeds: [embed] };
 		}
 
-		let footer = ``;
+		// Définir le titre
+		const title = zones.result.length === 0
+			? `${upFirstLetter(zones.pokemon.name)} est seulement disponible par évolution.`
+			: `Liste des zones pour ${upFirstLetter(zones.pokemon.name)}`;
+
+		// Fonction utilitaire pour nom lisible
+		function formatZoneName(name) {
+			return name
+				.split('-')
+				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(' ');
+		}
+
+		// Construction du texte par région
+		const allZone = zones.result.map(region => {
+			const zoneList = region.zones
+				.map(zone => `- ${formatZoneName(zone.name)} : ${isPremium ? zone.spawnChance / 10 : '??'}%`)
+				.join('\n');
+
+			return `**${region.name}**\n${zoneList}`;
+		}).join('\n\n');
+
+		// Footer si non premium
+		let footer = '';
 		if (!isPremium) {
 			footer = ` 💎 Pour obtenir les taux de spawn précis, devenez membre Premium ! 💎`;
 		}
-		const thumbnailUrl = zones.pokemon.img;
 
-		let embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23', false);
+		// Embed final
+		const thumbnailUrl = zones.pokemon.img;
+		const embed = createListEmbed(allZone, title, footer, thumbnailUrl, null, '#6B8E23', false);
 		return { embeds: [embed] };
+
 	} catch (error) {
-		console.error('Error retrieving zones.');
+		console.error('Error retrieving zones.', error);
 	}
 }
 
