@@ -211,38 +211,64 @@ async function dailyGift(interaction) {
 	const idTrainer = interaction.user.id;
 	try {
 		const response = await API.get(`/trainer/gift/` + idTrainer);
+
+		const embed = new EmbedBuilder().setColor('#B8860B');
+		let content = '';
+		let files = [];
+
 		if (response.data.status === 'alreadyGift') {
-			return `Vous avez déjà reçu votre cadeau. Vous pourrez en recevoir un nouveau dans ${formatRemainingTime(
+			content = `Vous pourrez en recevoir un nouveau dans ${formatRemainingTime(
 				response.data.remainning
 			)}.`;
+
+			const attachment = new AttachmentBuilder(`./assets/nogift.png`);
+			embed
+				.setTitle('Vous avez déjà reçu un cadeau.')
+				.setDescription(content)
+				.setColor('#6b5a2c')
+				.setThumbnail(`attachment://nogift.png`);
+			files.push(attachment);
+
+			if (!response.data.isPremium) {
+				embed.setFooter({
+					text: '💎 Les cadeaux passent de 12h à 4h pour les membres Premium ! 💎',
+				});
+			}
+
+			return { embeds: [embed], files };
 		}
 
-		const attachment = new AttachmentBuilder(`./assets/gift.png`);
-		const embed = new EmbedBuilder()
-			.setColor('#B8860B')
-			.setTitle('Vous avez reçu un cadeau !')
-			.setThumbnail(`attachment://gift.png`);
+		embed.setTitle('Vous avez reçu un cadeau !');
 
-		let content = '';
 		if (response.data.status === 'successMoney') {
 			content = `Vous avez reçu ${response.data.amount} pokédollars.`;
+			const attachment = new AttachmentBuilder(`./assets/gift.png`);
+			embed.setThumbnail(`attachment://gift.png`);
+			files.push(attachment);
 		} else if (response.data.status === 'successBall') {
 			const emojiBall = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === response.data.pokeball.name
 			);
 			content = `Vous avez reçu ${response.data.quantity} ${emojiBall}.`;
+			const attachment = new AttachmentBuilder(`./assets/gift.png`);
+			embed.setThumbnail(`attachment://gift.png`);
+			files.push(attachment);
 		} else if (response.data.status === 'successPokemon') {
 			content = `Vous avez reçu un ${response.data.pokemon.name} ${hasStar(response.data.isShiny)}.`;
-			embed.setImage(response.data.isShiny ? response.data.pokemon.imgShiny : response.data.pokemon.img);
+			const imageUrl = response.data.isShiny
+				? response.data.pokemon.imgShiny
+				: response.data.pokemon.img;
+			embed.setThumbnail(imageUrl);
 		}
 
 		embed.setDescription(content);
-
-		return { embeds: [embed], files: [attachment] };
+		return { embeds: [embed], files };
 	} catch (error) {
 		console.error(error);
 	}
 }
+
+
 
 async function getPokedex(interaction, type) {
 	// UPDATEGENERATION: Update the number of pokemons by generation

@@ -362,6 +362,7 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 			return `${upFirstLetter(namePokemon)} n’est pas un Pokémon.`;
 		}
 
+		// UPDATE GENERATION
 		// Cas Pokémon introuvables
 		if (
 			['mew', 'celebi', 'jirachi', 'phione'].includes(namePokemon.toLowerCase())
