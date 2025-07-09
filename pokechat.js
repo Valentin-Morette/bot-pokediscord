@@ -34,7 +34,8 @@ import {
 	dailyGift,
 	premiumDisplay,
 	welcomeTrainer,
-	premiumUrl
+	premiumUrl,
+	buyBalls
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -202,6 +203,19 @@ function pokeChat(client) {
 				} else {
 					interaction.reply({
 						content: `Vous êtes déjà Premium, merci pour votre soutien !`,
+						ephemeral: true,
+					});
+				}
+			} else if (customId.startsWith('ball')) {
+				const args = customId.split('|');
+				const ballName = args[1];
+				let url = await buyBalls(
+					interaction.user.id,
+					ballName,
+				);
+				if (url != null) {
+					interaction.reply({
+						content: `Pour acheter des ${ballName}, veuillez visiter ce lien : [Lien Boutique](${url})`,
 						ephemeral: true,
 					});
 				}

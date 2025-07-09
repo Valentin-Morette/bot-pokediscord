@@ -413,8 +413,8 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 async function shinyLuck(trainerId, pokemonName) {
 	try {
 		if (!(await getIsPremium(trainerId))) {
-			const { embeds, files } = await premiumEmbed(trainerId);
-			return { embeds, files };
+			const { embeds, files, components } = await premiumEmbed();
+			return { embeds, files, components };
 		}
 		const response = await API.post(`/pokemon/shiny-luck`, {
 			pokemonName: pokemonName,
@@ -446,8 +446,8 @@ async function shinyLuck(trainerId, pokemonName) {
 async function catchLuck(interaction) {
 	try {
 		if (!(await getIsPremium(interaction.user.id))) {
-			const { embeds, files } = await premiumEmbed(interaction.user.id);
-			return { embeds, files };
+			const { embeds, files, components } = await premiumEmbed(interaction.user.id);
+			return { embeds, files, components };
 		}
 		const pokemonName = interaction.options.getString('nom').toLowerCase();
 		const response = await API.post(`/pokemon/catch-luck`, {

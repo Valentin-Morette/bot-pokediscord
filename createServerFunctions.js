@@ -155,52 +155,221 @@ async function premiumMessage(message) {
 	}
 }
 
+// async function globalShopMessage(message) {
+// 	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
+// 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
+// 	if (channel) {
+// 		const messages = await channel.messages.fetch();
+// 		await channel.bulkDelete(messages);
+// 		const attachment = new AttachmentBuilder(`./assets/shop.png`);
+
+// 		const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
+// 		const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
+// 		const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
+// 		const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+
+// 		const priceEmbed = new EmbedBuilder()
+// 			.setColor('#FFFFFF')
+// 			.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
+// 			.setDescription(
+// 				`${pokeballEmoji} Pokeball : 50 $\n\n` +
+// 				`${superballEmoji} Superball : 80 $\n\n` +
+// 				`${hyperballEmoji} Hyperball : 150 $\n\n` +
+// 				`${masterballEmoji} Masterball : 100 000 $\n\n`
+// 			)
+// 			.setThumbnail(`attachment://shop.png`);
+// 		await channel.send({ embeds: [priceEmbed], files: [attachment] });
+
+// 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+// 		for (let i = 1; i <= 1000; i *= 10) {
+// 			let row = new ActionRowBuilder();
+// 			balls.forEach((ball) => {
+// 				if (ball !== 'masterball' || i <= 10) {
+// 					const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+// 					const button = new ButtonBuilder()
+// 						.setCustomId('buy|' + i + '|' + ball)
+// 						.setStyle(ButtonStyle.Secondary)
+// 						.setLabel('' + i)
+// 						.setEmoji(customEmoji.id);
+
+// 					row.addComponents(button);
+// 				}
+// 			});
+// 			await channel.send({ components: [row] });
+// 		}
+// 	} else {
+// 		console.error(`No channel found with the name ${channelName}`);
+// 	}
+// }
+
+// async function globalShopMessage(message) {
+// 	const channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
+// 	const channel = message.guild.channels.cache.find((ch) => ch.name === channelName);
+
+// 	if (!channel) {
+// 		console.error(`No channel found with the name ${channelName}`);
+// 		return;
+// 	}
+
+// 	const messages = await channel.messages.fetch();
+// 	await channel.bulkDelete(messages);
+
+// 	const attachment = new AttachmentBuilder(`./assets/shop.png`);
+
+// 	const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
+// 	const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
+// 	const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
+// 	const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+
+// 	const priceEmbed = new EmbedBuilder()
+// 		.setColor('#FFFFFF')
+// 		.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
+// 		.setDescription(
+// 			`${pokeballEmoji} Pokeball : 50 $\n\n` +
+// 			`${superballEmoji} Superball : 80 $\n\n` +
+// 			`${hyperballEmoji} Hyperball : 150 $\n\n` +
+// 			`${masterballEmoji} Masterball : 100 000 $\n\n`
+// 		)
+// 		.setThumbnail(`attachment://shop.png`);
+
+// 	await channel.send({ embeds: [priceEmbed], files: [attachment] });
+
+// 	// Définition des lignes de boutons
+// 	const rows = [
+// 		[100, 100, 100, 1],
+// 		[1000, 1000, 1000, 10],
+// 		[10000, 10000, 10000] // sans masterball
+// 	];
+
+// 	const ballTypes = ['pokeball', 'superball', 'hyperball', 'masterball'];
+
+// 	for (let line of rows) {
+// 		const row = new ActionRowBuilder();
+
+// 		for (let i = 0; i < line.length; i++) {
+// 			const quantity = line[i];
+// 			const ball = ballTypes[i];
+// 			if (!ball) continue;
+
+// 			// Exclusion si masterball avec trop grande quantité
+// 			if (ball === 'masterball' && quantity > 10) continue;
+
+// 			const emoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+// 			const button = new ButtonBuilder()
+// 				.setCustomId(`buy|${quantity}|${ball}`)
+// 				.setStyle(ButtonStyle.Secondary)
+// 				.setLabel(quantity.toString())
+// 				.setEmoji(emoji.id);
+
+// 			row.addComponents(button);
+// 		}
+
+// 		await channel.send({ components: [row] });
+// 	}
+// }
+
 async function globalShopMessage(message) {
-	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
-	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
-	if (channel) {
-		const messages = await channel.messages.fetch();
-		await channel.bulkDelete(messages);
-		const attachment = new AttachmentBuilder(`./assets/shop.png`);
+	const channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
+	const channel = message.guild.channels.cache.find((ch) => ch.name === channelName);
 
-		const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
-		const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
-		const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
-		const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
-
-		const priceEmbed = new EmbedBuilder()
-			.setColor('#FFFFFF')
-			.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
-			.setDescription(
-				`${pokeballEmoji} Pokeball : 50 $\n\n` +
-				`${superballEmoji} Superball : 80 $\n\n` +
-				`${hyperballEmoji} Hyperball : 150 $\n\n` +
-				`${masterballEmoji} Masterball : 100 000 $\n\n`
-			)
-			.setThumbnail(`attachment://shop.png`);
-		await channel.send({ embeds: [priceEmbed], files: [attachment] });
-
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-		for (let i = 1; i <= 1000; i *= 10) {
-			let row = new ActionRowBuilder();
-			balls.forEach((ball) => {
-				if (ball !== 'masterball' || i <= 10) {
-					const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
-					const button = new ButtonBuilder()
-						.setCustomId('buy|' + i + '|' + ball)
-						.setStyle(ButtonStyle.Secondary)
-						.setLabel('' + i)
-						.setEmoji(customEmoji.id);
-
-					row.addComponents(button);
-				}
-			});
-			await channel.send({ components: [row] });
-		}
-	} else {
+	if (!channel) {
 		console.error(`No channel found with the name ${channelName}`);
+		return;
 	}
+
+	const messages = await channel.messages.fetch();
+	await channel.bulkDelete(messages);
+
+	const attachment = new AttachmentBuilder(`./assets/shop.png`);
+
+	const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
+	const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
+	const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
+	const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+
+	const priceEmbed = new EmbedBuilder()
+		.setColor('#FFFFFF')
+		.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
+		.setDescription(
+			`${pokeballEmoji} Pokeball : 50 $\n\n` +
+			`${superballEmoji} Superball : 80 $\n\n` +
+			`${hyperballEmoji} Hyperball : 150 $\n\n` +
+			`${masterballEmoji} Masterball : 100 000 $\n\n`
+		)
+		.setThumbnail(`attachment://shop.png`);
+
+	await channel.send({ embeds: [priceEmbed], files: [attachment] });
+
+	// Boutons d'achat classiques
+	const rows = [
+		[100, 100, 100, 1],
+		[1000, 1000, 1000, 10],
+		[10000, 10000, 10000] // sans masterball
+	];
+
+	const ballTypes = ['pokeball', 'superball', 'hyperball', 'masterball'];
+
+	for (let line of rows) {
+		const row = new ActionRowBuilder();
+
+		for (let i = 0; i < line.length; i++) {
+			const quantity = line[i];
+			const ball = ballTypes[i];
+			if (!ball) continue;
+			if (ball === 'masterball' && quantity > 10) continue;
+
+			const emoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+			const button = new ButtonBuilder()
+				.setCustomId(`buy|${quantity}|${ball}`)
+				.setStyle(ButtonStyle.Secondary)
+				.setLabel(quantity.toString())
+				.setEmoji(emoji.id);
+
+			row.addComponents(button);
+		}
+
+		await channel.send({ components: [row] });
+	}
+
+	const ballEurosPrice = [
+		{ type: 'Pokéball', price: 1.99, emoji: pokeballEmoji },
+		{ type: 'Superball', price: 2.49, emoji: superballEmoji },
+		{ type: 'Hyperball', price: 3.99, emoji: hyperballEmoji },
+		{ type: 'Masterball', price: 4.99, emoji: masterballEmoji }
+	];
+
+	// Embed payant 💳
+	const euroEmbed = new EmbedBuilder()
+		.setColor('#FFD700')
+		.setTitle('Vous pouvez également payer avec la monnaie de votre monde.')
+		.setDescription(
+			`${pokeballEmoji} : ` + ballEurosPrice[0].price + ' € les 1000 ' + ballEurosPrice[0].type + '\n\n' +
+			`${superballEmoji} : ` + ballEurosPrice[1].price + ' € les 1000 ' + ballEurosPrice[1].type + '\n\n' +
+			`${hyperballEmoji} : ` + ballEurosPrice[2].price + ' € les 1000 ' + ballEurosPrice[2].type + '\n\n' +
+			`${masterballEmoji} : ` + ballEurosPrice[3].price + ' € les 10 ' + ballEurosPrice[3].type + '\n\n'
+		)
+		.setThumbnail(`attachment://shop.png`);
+
+	await channel.send({ embeds: [euroEmbed], files: [attachment] });
+
+	// Créer les boutons d'achat avec la monnaie de votre monde
+	const row = new ActionRowBuilder();
+	for (let i = 0; i < ballTypes.length; i++) {
+		const ball = ballTypes[i];
+		if (!ball) continue;
+		const emoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
+		const button = new ButtonBuilder()
+			.setCustomId(`ball|${ball}`)
+			.setStyle(ButtonStyle.Secondary)
+			.setLabel((ballEurosPrice[i].type !== "Masterball" ? 1000 : 10) + ' (' + ballEurosPrice[i].price + '€)')
+			.setEmoji(emoji.id);
+
+		row.addComponents(button);
+	}
+	await channel.send({ components: [row] });
 }
+
+
 
 async function arenaMessagesGen1(message) {
 	await sendArenaMessage(

@@ -144,8 +144,8 @@ async function premiumDisplay(discordId) {
 		const { embeds, files } = await alsoPremiumEmbed();
 		return { embeds, files };
 	} else {
-		const { embeds, files } = await premiumEmbed(discordId, true);
-		return { embeds, files };
+		const { embeds, files, components } = await premiumEmbed(true);
+		return { embeds, files, components };
 	}
 }
 
@@ -156,6 +156,28 @@ async function premiumUrl(discordId) {
 	try {
 		const response = await API.post(`/payment/create-checkout-session`, {
 			discordId: discordId,
+			priceId: process.env.STRIPE_PREMIUM_PRICE_ID,
+			name: 'Premium',
+		});
+		return response.data.url;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+async function buyBalls(discordId, ballName) {
+	const ballPriceId = {
+		pokeball: process.env.STRIPE_POKEBALL_PRICE_ID,
+		superball: process.env.STRIPE_SUPERBALL_PRICE_ID,
+		hyperball: process.env.STRIPE_HYPERBALL_PRICE_ID,
+		masterball: process.env.STRIPE_MASTERBALL_PRICE_ID
+	}
+	try {
+		const response = await API.post(`/payment/create-checkout-session`, {
+			discordId: discordId,
+			priceId: ballPriceId[ballName],
+			name: ballName,
 		});
 		return response.data.url;
 	} catch (error) {
@@ -166,8 +188,8 @@ async function premiumUrl(discordId) {
 
 async function getPokedexList(interaction, type) {
 	if (!(await getIsPremium(interaction.user.id))) {
-		const { embeds, files } = await premiumEmbed(interaction.user.id);
-		return { embeds, files };
+		const { embeds, files, components } = await premiumEmbed();
+		return { embeds, files, components };
 	}
 	// UPDATEGENERATION: Update the number of pokemons by generation
 	const generationList = [1, 2, 3, 4];
@@ -283,8 +305,8 @@ async function getPokedex(interaction, type) {
 	let isShiny = type.startsWith('shiny');
 
 	if (isReverse && !(await getIsPremium(interaction.user.id))) {
-		const { embeds, files } = await premiumEmbed(interaction.user.id);
-		return { embeds, files };
+		const { embeds, files, components } = await premiumEmbed();
+		return { embeds, files, components };
 	}
 
 	let generation = interaction.options.getInteger('generation');
@@ -875,5 +897,6 @@ export {
 	getIsPremium,
 	premiumDisplay,
 	welcomeTrainer,
-	premiumUrl
+	premiumUrl,
+	buyBalls,
 };

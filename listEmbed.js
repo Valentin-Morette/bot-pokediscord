@@ -1,4 +1,4 @@
-import { EmbedBuilder, AttachmentBuilder } from 'discord.js';
+import { EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { API } from './globalFunctions.js';
 
 function buyMeACoffeeEmbed(color) {
@@ -55,7 +55,7 @@ function GamsGoEmbed(color) {
 		.setTitle("💰 Jusqu'à -75% sur vos abonnements ! 💰")
 		.setDescription(
 			"Profitez de **Netflix, Spotify, Disney+ et bien plus** à prix réduit grâce à **GamsGo**, la plateforme de partage d'abonnements ! 🎉\n\n" +
-				"👉 **Jusqu'à 10 jours gratuits** en passant par ce lien :\n"
+			"👉 **Jusqu'à 10 jours gratuits** en passant par ce lien :\n"
 		)
 		.addFields({
 			name: '🔗 Lien GamsGo',
@@ -69,33 +69,32 @@ function GamsGoEmbed(color) {
 	return { embed, attachment: null };
 }
 
-async function premiumEmbed(discordId, isCmd = false) {
-	const response = await API.post(`/payment/create-checkout-session`, {
-		discordId: discordId,
-	});
-	const url = response.data.url;
+async function premiumEmbed(isCmd = false) {
 	const attachment = new AttachmentBuilder('./assets/premium.png');
 	const embed = new EmbedBuilder()
 		.setTitle('💎 Devenez Premium ! 💎')
 		.setDescription(
-			` ${
-				isCmd ? '' : 'Cette commande est réservée aux membres Premium. '
+			` ${isCmd ? '' : 'Cette commande est réservée aux membres Premium. '
 			}En devenant Premium, vous soutenez le serveur et le bot tout en profitant de nombreux avantages exclusifs !\n\n` +
-				'**Avantages :**\n' +
-				'- Accès à des commandes exclusives.\n' +
-				'- Plus de contenus avec certaines commandes.\n' +
-				'- Pas de publicités sur vos commandes.\n' +
-				'- Commande /cadeau disponible toute les 4h au lieu de 12h.\n\n' +
-				'Et ce pour seulement **3,99€ en une fois** !\n\n'
+			'**Avantages :**\n' +
+			'- Accès à des commandes exclusives.\n' +
+			'- Plus de contenus avec certaines commandes.\n' +
+			'- Pas de publicités sur vos commandes.\n' +
+			'- Commande /cadeau disponible toute les 4h au lieu de 12h.\n\n' +
+			'Et ce pour seulement **3,99€ en une fois** !\n\n'
 		)
-		.addFields({
-			name: `🔗 Lien de paiement ( ⚠️ Lien valable pour l'utilisateur de la commande )`,
-			value: `[Cliquez ici pour devenir Premium !](${url})`,
-		})
 		.setColor('#FFCC00')
 		.setThumbnail('attachment://premium.png');
 
-	return { embeds: [embed], files: [attachment] };
+	let row = new ActionRowBuilder();
+	const button = new ButtonBuilder()
+		.setCustomId('premium')
+		.setStyle(ButtonStyle.Primary)
+		.setEmoji('💎')
+		.setLabel('Devenir Premium');
+	row.addComponents(button);
+
+	return { embeds: [embed], files: [attachment], components: [row] };
 }
 
 async function alsoPremiumEmbed() {
