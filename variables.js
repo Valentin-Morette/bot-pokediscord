@@ -878,7 +878,7 @@ const pokemons = [
 	'Goinfrex',
 	'Riolu',
 	'Lucario',
-	'Hipopotas',
+	'Hippopotas',
 	'Hippodocus',
 	'Rapion',
 	'Drascore',
