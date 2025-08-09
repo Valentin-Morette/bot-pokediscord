@@ -7,8 +7,9 @@ import {
 	ActionRowBuilder,
 	ButtonStyle,
 	ChannelType,
+	PermissionFlagsBits,
 } from 'discord.js';
-import { API } from './globalFunctions.js';
+import { API, wait } from './globalFunctions.js';
 
 async function sendArenaMessage(
 	message,
@@ -60,6 +61,54 @@ async function addBallEmojis(message) {
 	}
 }
 
+function buildCommandEmbed() {
+	return new EmbedBuilder()
+		.setColor('#FFFFFF')
+		.setTitle('Liste des Commandes du Serveur')
+		.setDescription(
+			'**Recherche de Pokémon**\n' +
+			'- `/cherche` : pour chercher un Pokémon.\n\n' +
+			'**Vente de Pokémon**\n' +
+			'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
+			'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
+			'**Visualiser les Pokémon**\n' +
+			"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
+			"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
+			'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
+			'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
+			'**Évolution de Pokémon**\n' +
+			'- `/nombre-evolution [nom du Pokémon]` : pour voir le nombre de Pokémon requis pour une évolution.\n' +
+			'- `/evolution [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon.\n' +
+			'- `/evolution-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon shiny.\n\n' +
+			'**Inventaire et Finances**\n' +
+			'- `/argent` : pour voir votre argent.\n' +
+			'- `/ball` : pour voir toutes vos Pokéballs.\n' +
+			'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
+			'- `/cadeau` : pour recevoir un cadeau.\n' +
+			'- `/boutique` : pour ouvrir la boutique.\n\n' +
+			'**Pokémon Disponibles et Échanges**\n' +
+			'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
+			'- `/echange [nombre de Pokémon offerts] [nom du Pokémon offert] [nombre de Pokémon demandés] [nom du Pokémon demandé]` : pour échanger des Pokémon avec un autre joueur.\n' +
+			'- `/zone [nom du Pokémon]` : pour voir les zones où apparaît un Pokémon.\n\n' +
+			'**Utilisation et Achat de Runes**\n' +
+			'- `/rune-utiliser [nom du Pokémon]` : pour utiliser une rune de Pokémon.\n' +
+			'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
+			'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
+			'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
+			'**Autres**\n' +
+			'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
+			'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
+			'- `/premium` : pour devenir membre premium du serveur.\n\n' +
+			'**💎 Premium 💎**\n' +
+			'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
+			'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
+			'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
+			'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
+			'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n' +
+			'- `/chance-capture [nom du Pokémon]` : pour connaître le pourcentage de chance de capturer un Pokémon par type de Pokéball.\n'
+		);
+}
+
 async function commandesMessage(message) {
 	let channelName = '🧾・𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐞𝐬';
 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
@@ -67,51 +116,7 @@ async function commandesMessage(message) {
 		const messages = await channel.messages.fetch();
 		await channel.bulkDelete(messages);
 
-		const commandEmbed = new EmbedBuilder()
-			.setColor('#FFFFFF')
-			.setTitle('Liste des Commandes du Serveur')
-			.setDescription(
-				'**Recherche de Pokémon**\n' +
-				'- `/cherche` : pour chercher un Pokémon.\n\n' +
-				'**Vente de Pokémon**\n' +
-				'- `/vendre [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon.\n' +
-				'- `/vendre-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour vendre un Pokémon shiny.\n\n' +
-				'**Visualiser les Pokémon**\n' +
-				"- `/pokedex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Pokédex d'un dresseur.\n" +
-				"- `/shinydex [numero de generation (optionnel)][nom du dresseur (optionnel)]` : pour voir le Shinydex d'un dresseur.\n" +
-				'- `/quantite [nom du Pokémon]` : pour voir la quantité d’un Pokémon spécifique que vous possédez.\n' +
-				'- `/quantite-shiny [nom du Pokémon]` : pour voir la quantité d’un Pokémon shiny spécifique que vous possédez.\n\n' +
-				'**Évolution de Pokémon**\n' +
-				'- `/nombre-evolution [nom du Pokémon]` : pour voir le nombre de Pokémon requis pour une évolution.\n' +
-				'- `/evolution [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon.\n' +
-				'- `/evolution-shiny [nom du Pokémon] [max (optionnel)] [quantité (optionnel)]` : pour faire évoluer un Pokémon shiny.\n\n' +
-				'**Inventaire et Finances**\n' +
-				'- `/argent` : pour voir votre argent.\n' +
-				'- `/ball` : pour voir toutes vos Pokéballs.\n' +
-				'- `/prix [nom du Pokémon]` : pour voir le prix de vente d’un Pokémon.\n' +
-				'- `/cadeau` : pour recevoir un cadeau.\n' +
-				'- `/boutique` : pour ouvrir la boutique.\n\n' +
-				'**Pokémon Disponibles et Échanges**\n' +
-				'- `/disponible` : pour voir les Pokémon disponibles dans la zone.\n' +
-				'- `/echange [nombre de Pokémon offerts] [nom du Pokémon offert] [nombre de Pokémon demandés] [nom du Pokémon demandé]` : pour échanger des Pokémon avec un autre joueur.\n' +
-				'- `/zone [nom du Pokémon]` : pour voir les zones où apparaît un Pokémon.\n\n' +
-				'**Utilisation et Achat de Runes**\n' +
-				'- `/rune-utiliser [nom du Pokémon]` : pour utiliser une rune de Pokémon.\n' +
-				'- `/rune-acheter [nom du Pokémon]` : pour acheter une rune de Pokémon.\n' +
-				'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
-				'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
-				'**Autres**\n' +
-				'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
-				'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
-				'- `/premium` : pour devenir membre premium du serveur.\n\n' +
-				'**💎 Premium 💎**\n' +
-				'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
-				'- `/shinydex-liste` : pour voir le résumé de tous les Shinydex.\n' +
-				'- `/pokedex-inverse [numero de generation (optionnel)]` : pour voir votre Pokédex inversé.\n' +
-				'- `/shinydex-inverse [numero de generation (optionnel)]` : pour voir votre Shinydex inversé.\n' +
-				'- `/chance-shiny [nom du Pokémon]` : pour connaître le poucentage de chance d’obtenir un Pokémon shiny.\n' +
-				'- `/chance-capture [nom du Pokémon]` : pour connaître le pourcentage de chance de capturer un Pokémon par type de Pokéball.\n'
-			);
+		const commandEmbed = buildCommandEmbed();
 		await channel.send({ embeds: [commandEmbed] });
 	} else {
 		console.error(`No channel found with the name ${channelName}`);
@@ -369,8 +374,6 @@ async function globalShopMessage(message) {
 	await channel.send({ components: [row] });
 }
 
-
-
 async function arenaMessagesGen1(message) {
 	await sendArenaMessage(
 		message,
@@ -485,6 +488,86 @@ async function channelZones(message) {
 	});
 }
 
+async function channelZonesAsForum(message) {
+	const categoryName = 'PokeFarm';
+
+	let category = message.guild.channels.cache.find(
+		ch => ch.type === ChannelType.GuildCategory && ch.name === categoryName
+	);
+
+	if (!category) {
+		category = await message.guild.channels.create({
+			name: categoryName,
+			type: ChannelType.GuildCategory,
+			reason: 'Regroupe tous les salons de la zone Pokémon',
+		});
+	}
+
+	const allGeneration = {
+		1: 'Kanto',
+		2: 'Johto',
+		3: 'Hoenn',
+		4: 'Sinnoh',
+	};
+
+	for (const [generationNumber, generationName] of Object.entries(allGeneration)) {
+		const forum = await message.guild.channels.create({
+			name: `🗺️・${generationName}`,
+			type: ChannelType.GuildForum,
+			parent: category.id,
+			permissionOverwrites: [
+				{
+					id: message.guild.roles.everyone.id,
+					deny: [PermissionFlagsBits.CreatePublicThreads, PermissionFlagsBits.CreatePrivateThreads],
+					allow: [PermissionFlagsBits.SendMessagesInThreads, PermissionFlagsBits.ViewChannel],
+				},
+			],
+			reason: `Forum de discussion pour ${generationName}`,
+		});
+
+		// Threads (posts) ici si besoin
+		const response = await API.get(`/zone/${generationNumber}`);
+		for (const zone of response.data) {
+			await forum.threads.create({
+				name: `🌳・${zone}`,
+				message: {
+					content: `Bienvenue dans la zone **${zone}** de la génération **${generationName}** !`,
+				},
+				autoArchiveDuration: 10080,
+			});
+
+			await wait(2500);
+		}
+	}
+}
+
+async function reopenArchivedThreads(client) {
+	const guild = client.guilds.cache.get(process.env.IDSERVER);
+	if (!guild) return console.log("❌ Serveur introuvable");
+
+	await guild.channels.fetch(); // charger tous les salons
+	const forumNames = ['🗺️・kanto', "🗺️・johto", "🗺️・hoenn", "🗺️・sinnoh"];
+
+	const forums = guild.channels.cache.filter(
+		(ch) => ch.type === ChannelType.GuildForum && forumNames.includes(ch.name)
+	);
+
+	for (const forum of forums.values()) {
+		try {
+			const archived = await forum.threads.fetchArchived();
+			for (const thread of archived.threads.values()) {
+				if (!thread.locked) {
+					await thread.setArchived(false);
+					console.log(`♻️ Thread rouvert : ${thread.name}`);
+				}
+			}
+		} catch (err) {
+			console.error(`❌ Erreur dans le forum ${forum.name} :`, err.message);
+		}
+	}
+}
+
+
 function slashCommande(commands) {
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
@@ -492,7 +575,11 @@ function slashCommande(commands) {
 		try {
 			console.log('Starting slash commands registration.');
 
-			await rest.put(Routes.applicationGuildCommands(process.env.IDAPPLICATION, process.env.IDSERVER), {
+			// await rest.put(Routes.applicationGuildCommands(process.env.IDAPPLICATION, process.env.IDSERVER), {
+			// 	body: commands,
+			// });
+
+			await rest.put(Routes.applicationCommands(process.env.IDAPPLICATION), {
 				body: commands,
 			});
 
@@ -505,13 +592,17 @@ function slashCommande(commands) {
 
 export {
 	addBallEmojis,
+	commandesMessage,
+	globalShopMessage,
+	sendArenaMessage,
 	slashCommande,
 	arenaMessagesGen1,
 	arenaMessagesGen2,
 	arenaMessagesGen3,
 	arenaMessagesGen4,
-	commandesMessage,
-	globalShopMessage,
 	channelZones,
+	channelZonesAsForum,
 	premiumMessage,
+	buildCommandEmbed,
+	reopenArchivedThreads
 };

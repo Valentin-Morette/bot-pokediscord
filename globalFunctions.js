@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle, ButtonBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 
 function upFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
@@ -23,6 +23,14 @@ function createButtons(message, idPokemonWild) {
 	});
 
 	return row;
+}
+
+function wait(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isUserAdmin(member) {
+	return member.permissions.has(PermissionFlagsBits.Administrator);
 }
 
 function formatRemainingTime(milliseconds) {
@@ -112,6 +120,7 @@ const API = axios.create({
 
 export {
 	upFirstLetter,
+	wait,
 	formatNombreAvecSeparateur,
 	createButtons,
 	heartbeat,
@@ -119,5 +128,6 @@ export {
 	correctNameZone,
 	formatRemainingTime,
 	removeAccents,
+	isUserAdmin,
 	API,
 };

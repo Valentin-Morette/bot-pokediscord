@@ -8,7 +8,9 @@ import {
 	commandesMessage,
 	globalShopMessage,
 	channelZones,
+	channelZonesAsForum,
 	premiumMessage,
+	reopenArchivedThreads
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -35,7 +37,9 @@ import {
 	premiumDisplay,
 	welcomeTrainer,
 	premiumUrl,
-	buyBalls
+	buyBalls,
+	displayHelp,
+	saveBugIdea
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -47,9 +51,10 @@ import {
 	spawnPokemonWithRune,
 	shinyLuck,
 	catchLuck,
+	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { heartbeat, removeAccents } from './globalFunctions.js';
+import { heartbeat, removeAccents, isUserAdmin, API } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
 
 function pokeChat(client) {
@@ -60,56 +65,23 @@ function pokeChat(client) {
 		heartbeat(client);
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();
-			clearOldWildPokemon();
 			setTimeout(() => {
 				client.login(process.env.TOKEN);
 			}, 5000);
 		});
 
-		// Lancer une tâche toutes les 30 minutes
 		setInterval(async () => {
-			const guild = client.guilds.cache.get(process.env.IDSERVER);
-			if (!guild) return console.log("❌ Serveur introuvable");
+			console.log('🔄 Vérification des threads pour les nouveaux spawns de Pokémon...');
 
-			await guild.channels.fetch(); // Important pour bien charger les channels
-
-			// UPDATEGENERATION: Add the new categories for the new generation
-			const categories = guild.channels.cache.filter(
-				(c) =>
-					c.type === ChannelType.GuildCategory &&
-					(c.name === "𝗞𝗔𝗡𝗧𝗢" || c.name === "𝗝𝗢𝗛𝗧𝗢" || c.name === "𝗛𝗢𝗘𝗡𝗡" || c.name === "𝗦𝗜𝗡𝗡𝗢𝗛")
-			);
-
-			for (const category of categories.values()) {
-				const channels = guild.channels.cache.filter(
-					(c) => c.parentId === category.id && c.type === ChannelType.GuildText
-				);
-
-				for (const channel of channels.values()) {
-					try {
-						const lastMessages = await channel.messages.fetch({ limit: 1 });
-						const lastMessage = lastMessages.first();
-
-						if (
-							lastMessage &&
-							lastMessage.author.id === client.user.id &&
-							lastMessage.embeds.length > 0 &&
-							lastMessage.embeds[0].title?.includes("sauvage apparaît")
-						) {
-							continue;
-						}
-
-						// Lancer le spawn
-						await spawnRandomPokemon(channel);
-					} catch (err) {
-						console.error(`❌ Erreur dans le salon ${channel.name}`, err);
-					}
-				}
+			for (const [, guild] of client.guilds.cache) {
+				await checkAndSpawnPokemon(guild);
 			}
-		}, 30 * 60 * 1000); // 30 minutes
+		}, 30 * 60 * 1000);
 	});
 
+	// Only serv perso
 	client.on('guildMemberAdd', (member) => {
+		if (member.guild.id !== process.env.IDSERVER) return;
 		addTrainer(member);
 		let badgeRole = member.guild.roles.cache.find((role) => role.name === 'Dresseur Pokémon');
 
@@ -123,8 +95,54 @@ function pokeChat(client) {
 		}
 	});
 
+	client.on('guildCreate', async (guild) => {
+		try {
+			await API.post(`/servers`, {
+				idServer: guild.id,
+				name: guild.name,
+				idOwner: guild.ownerId
+			});
+			await checkAndSpawnPokemon(guild);
+		} catch (error) {
+			console.error("Erreur API lors de l'enregistrement :", error.response?.data || error.message);
+		}
+	});
+
+	client.on('guildDelete', async (guild) => {
+		try {
+			await API.put(`/servers/${guild.id}`, { isDelete: true });
+		} catch (error) {
+			console.error("Erreur API lors de la suppression :", error.response?.data || error.message);
+		}
+	});
+
+	client.on('channelUpdate', async (oldChannel, newChannel) => {
+		// Vérifie que c'est bien une catégorie renommée
+		if (
+			oldChannel.type === ChannelType.GuildCategory &&
+			newChannel.type === ChannelType.GuildCategory &&
+			oldChannel.name === 'PokeFarm' &&
+			newChannel.name !== 'PokeFarm'
+		) {
+			try {
+				await newChannel.setName('PokeFarm');
+			} catch (error) {
+				console.error(`❌ Impossible de renommer la catégorie "${newChannel.name}" :`, error);
+			}
+		}
+	});
+
+
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
+
+		if (isUserAdmin(message.member)) {
+			if (message.content === '!install') {
+				await addBallEmojis(message);
+				await channelZonesAsForum(message);
+				await API.put(`/servers/${message.guild.id}`, { isInstal: true });
+			}
+		}
 
 		if (message.author.id === process.env.MYDISCORDID) {
 			if (message.content === '!addBallEmojis') {
@@ -145,6 +163,8 @@ function pokeChat(client) {
 				await kickMember(message);
 			} else if (message.content === '!channelZones') {
 				await channelZones(message);
+			} else if (message.content === '!channelZonesAsForum') {
+				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
 				await premiumMessage(message);
 			}
@@ -153,6 +173,16 @@ function pokeChat(client) {
 	});
 
 	client.on('interactionCreate', async (interaction) => {
+		if (!interaction.guild || !interaction.channel) return;
+
+		const parent = interaction.channel.parent.parent;
+		if (!parent || parent.name !== "PokeFarm") {
+			await interaction.reply({
+				content: "Cette commande ne peut être utilisée que dans la catégorie `PokeFarm`.",
+				ephemeral: true
+			});
+			return;
+		}
 		// Button interaction
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
@@ -262,6 +292,18 @@ function pokeChat(client) {
 				return interaction.reply(
 					await getZoneForPokemon(interaction.user.id, interaction.options.getString('nom'))
 				);
+			}
+
+			if (interaction.commandName === 'help') {
+				return interaction.reply(await displayHelp(interaction));
+			}
+
+			if (interaction.commandName === 'bug') {
+				return interaction.reply(await saveBugIdea(interaction, 'bug'));
+			}
+
+			if (interaction.commandName === 'idee') {
+				return interaction.reply(await saveBugIdea(interaction, 'idea'));
 			}
 
 			if (interaction.commandName === 'pokedex') {

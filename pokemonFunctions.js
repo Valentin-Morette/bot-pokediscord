@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder, ChannelType } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 import { getIsPremium } from './trainerFunctions.js';
 import { XEmbed, GamsGoEmbed, premiumEmbed } from './listEmbed.js';
@@ -492,6 +492,49 @@ async function catchLuck(interaction) {
 	}
 }
 
+async function checkAndSpawnPokemon(guild) {
+	try {
+		await guild.channels.fetch(); // recharge les salons
+
+		const forumNames = ['🗺️・kanto', "🗺️・johto", "🗺️・hoenn", "🗺️・sinnoh"];
+
+		const forums = guild.channels.cache.filter(
+			(c) => c.type === ChannelType.GuildForum && forumNames.includes(c.name)
+		);
+
+		for (const forum of forums.values()) {
+			try {
+				const threads = await forum.threads.fetchActive();
+
+				for (const thread of threads.threads.values()) {
+					try {
+						const lastMessages = await thread.messages.fetch({ limit: 1 });
+						const lastMessage = lastMessages.first();
+
+						if (
+							lastMessage &&
+							lastMessage.author.id === guild.client.user.id &&
+							lastMessage.embeds.length > 0 &&
+							lastMessage.embeds[0].title?.includes("sauvage apparaît")
+						) {
+							continue; // spawn déjà présent
+						}
+
+						await spawnRandomPokemon(thread);
+					} catch (err) {
+						console.error(`❌ Erreur dans le thread ${thread.name} de ${guild.name}`, err);
+					}
+				}
+			} catch (err) {
+				console.error(`❌ Erreur avec le forum ${forum.name} de ${guild.name}`, err);
+			}
+		}
+	} catch (err) {
+		console.error(`❌ Erreur avec le serveur ${guild.name}`, err);
+	}
+}
+
+
 export {
 	findRandomPokemon,
 	evolvePokemon,
@@ -503,4 +546,5 @@ export {
 	shinyLuck,
 	catchLuck,
 	spawnRandomPokemon,
+	checkAndSpawnPokemon
 };

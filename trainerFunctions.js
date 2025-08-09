@@ -11,11 +11,12 @@ import {
 	createListEmbed,
 	API,
 	formatRemainingTime,
+	isUserAdmin
 } from './globalFunctions.js';
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
 import { premiumEmbed, alsoPremiumEmbed } from './listEmbed.js';
-
+import { buildCommandEmbed } from './createServerFunctions.js';
 const shopCooldowns = new Map();
 
 async function addTrainer(member) {
@@ -186,6 +187,40 @@ async function buyBalls(discordId, ballName) {
 	}
 }
 
+async function displayHelp(interaction) {
+	let adminIntro = '';
+	if (isUserAdmin(interaction.member)) {
+		adminIntro =
+			'**🔧 Commande d’installation (admin uniquement)**\n' +
+			'Utilisez `!install` pour installer automatiquement :\n' +
+			'- Une catégorie dédiée avec les forums par génération\n' +
+			'- Les threads (posts) pour chaque zone\n' +
+			'- Les permissions et emojis nécessaires au bon fonctionnement du bot\n\n' +
+			'⚠️ Cette opération peut prendre **jusqu’à 10 minutes**.\n\n' +
+			' -------------------------------------------------\n\n';
+	}
+
+	const commandEmbed = buildCommandEmbed();
+	commandEmbed.setDescription(adminIntro + commandEmbed.data.description);
+	await interaction.channel.send({ embeds: [commandEmbed] });
+}
+
+async function saveBugIdea(interaction, type) {
+	const data = {
+		idTrainer: interaction.user.id,
+		message: interaction.options.getString('description'),
+		type: type,
+	};
+	let response = await API.post(`/bugs-ideas`, data);
+	if (response.data.status === 'success') {
+		return `Merci pour votre ${type === 'bug' ? 'rapport de bug' : 'idée'} ! Nous l'avons bien reçu et nous allons l'examiner.`;
+	} else if (response.data.status === 'alreadySent') {
+		return `Vous avez déjà envoyé un${type === 'bug' ? ' rapport de bug' : 'e idée'} récemment. Merci de patienter avant d'en envoyer un nouveau.`;
+	} else {
+		return `Une erreur est survenue lors de l'envoi de votre ${type === 'bug' ? 'rapport de bug' : 'idée'}. Veuillez réessayer plus tard.`;
+	}
+}
+
 async function getPokedexList(interaction, type) {
 	if (!(await getIsPremium(interaction.user.id))) {
 		const { embeds, files, components } = await premiumEmbed();
@@ -313,10 +348,10 @@ async function getPokedex(interaction, type) {
 	if (generation == null) {
 		// UPDATEGENERATION: Update the category name for each generation
 		const categoryNameForGeneration = {
-			'𝗞𝗔𝗡𝗧𝗢': 1,
-			'𝗝𝗢𝗛𝗧𝗢': 2,
-			'𝗛𝗢𝗘𝗡𝗡': 3,
-			'𝗦𝗜𝗡𝗡𝗢𝗛': 4,
+			'🗺️・kanto': 1,
+			'🗺️・johto': 2,
+			'🗺️・hoenn': 3,
+			'🗺️・sinnoh': 4,
 		};
 		generation = categoryNameForGeneration[interaction.channel.parent.name] ?? 1;
 	}
@@ -634,9 +669,12 @@ async function shopMessage(interaction, needReply = false) {
 	let rows = [];
 	let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 
-	for (let i = 10; i <= 100; i *= 10) {
+	for (let i = 10; i <= 1000; i *= 10) {
 		let row = new ActionRowBuilder();
 		balls.forEach((ball) => {
+			if (ball === 'masterball' && i == 1000) {
+				return;
+			}
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			let number = ball === 'masterball' ? i / 10 : i;
 			const button = new ButtonBuilder()
@@ -899,4 +937,6 @@ export {
 	welcomeTrainer,
 	premiumUrl,
 	buyBalls,
+	displayHelp,
+	saveBugIdea
 };

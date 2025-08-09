@@ -125,6 +125,34 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'help',
+		description: 'Affiche la liste des commandes',
+	},
+	{
+		name: 'bug',
+		description: 'Signale un bug',
+		options: [
+			{
+				name: 'description',
+				type: 3,
+				description: 'Description du bug',
+				required: true,
+			},
+		],
+	},
+	{
+		name: 'idee',
+		description: 'Propose une idée de fonctionnalité / amélioration',
+		options: [
+			{
+				name: 'description',
+				type: 3,
+				description: 'Description de l’idée',
+				required: true,
+			},
+		],
+	},
+	{
 		name: 'evolution-shiny',
 		description: 'Fait évoluer un Pokémon shiny',
 		options: [
