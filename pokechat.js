@@ -54,21 +54,28 @@ import {
 	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { heartbeat, removeAccents, isUserAdmin, API } from './globalFunctions.js';
+import { removeAccents, isUserAdmin, API } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
 
-	client.on('ready', () => {
+	client.on('ready', async () => {
 		console.log('Pokechat Ready!');
-		heartbeat(client);
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();
 			setTimeout(() => {
 				client.login(process.env.TOKEN);
 			}, 5000);
 		});
+
+		for (const [guildId, guild] of client.guilds.cache) {
+			try {
+				await guild.emojis.fetch();
+			} catch (error) {
+				console.warn(`⚠️ Impossible de fetch les emojis pour ${guild.name} :`, error);
+			}
+		}
 
 		setInterval(async () => {
 			console.log('🔄 Vérification des threads pour les nouveaux spawns de Pokémon...');
@@ -79,19 +86,20 @@ function pokeChat(client) {
 		}, 30 * 60 * 1000);
 	});
 
-	// Only serv perso
 	client.on('guildMemberAdd', (member) => {
-		if (member.guild.id !== process.env.IDSERVER) return;
 		addTrainer(member);
-		let badgeRole = member.guild.roles.cache.find((role) => role.name === 'Dresseur Pokémon');
+		// Only serv perso
+		if (member.guild.id == process.env.IDSERVER) {
+			let badgeRole = member.guild.roles.cache.find((role) => role.name === 'Dresseur Pokémon');
 
-		if (badgeRole) {
-			member.roles.add(badgeRole).catch(console.error);
-		}
+			if (badgeRole) {
+				member.roles.add(badgeRole).catch(console.error);
+			}
 
-		const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
-		if (welcomeChannel) {
-			welcomeChannel.send(welcomeTrainer(member));
+			const welcomeChannel = member.guild.channels.cache.find((ch) => ch.name === '👋・𝐀𝐜𝐜𝐮𝐞𝐢𝐥');
+			if (welcomeChannel) {
+				welcomeChannel.send(welcomeTrainer(member));
+			}
 		}
 	});
 
@@ -139,7 +147,9 @@ function pokeChat(client) {
 		if (isUserAdmin(message.member)) {
 			if (message.content === '!install') {
 				await addBallEmojis(message);
+				await message.guild.emojis.fetch();
 				await channelZonesAsForum(message);
+				await checkAndSpawnPokemon(message.guild);
 				await API.put(`/servers/${message.guild.id}`, { isInstal: true });
 			}
 		}

@@ -1,12 +1,12 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder, ChannelType } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 import { getIsPremium } from './trainerFunctions.js';
-import { XEmbed, GamsGoEmbed, premiumEmbed } from './listEmbed.js';
+import { XEmbed, GamsGoEmbed, premiumEmbed, premiumAdEmbed } from './listEmbed.js';
 
 let commandCount = 0;
 let embedIndex = 0;
 
-const embedFunctions = [XEmbed, GamsGoEmbed];
+const embedFunctions = [XEmbed, premiumAdEmbed];
 
 async function findRandomPokemon(interaction, followUp = false) {
 	commandCount++;
@@ -48,7 +48,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 40 === 0) {
+		if (commandCount % 2 === 0) {
 			if (!(await getIsPremium(interaction.user.id))) {
 				const { embed: extraEmbed, attachment: extraAttachment } =
 					embedFunctions[embedIndex % embedFunctions.length](color);
@@ -464,6 +464,7 @@ async function catchLuck(interaction) {
 		let message = '';
 		const pokeballData = response.data.pokeballData;
 		const pokemonData = response.data.pokemonData;
+
 		for (let i = 0; i < pokeballData.length; i++) {
 			const customEmoji = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === pokeballData[i].name
@@ -477,7 +478,9 @@ async function catchLuck(interaction) {
 					: pokemonData.catchRate + pokeballData[i].catchBonus
 				}%\n`;
 		}
+
 		message += '- 🏃 Fuites : ' + pokemonData.escapeRate + '%';
+
 		let embed = createListEmbed(
 			message,
 			`Chances de capture pour ${upFirstLetter(pokemonName)} :`,
@@ -486,6 +489,7 @@ async function catchLuck(interaction) {
 			null,
 			'#6B8E23'
 		);
+
 		return { embeds: [embed] };
 	} catch (error) {
 		console.error('Error retrieving catch luck.');

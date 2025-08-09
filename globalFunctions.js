@@ -100,12 +100,6 @@ function correctNameZone(name) {
 		.replace(/[\u0300-\u036f]/g, '');
 }
 
-function heartbeat(client) {
-	setInterval(() => {
-		client.ws.ping;
-	}, 300000);
-}
-
 function removeAccents(str) {
 	if (typeof str !== 'string') return '';
 	return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -123,7 +117,6 @@ export {
 	wait,
 	formatNombreAvecSeparateur,
 	createButtons,
-	heartbeat,
 	createListEmbed,
 	correctNameZone,
 	formatRemainingTime,

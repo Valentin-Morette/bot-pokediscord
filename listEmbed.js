@@ -69,6 +69,27 @@ function GamsGoEmbed(color) {
 	return { embed, attachment: null };
 }
 
+async function premiumAdEmbed() {
+	const attachment = new AttachmentBuilder('./assets/premium.png');
+	const embed = new EmbedBuilder()
+		.setTitle('💎 Découvrez l’offre Premium ! 💎')
+		.setDescription(
+			`Envie de profiter pleinement du bot et de débloquer des fonctionnalités exclusives ?\n\n` +
+			'**Avantages Premium :**\n' +
+			'- Accès à des commandes exclusives.\n' +
+			'- Plus de contenus avec certaines commandes.\n' +
+			'- Pas de publicités sur vos commandes.\n' +
+			'- Commande /cadeau disponible toutes les 4h au lieu de 12h.\n\n' +
+			`Le tout pour seulement **3,99€ en une fois** !\n\n` +
+			`➡️ Pour en savoir plus ou le devenir, tapez la commande **/premium** sur ce serveur.`
+		)
+		.setColor('#FFCC00')
+		.setThumbnail('attachment://premium.png');
+
+	return { embeds: [embed], files: [attachment] };
+}
+
+
 async function premiumEmbed(isCmd = false) {
 	const attachment = new AttachmentBuilder('./assets/premium.png');
 	const embed = new EmbedBuilder()
@@ -110,4 +131,4 @@ async function alsoPremiumEmbed() {
 	return { embeds: [embed], files: [attachment] };
 }
 
-export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed };
+export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed, premiumAdEmbed };

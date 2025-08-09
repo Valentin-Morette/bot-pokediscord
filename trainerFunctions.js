@@ -196,7 +196,7 @@ async function displayHelp(interaction) {
 			'- Une catégorie dédiée avec les forums par génération\n' +
 			'- Les threads (posts) pour chaque zone\n' +
 			'- Les permissions et emojis nécessaires au bon fonctionnement du bot\n\n' +
-			'⚠️ Cette opération peut prendre **jusqu’à 10 minutes**.\n\n' +
+			'⚠️ Cette opération peut prendre **jusqu’à 15 minutes** et le bot fera régulièrement des pauses lors de la création des forums.\n\n' +
 			' -------------------------------------------------\n\n';
 	}
 
