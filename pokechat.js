@@ -56,11 +56,20 @@ import {
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, API } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
+import { REST, Routes } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
 
+	async function clearGuildCommands(appId, guildId, token) {
+		const rest = new REST({ version: '10' }).setToken(token);
+		await rest.put(Routes.applicationGuildCommands(appId, guildId), { body: [] });
+		console.log(`✅ Guild commands purgées pour ${guildId}`);
+	}
+
 	client.on('ready', async () => {
+		clearGuildCommands(client.user.id, process.env.IDSERVER, process.env.TOKEN)
+			.catch(console.error);
 		console.log('Pokechat Ready!');
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();

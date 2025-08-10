@@ -435,7 +435,7 @@ async function channelZonesAsForum(message) {
 		const response = await API.get(`/zone/${generationNumber}`);
 		for (const zone of response.data) {
 			await forum.threads.create({
-				name: zone,
+				name: '🌳・' + zone,
 				message: {
 					content: `Bienvenue dans la zone **${zone}** de la génération **${generationName}** !`,
 				},
