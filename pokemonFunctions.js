@@ -48,14 +48,15 @@ async function findRandomPokemon(interaction, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 2 === 0) {
+		if (commandCount % 40 === 0) {
 			if (!(await getIsPremium(interaction.user.id))) {
-				const { embed: extraEmbed, attachment: extraAttachment } =
-					embedFunctions[embedIndex % embedFunctions.length](color);
-				responseOptions.embeds.push(extraEmbed);
-				if (extraAttachment) {
+				const { embeds: extraEmbeds, files: extraFiles } =
+					await embedFunctions[embedIndex % embedFunctions.length](color);
+
+				responseOptions.embeds.push(...extraEmbeds);
+				if (extraFiles) {
 					if (!responseOptions.files) responseOptions.files = [];
-					responseOptions.files.push(extraAttachment);
+					responseOptions.files.push(...extraFiles);
 				}
 				embedIndex++;
 			}

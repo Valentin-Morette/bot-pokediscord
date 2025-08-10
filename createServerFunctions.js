@@ -96,6 +96,8 @@ function buildCommandEmbed() {
 			'- `/rune-prix [nom du Pokémon]` : pour voir le prix d’une rune de Pokémon.\n' +
 			'- `/rune-inventaire` : pour voir les runes de Pokémon en votre possession.\n\n' +
 			'**Autres**\n' +
+			'- `/bug` : pour signaler un bug.\n' +
+			'- `/idee` : pour faire une suggestion.\n' +
 			'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
 			'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
 			'- `/premium` : pour devenir membre premium du serveur.\n\n' +
@@ -159,119 +161,6 @@ async function premiumMessage(message) {
 		console.error(`No channel found with the name ${channelName}`);
 	}
 }
-
-// async function globalShopMessage(message) {
-// 	let channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
-// 	let channel = message.guild.channels.cache.find((channel) => channel.name === channelName);
-// 	if (channel) {
-// 		const messages = await channel.messages.fetch();
-// 		await channel.bulkDelete(messages);
-// 		const attachment = new AttachmentBuilder(`./assets/shop.png`);
-
-// 		const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
-// 		const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
-// 		const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
-// 		const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
-
-// 		const priceEmbed = new EmbedBuilder()
-// 			.setColor('#FFFFFF')
-// 			.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
-// 			.setDescription(
-// 				`${pokeballEmoji} Pokeball : 50 $\n\n` +
-// 				`${superballEmoji} Superball : 80 $\n\n` +
-// 				`${hyperballEmoji} Hyperball : 150 $\n\n` +
-// 				`${masterballEmoji} Masterball : 100 000 $\n\n`
-// 			)
-// 			.setThumbnail(`attachment://shop.png`);
-// 		await channel.send({ embeds: [priceEmbed], files: [attachment] });
-
-// 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
-// 		for (let i = 1; i <= 1000; i *= 10) {
-// 			let row = new ActionRowBuilder();
-// 			balls.forEach((ball) => {
-// 				if (ball !== 'masterball' || i <= 10) {
-// 					const customEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
-// 					const button = new ButtonBuilder()
-// 						.setCustomId('buy|' + i + '|' + ball)
-// 						.setStyle(ButtonStyle.Secondary)
-// 						.setLabel('' + i)
-// 						.setEmoji(customEmoji.id);
-
-// 					row.addComponents(button);
-// 				}
-// 			});
-// 			await channel.send({ components: [row] });
-// 		}
-// 	} else {
-// 		console.error(`No channel found with the name ${channelName}`);
-// 	}
-// }
-
-// async function globalShopMessage(message) {
-// 	const channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
-// 	const channel = message.guild.channels.cache.find((ch) => ch.name === channelName);
-
-// 	if (!channel) {
-// 		console.error(`No channel found with the name ${channelName}`);
-// 		return;
-// 	}
-
-// 	const messages = await channel.messages.fetch();
-// 	await channel.bulkDelete(messages);
-
-// 	const attachment = new AttachmentBuilder(`./assets/shop.png`);
-
-// 	const pokeballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'pokeball');
-// 	const superballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
-// 	const hyperballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
-// 	const masterballEmoji = message.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
-
-// 	const priceEmbed = new EmbedBuilder()
-// 		.setColor('#FFFFFF')
-// 		.setTitle('Bienvenue, Dresseur ! Jetez un œil à nos Pokéballs !')
-// 		.setDescription(
-// 			`${pokeballEmoji} Pokeball : 50 $\n\n` +
-// 			`${superballEmoji} Superball : 80 $\n\n` +
-// 			`${hyperballEmoji} Hyperball : 150 $\n\n` +
-// 			`${masterballEmoji} Masterball : 100 000 $\n\n`
-// 		)
-// 		.setThumbnail(`attachment://shop.png`);
-
-// 	await channel.send({ embeds: [priceEmbed], files: [attachment] });
-
-// 	// Définition des lignes de boutons
-// 	const rows = [
-// 		[100, 100, 100, 1],
-// 		[1000, 1000, 1000, 10],
-// 		[10000, 10000, 10000] // sans masterball
-// 	];
-
-// 	const ballTypes = ['pokeball', 'superball', 'hyperball', 'masterball'];
-
-// 	for (let line of rows) {
-// 		const row = new ActionRowBuilder();
-
-// 		for (let i = 0; i < line.length; i++) {
-// 			const quantity = line[i];
-// 			const ball = ballTypes[i];
-// 			if (!ball) continue;
-
-// 			// Exclusion si masterball avec trop grande quantité
-// 			if (ball === 'masterball' && quantity > 10) continue;
-
-// 			const emoji = message.guild.emojis.cache.find((emoji) => emoji.name === ball);
-// 			const button = new ButtonBuilder()
-// 				.setCustomId(`buy|${quantity}|${ball}`)
-// 				.setStyle(ButtonStyle.Secondary)
-// 				.setLabel(quantity.toString())
-// 				.setEmoji(emoji.id);
-
-// 			row.addComponents(button);
-// 		}
-
-// 		await channel.send({ components: [row] });
-// 	}
-// }
 
 async function globalShopMessage(message) {
 	const channelName = '🛒・𝐁𝐨𝐮𝐭𝐢𝐪𝐮𝐞';
@@ -515,27 +404,43 @@ async function channelZonesAsForum(message) {
 			name: `🗺️・${generationName}`,
 			type: ChannelType.GuildForum,
 			parent: category.id,
+			topic: `Chaque post est une zone avec des Pokémon différents.\nCliquez sur les boutons sous les Pokémon pour tenter de les capturer.\nGérez vos Poké Balls et votre argent avec soin.\nUtilisez la commande /help pour voir toutes les commandes disponibles.`,
 			permissionOverwrites: [
 				{
 					id: message.guild.roles.everyone.id,
-					deny: [PermissionFlagsBits.CreatePublicThreads, PermissionFlagsBits.CreatePrivateThreads],
-					allow: [PermissionFlagsBits.SendMessagesInThreads, PermissionFlagsBits.ViewChannel],
+					deny: [PermissionFlagsBits.SendMessages],
+					allow: [
+						PermissionFlagsBits.ViewChannel,
+						PermissionFlagsBits.ReadMessageHistory,
+						PermissionFlagsBits.SendMessagesInThreads,
+						PermissionFlagsBits.AddReactions,
+					],
 				},
+				{
+					id: message.client.user.id,
+					allow: [
+						PermissionFlagsBits.ViewChannel,
+						PermissionFlagsBits.ReadMessageHistory,
+						PermissionFlagsBits.SendMessages,
+						PermissionFlagsBits.SendMessagesInThreads,
+						PermissionFlagsBits.ManageThreads,
+						PermissionFlagsBits.ManageChannels,
+					],
+				}
 			],
 			reason: `Forum de discussion pour ${generationName}`,
 		});
 
-		// Threads (posts) ici si besoin
+		// Créer les posts (threads) par le bot seulement
 		const response = await API.get(`/zone/${generationNumber}`);
 		for (const zone of response.data) {
 			await forum.threads.create({
-				name: `🌳・${zone}`,
+				name: zone,
 				message: {
 					content: `Bienvenue dans la zone **${zone}** de la génération **${generationName}** !`,
 				},
 				autoArchiveDuration: 10080,
 			});
-
 			await wait(2500);
 		}
 	}
@@ -545,7 +450,7 @@ async function reopenArchivedThreads(client) {
 	const guild = client.guilds.cache.get(process.env.IDSERVER);
 	if (!guild) return console.log("❌ Serveur introuvable");
 
-	await guild.channels.fetch(); // charger tous les salons
+	await guild.channels.fetch();
 	const forumNames = ['🗺️・kanto', "🗺️・johto", "🗺️・hoenn", "🗺️・sinnoh"];
 
 	const forums = guild.channels.cache.filter(

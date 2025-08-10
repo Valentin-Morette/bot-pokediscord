@@ -69,6 +69,12 @@ function pokeChat(client) {
 			}, 5000);
 		});
 
+		await reopenArchivedThreads(client);
+
+		cron.schedule('*/30 * * * *', async () => {
+			await reopenArchivedThreads(client);
+		});
+
 		for (const [guildId, guild] of client.guilds.cache) {
 			try {
 				await guild.emojis.fetch();
@@ -87,7 +93,7 @@ function pokeChat(client) {
 	});
 
 	client.on('guildMemberAdd', (member) => {
-		addTrainer(member);
+		addTrainer(member, member.guild.id);
 		// Only serv perso
 		if (member.guild.id == process.env.IDSERVER) {
 			let badgeRole = member.guild.roles.cache.find((role) => role.name === 'Dresseur Pokémon');
@@ -110,7 +116,8 @@ function pokeChat(client) {
 				name: guild.name,
 				idOwner: guild.ownerId
 			});
-			await checkAndSpawnPokemon(guild);
+			await guild.members.fetch();
+			addTrainer(guild.members.cache.filter(m => !m.user.bot).map(m => m), guild.id);
 		} catch (error) {
 			console.error("Erreur API lors de l'enregistrement :", error.response?.data || error.message);
 		}

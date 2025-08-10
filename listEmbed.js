@@ -1,5 +1,4 @@
 import { EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { API } from './globalFunctions.js';
 
 function buyMeACoffeeEmbed(color) {
 	const embed = new EmbedBuilder()
@@ -15,7 +14,8 @@ function buyMeACoffeeEmbed(color) {
 		.setThumbnail(
 			'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGI4ZWsxaWl2MTc1enF1cnZ4cnAydWlraWFpMXl2bXg2dTc3bGxyZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/TDQOtnWgsBx99cNoyH/giphy.gif'
 		);
-	return { embed, attachment: null };
+
+	return { embeds: [embed], files: [] };
 }
 
 function instantGamingEmbed(color) {
@@ -31,14 +31,14 @@ function instantGamingEmbed(color) {
 		.setColor(color)
 		.setThumbnail('https://seeklogo.com/images/I/instant-gaming-logo-5931E64B57-seeklogo.com.png');
 
-	return { embed, attachment: null };
+	return { embeds: [embed], files: [] };
 }
 
 function XEmbed(color) {
 	const embed = new EmbedBuilder()
 		.setTitle('🌐 Suivez-nous sur X ! 🌐')
 		.setDescription(
-			'Restez informé des dernières statistiques du serveur Pokémon ! Découvrez combien de Pokémon sont apparus, capturés et échappés chaque jour. Ne manquez aucune mise à jour et rejoignez la communauté ! 🚀'
+			'Restez informé des dernières statistiques du bot ! Découvrez combien de Pokémon sont apparus, capturés et échappés chaque jour. Ne manquez aucune mise à jour et rejoignez la communauté ! 🚀'
 		)
 		.addFields({
 			name: '🔗 Suivez-nous ici',
@@ -47,7 +47,7 @@ function XEmbed(color) {
 		.setColor(color)
 		.setThumbnail('https://upload.wikimedia.org/wikipedia/commons/e/e6/Twitter-new-logo.jpg');
 
-	return { embed, attachment: null };
+	return { embeds: [embed], files: [] };
 }
 
 function GamsGoEmbed(color) {
@@ -66,8 +66,9 @@ function GamsGoEmbed(color) {
 			'https://external-preview.redd.it/9YItORrxXBGN2DPzfgGh7OrkLvXVWHMWvOsQvCQ7sU4.jpg?width=640&crop=smart&auto=webp&s=f7a46fd0a31792ecd2ece3cea719f869849e6c02'
 		);
 
-	return { embed, attachment: null };
+	return { embeds: [embed], files: [] };
 }
+
 
 async function premiumAdEmbed() {
 	const attachment = new AttachmentBuilder('./assets/premium.png');

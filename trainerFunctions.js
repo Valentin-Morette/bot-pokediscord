@@ -19,36 +19,72 @@ import { premiumEmbed, alsoPremiumEmbed } from './listEmbed.js';
 import { buildCommandEmbed } from './createServerFunctions.js';
 const shopCooldowns = new Map();
 
-async function addTrainer(member) {
+function setBallButtonEmojiOrLabel(button, guild, name) {
+	const e = guild.emojis.cache.find(x => x.name === name);
+	if (e) button.setEmoji({ id: e.id, name: e.name, animated: e.animated });
+	else button.setLabel(name);
+}
+
+async function buildFreshBallRow(guild, pokemonId, disabled = false) {
+	await guild.emojis.fetch().catch(() => { });
+	const balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
+	const row = new ActionRowBuilder();
+	for (const ball of balls) {
+		const btn = new ButtonBuilder()
+			.setCustomId(`${ball}|${pokemonId}`)
+			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(disabled);
+		setBallButtonEmojiOrLabel(btn, guild, ball);
+		row.addComponents(btn);
+	}
+	return row;
+}
+
+async function addTrainer(members, guildId = process.env.IDSERVER) {
 	try {
-		const response = await API.get(`/trainer/verify/` + member.id);
-		if (!response.data.hasAccount) {
+		const defaultMoney = 2500;
+		const defaultBalls = [
+			{ id: 1, quantity: 50 },
+			{ id: 2, quantity: 30 },
+			{ id: 3, quantity: 10 },
+		];
+
+		const memberArray = Array.isArray(members) ? members : [members];
+
+		if (memberArray.length === 1) {
+			const member = memberArray[0];
 			await API.post(`/trainer`, {
 				trainer: {
 					idDiscord: member.id,
 					name: member.user.username,
-					money: 2500,
+					money: defaultMoney,
+					firstServerId: guildId,
 				},
-				ball: [
-					{
-						id: 1,
-						quantity: 50,
-					},
-					{
-						id: 2,
-						quantity: 30,
-					},
-					{
-						id: 3,
-						quantity: 10,
-					},
-				],
+				ball: defaultBalls,
 			});
+		}
+		else {
+			const trainers = memberArray
+				.filter(m => !m.user.bot)
+				.map(m => ({
+					idDiscord: m.id,
+					name: m.user.username,
+					firstServerId: guildId,
+				}));
+
+			if (trainers.length > 0) {
+				await API.post(`/trainer/bulk`, {
+					trainers,
+					money: defaultMoney,
+					ball: defaultBalls,
+				});
+			}
 		}
 	} catch (error) {
 		console.error(error);
 	}
 }
+
 
 function welcomeTrainer(member) {
 	try {
@@ -202,7 +238,7 @@ async function displayHelp(interaction) {
 
 	const commandEmbed = buildCommandEmbed();
 	commandEmbed.setDescription(adminIntro + commandEmbed.data.description);
-	await interaction.channel.send({ embeds: [commandEmbed] });
+	return { embeds: [commandEmbed], ephemeral: false };
 }
 
 async function saveBugIdea(interaction, type) {
@@ -536,14 +572,13 @@ async function handleCatch(interaction, idPokeball) {
 	const idTrainer = interaction.user.id;
 
 	const response = await catchPokemon(idPokemonWild, idTrainer, idPokeball);
-	let replyMessage;
-	let components;
 
 	const originalEmbed = interaction.message.embeds[0];
-	let secondOriginalEmbed = null;
 	const newEmbed = new EmbedBuilder()
 		.setTitle(originalEmbed.title)
 		.setThumbnail(originalEmbed.thumbnail?.url);
+
+	let secondOriginalEmbed = null;
 	const newEmbed2 = new EmbedBuilder();
 	if (interaction.message.embeds.length > 1) {
 		secondOriginalEmbed = interaction.message.embeds[1];
@@ -551,89 +586,85 @@ async function handleCatch(interaction, idPokeball) {
 			.setTitle(secondOriginalEmbed.title)
 			.setThumbnail(secondOriginalEmbed.thumbnail?.url)
 			.setDescription(secondOriginalEmbed.description)
-			.setColor(secondOriginalEmbed.color)
-			.addFields(secondOriginalEmbed.fields);
+			.setColor(secondOriginalEmbed.color ?? null)
+			.addFields(secondOriginalEmbed.fields ?? []);
 	}
 
-	let addFieldsValue = originalEmbed.fields[0]?.value ?? '0';
+	let attempts = parseInt(originalEmbed.fields?.[0]?.value ?? '0', 10) || 0;
+	let replyMessage = '';
+	let disabled = false;
 
 	switch (response.status) {
 		case 'noCatch':
-			newEmbed.setColor(originalEmbed.color);
+			newEmbed.setColor(originalEmbed.color ?? null);
 			replyMessage = `${response.pokemonName} s'est échappé, réessayez !`;
-			addFieldsValue = parseInt(addFieldsValue) + 1;
+			attempts += 1;
+			disabled = false;
 			break;
+
 		case 'catch':
 			newEmbed.setColor('#3aa12f');
-			if (secondOriginalEmbed !== null) {
-				newEmbed2.setColor('#3aa12f');
-			}
+			if (secondOriginalEmbed) newEmbed2.setColor('#3aa12f');
 			replyMessage = `${response.pokemonName} a été attrapé par <@${interaction.user.id}>.`;
-			addFieldsValue = parseInt(addFieldsValue) + 1;
-			components = await disabledButtons(interaction);
+			attempts += 1;
+			disabled = true;
 			break;
+
 		case 'escape':
 			newEmbed.setColor('#c71a28');
-			if (secondOriginalEmbed !== null) {
-				newEmbed2.setColor('#c71a28');
-			}
+			if (secondOriginalEmbed) newEmbed2.setColor('#c71a28');
 			replyMessage = `${response.pokemonName} s'est échappé! dommage`;
-			addFieldsValue = parseInt(addFieldsValue) + 1;
-			components = await disabledButtons(interaction);
+			attempts += 1;
+			disabled = true;
 			break;
+
 		case 'alreadyCatch':
-			newEmbed.setColor(originalEmbed.color);
+			newEmbed.setColor(originalEmbed.color ?? null);
 			replyMessage = `Le Pokémon a déjà été attrapé.`;
+			disabled = true;
 			break;
+
 		case 'alreadyEscape':
 			replyMessage = `Le Pokémon s'est déjà échappé.`;
+			disabled = true;
 			break;
+
 		case 'noBall':
-			newEmbed.setColor(originalEmbed.color);
-			replyMessage = `Vous n'avez pas de ${balls.find((ball) => ball.id === idPokeball).name}.`;
+			newEmbed.setColor(originalEmbed.color ?? null);
+			replyMessage = `Vous n'avez pas de ${balls.find((b) => b.id === idPokeball).name}.`;
+			disabled = false;
 			break;
+
 		case 'noExistPokemon':
-			newEmbed.setColor(originalEmbed.color);
+			newEmbed.setColor(originalEmbed.color ?? null);
 			replyMessage = `Le Pokémon a disparu.`;
-			components = await disabledButtons(interaction);
+			disabled = true;
 			break;
+
 		default:
 			replyMessage = 'An unexpected error occurred.';
+			disabled = false;
 	}
 
-	newEmbed.setDescription(replyMessage);
-	newEmbed.addFields({ name: 'Tentatives', value: addFieldsValue.toString(), inline: true });
+	newEmbed
+		.setDescription(replyMessage)
+		.addFields({ name: 'Tentatives', value: String(attempts), inline: true });
 
-	const responseEmbed = { embeds: [newEmbed], components };
+	const components = [await buildFreshBallRow(interaction.guild, idPokemonWild, disabled)];
 
-	if (secondOriginalEmbed !== null) {
-		responseEmbed.embeds.push(newEmbed2);
-	}
+	const responsePayload = { embeds: [newEmbed], components };
+	if (secondOriginalEmbed) responsePayload.embeds.push(newEmbed2);
 
-	// Assurez-vous d'attendre l'update avant d'aller plus loin
-	await interaction.update(responseEmbed);
+	await interaction.update(responsePayload);
 
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
 		await findRandomPokemon(interaction, true);
 	} else if (response.status === 'noBall') {
+		// ton cooldown shop inchangé…
 		const now = Date.now();
 		const cooldownAmount = 10000;
-
-		if (shopCooldowns.has(interaction.user.id)) {
-			const expirationTime = shopCooldowns.get(interaction.user.id);
-			if (now < expirationTime) {
-				return;
-			}
-		}
-
+		if (shopCooldowns.get(interaction.user.id) > now) return;
 		shopCooldowns.set(interaction.user.id, now + cooldownAmount);
-
-		for (const [key, val] of shopCooldowns) {
-			if (now > val) {
-				shopCooldowns.delete(key);
-			}
-		}
-
 		setTimeout(() => shopMessage(interaction), 500);
 	}
 }
