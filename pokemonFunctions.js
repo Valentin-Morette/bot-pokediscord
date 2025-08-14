@@ -357,7 +357,6 @@ async function getZoneForPokemon(trainerId, namePokemon) {
 		let zones = response.data;
 
 		const isPremium = await getIsPremium(trainerId);
-		console.dir(zones, { depth: null, colors: true });
 
 		if (zones.status === 'noExistPokemon') {
 			return `${upFirstLetter(namePokemon)} n’est pas un Pokémon.`;

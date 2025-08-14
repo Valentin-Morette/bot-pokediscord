@@ -186,7 +186,7 @@ async function premiumDisplay(discordId) {
 	}
 }
 
-async function premiumUrl(discordId) {
+async function premiumUrl(discordId, serverId) {
 	if (await getIsPremium(discordId)) {
 		return null;
 	}
@@ -195,6 +195,7 @@ async function premiumUrl(discordId) {
 			discordId: discordId,
 			priceId: process.env.STRIPE_PREMIUM_PRICE_ID,
 			name: 'Premium',
+			serverId: serverId,
 		});
 		return response.data.url;
 	} catch (error) {

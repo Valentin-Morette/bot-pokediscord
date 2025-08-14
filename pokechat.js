@@ -44,7 +44,6 @@ import {
 import {
 	spawnRandomPokemon,
 	evolvePokemon,
-	clearOldWildPokemon,
 	nbPokemon,
 	getAvailable,
 	getZoneForPokemon,
@@ -56,20 +55,11 @@ import {
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, API } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
-import { REST, Routes } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
 
-	async function clearGuildCommands(appId, guildId, token) {
-		const rest = new REST({ version: '10' }).setToken(token);
-		await rest.put(Routes.applicationGuildCommands(appId, guildId), { body: [] });
-		console.log(`✅ Guild commands purgées pour ${guildId}`);
-	}
-
 	client.on('ready', async () => {
-		clearGuildCommands(client.user.id, process.env.IDSERVER, process.env.TOKEN)
-			.catch(console.error);
 		console.log('Pokechat Ready!');
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();
@@ -250,7 +240,7 @@ function pokeChat(client) {
 					await interaction.followUp(`The trade was successfully completed.`);
 				}
 			} else if (customId.startsWith('premium')) {
-				let url = await premiumUrl(interaction.user.id);
+				let url = await premiumUrl(interaction.user.id, interaction.guild.id);
 				if (url != null) {
 					interaction.reply({
 						content: `Pour devenir Premium, veuillez visiter ce lien : [Lien Premium](${url})`,
