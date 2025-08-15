@@ -160,12 +160,12 @@ async function getBallTrainer(interaction) {
 		const response = await API.get(`/pokeball/trainer/` + interaction.member.id);
 		const arrResponse = [];
 		for (let i = 0; i < response.data.length; i++) {
+			const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 			const customEmoji = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === response.data[i].name
 			);
-			arrResponse.push(
-				'- ' + (customEmoji ? customEmoji.toString() : '') + ' : ' + response.data[i].quantity
-			);
+			const emojiDisplay = customEmoji ? customEmoji.toString() : (fallbackEmojiByBall[response.data[i].name] || '⚪');
+			arrResponse.push(`- ${emojiDisplay} : ${response.data[i].quantity}`);
 		}
 		const footer = 'Liste des Pokéball de ' + interaction.member.user.username;
 		const thumbnailUrl = user.displayAvatarURL({ format: 'png', dynamic: true });
@@ -340,10 +340,12 @@ async function dailyGift(interaction) {
 			embed.setThumbnail(`attachment://gift.png`);
 			files.push(attachment);
 		} else if (response.data.status === 'successBall') {
+			const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 			const emojiBall = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === response.data.pokeball.name
 			);
-			content = `Vous avez reçu ${response.data.quantity} ${emojiBall}.`;
+			const emojiDisplay = emojiBall ? emojiBall.toString() : (fallbackEmojiByBall[response.data.pokeball.name] || '⚪');
+			content = `Vous avez reçu ${response.data.quantity} ${emojiDisplay}.`;
 			const attachment = new AttachmentBuilder(`./assets/gift.png`);
 			embed.setThumbnail(`attachment://gift.png`);
 			files.push(attachment);
@@ -681,6 +683,11 @@ async function shopMessage(interaction, needReply = false) {
 	const superballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'superball');
 	const hyperballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'hyperball');
 	const masterballEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === 'masterball');
+	const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
+	const pokeballDisplay = pokeballEmoji ? pokeballEmoji.toString() : fallbackEmojiByBall.pokeball;
+	const superballDisplay = superballEmoji ? superballEmoji.toString() : fallbackEmojiByBall.superball;
+	const hyperballDisplay = hyperballEmoji ? hyperballEmoji.toString() : fallbackEmojiByBall.hyperball;
+	const masterballDisplay = masterballEmoji ? masterballEmoji.toString() : fallbackEmojiByBall.masterball;
 
 	const title = needReply
 		? 'Bienvenue à la boutique de Pokéballs !'
@@ -691,10 +698,10 @@ async function shopMessage(interaction, needReply = false) {
 		.setTitle(title)
 		.setDescription(
 			`Vous avez actuellement : ${formatNombreAvecSeparateur(response.data.money)} $.\n\n` +
-			`${pokeballEmoji} Pokeball : 50 $\n\n` +
-			`${superballEmoji} Superball : 80 $\n\n` +
-			`${hyperballEmoji} Hyperball : 150 $\n\n` +
-			`${masterballEmoji} Masterball : 100 000 $\n\n`
+			`${pokeballDisplay} Pokeball : 50 $\n\n` +
+			`${superballDisplay} Superball : 80 $\n\n` +
+			`${hyperballDisplay} Hyperball : 150 $\n\n` +
+			`${masterballDisplay} Masterball : 100 000 $\n\n`
 		)
 		.setThumbnail(`attachment://shop.png`);
 
@@ -713,7 +720,7 @@ async function shopMessage(interaction, needReply = false) {
 				.setCustomId('buy|' + number + '|' + ball)
 				.setStyle(ButtonStyle.Secondary)
 				.setLabel('' + number)
-				.setEmoji(customEmoji.id);
+				.setEmoji(customEmoji ? customEmoji.id : fallbackEmojiByBall[ball]);
 
 			row.addComponents(button);
 		});

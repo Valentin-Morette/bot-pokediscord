@@ -26,12 +26,13 @@ async function findRandomPokemon(interaction, followUp = false) {
 		let pokemon = randomPokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		let row = new ActionRowBuilder();
+		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
 				.setCustomId(ball + '|' + pokemon.idPokemonWild)
-				.setStyle(ButtonStyle.Secondary);
-			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+				.setStyle(ButtonStyle.Secondary)
+				.setEmoji(customEmoji ? customEmoji.id : fallbackEmojiByBall[ball]);
 
 			row.addComponents(button);
 		});
@@ -101,13 +102,14 @@ async function spawnRandomPokemon(context, followUp = false) {
 		const pokemon = pokemons;
 		const balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		const row = new ActionRowBuilder();
+		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 
 		balls.forEach((ball) => {
 			const emoji = channel.guild.emojis.cache.find((e) => e.name === ball);
 			const btn = new ButtonBuilder()
 				.setCustomId(`${ball}|${pokemon.idPokemonWild}`)
-				.setStyle(ButtonStyle.Secondary);
-			btn[emoji ? 'setEmoji' : 'setLabel'](emoji ? emoji.id : ball);
+				.setStyle(ButtonStyle.Secondary)
+				.setEmoji(emoji ? emoji.id : fallbackEmojiByBall[ball]);
 			row.addComponents(btn);
 		});
 
@@ -169,12 +171,13 @@ async function spawnPokemonWithRune(interaction) {
 		let pokemonSpawn = pokemon.data;
 		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		let row = new ActionRowBuilder();
+		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 		balls.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
 				.setCustomId(ball + '|' + pokemonSpawn.idPokemonWild)
-				.setStyle(ButtonStyle.Secondary);
-			button[customEmoji ? 'setEmoji' : 'setLabel'](customEmoji ? customEmoji.id : ball);
+				.setStyle(ButtonStyle.Secondary)
+				.setEmoji(customEmoji ? customEmoji.id : fallbackEmojiByBall[ball]);
 
 			row.addComponents(button);
 		});
@@ -465,11 +468,13 @@ async function catchLuck(interaction) {
 		const pokeballData = response.data.pokeballData;
 		const pokemonData = response.data.pokemonData;
 
+		const fallbackEmojiByBall2 = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 		for (let i = 0; i < pokeballData.length; i++) {
 			const customEmoji = interaction.guild.emojis.cache.find(
 				(emoji) => emoji.name === pokeballData[i].name
 			);
-			message += `- ${customEmoji ? customEmoji.toString() : ''} ${upFirstLetter(
+			const emojiTxt = customEmoji ? customEmoji.toString() : fallbackEmojiByBall2[pokeballData[i].name];
+			message += `- ${emojiTxt} ${upFirstLetter(
 				pokeballData[i].name
 			)} : ${pokemonData.catchRate + pokeballData[i].catchBonus > 100
 				? 100
