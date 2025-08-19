@@ -70,7 +70,7 @@ function GamsGoEmbed(color) {
 }
 
 
-async function premiumAdEmbed() {
+async function premiumAdEmbed(color) {
 	const attachment = new AttachmentBuilder('./assets/premium.png');
 	const embed = new EmbedBuilder()
 		.setTitle('💎 Découvrez l’offre Premium ! 💎')
@@ -84,7 +84,7 @@ async function premiumAdEmbed() {
 			`Le tout pour seulement **3,99€ en une fois** !\n\n` +
 			`➡️ Pour en savoir plus ou le devenir, tapez la commande **/premium** sur ce serveur.`
 		)
-		.setColor('#FFCC00')
+		.setColor(color)
 		.setThumbnail('attachment://premium.png');
 
 	return { embeds: [embed], files: [attachment] };
@@ -132,4 +132,23 @@ async function alsoPremiumEmbed() {
 	return { embeds: [embed], files: [attachment] };
 }
 
-export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed, premiumAdEmbed };
+async function inviteEmbed(color) {
+	const embed = new EmbedBuilder()
+		.setTitle('🚀 Installez le Bot Pokémon sur votre serveur !')
+		.setDescription(
+			`Envie d'explorer les régions Pokémon avec vos amis ? 🎮\n\n` +
+			`Ajoutez le bot dès maintenant sur **votre propre serveur Discord** !\n\n` +
+			'**Fonctionnalités automatiques :**\n' +
+			'- Création d’une catégorie dédiée avec 4 forums (Kanto, Johto, Hoenn, Sinnoh).\n' +
+			'- Installation des zones (Forêt de Jade, Mont Abrupt, Temple Frimapic, etc.) en un clic.\n' +
+			'- Système complet de capture, échanges, évolutions et gestion des Balls.\n\n' +
+			`👉 [Cliquez ici pour inviter le bot](https://discord.com/oauth2/authorize?client_id=1142325515575889971&permissions=398358604880&integration_type=0&scope=bot)`
+		)
+		.setColor(color)
+		.setThumbnail('https://images.seeklogo.com/logo-png/40/1/discord-white-logo-png_seeklogo-403999.png')
+	return { embeds: [embed], files: [] };
+}
+
+
+
+export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed, premiumAdEmbed, inviteEmbed };
