@@ -232,8 +232,10 @@ async function displayHelp(interaction) {
 			'Utilisez `!install` pour installer automatiquement :\n' +
 			'- Une catégorie dédiée avec les forums par génération\n' +
 			'- Les threads (posts) pour chaque zone\n' +
-			'- Les permissions et emojis nécessaires au bon fonctionnement du bot\n\n' +
-			'⚠️ Cette opération peut prendre **jusqu’à 15 minutes** et le bot fera régulièrement des pauses lors de la création des forums.\n\n' +
+			'- Les permissions et émojis nécessaires au bon fonctionnement du bot\n\n' +
+			"⚠️ Cette opération peut prendre **jusqu’à 15 minutes** et le bot fera régulièrement des pauses lors de la création des forums. Assurez-vous également d'avoir 4 emplacements d'émojis libres sur le serveur.\n\n" +
+			'**🧩 Outils émojis (admin)**\n' +
+			'Utilisez `!addBallEmojis` pour réinstaller uniquement les émojis des Pokéballs (à utiliser si vous avez des emojis manquants).\n\n' +
 			' -------------------------------------------------\n\n';
 	}
 

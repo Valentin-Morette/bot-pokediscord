@@ -78,7 +78,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 	}
 }
 
-async function spawnRandomPokemon(context, followUp = false) {
+async function spawnRandomPokemon(context) {
 	const isInteraction = !!context?.reply;
 	const channel = isInteraction ? context.channel : context;
 

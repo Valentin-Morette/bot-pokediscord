@@ -54,7 +54,7 @@ import {
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, API } from './globalFunctions.js';
-import { ChannelType } from 'discord.js';
+import { ChannelType, EmbedBuilder } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
@@ -117,6 +117,40 @@ function pokeChat(client) {
 			});
 			await guild.members.fetch();
 			addTrainer(guild.members.cache.filter(m => !m.user.bot).map(m => m), guild.id);
+			const owner = await guild.members.fetch(guild.ownerId);
+			const embed = new EmbedBuilder()
+				.setColor('#3eb0ed')
+				.setTitle(`Merci d'avoir installé le bot sur ${guild.name} !`)
+				.setDescription(
+					"Pour terminer l'installation, utilisez la commande `!install` dans un salon de votre serveur (pas en réponse à ce message)."
+				)
+				.addFields(
+					{
+						name: 'Ce que fait !install',
+						value:
+							'- Crée la catégorie `PokeFarm` avec 4 forums (Kanto, Johto, Hoenn, Sinnoh)\n' +
+							'- Crée les posts de zones et prépare les spawns\n' +
+							"- Configure les permissions nécessaires",
+					},
+					{
+						name: 'Pré‑requis émojis',
+						value:
+							"- Assurez‑vous d'avoir au moins **4 emplacements d’émojis libres** (pokeball, superball, hyperball, masterball).\n" +
+							"- Si nécessaire, vous pourrez (ré)installer les émojis plus tard avec `!addBallEmojis`.",
+					},
+					{
+						name: 'Aide',
+						value: '- Tapez `/help` sur le serveur pour voir toutes les commandes.',
+					},
+					{
+						name: 'Informations complémentaires',
+						value: "- L'installation prend environ 15 minutes. Le bot fera des pauses lors de la création des forums.\n" +
+							"- L'ensemble de l'air de jeu est installé en bas de votre serveur. Le bot ne va donc pas désordonner votre serveur."
+					},
+				)
+				.setFooter({ text: 'Bon jeu !' })
+
+			await owner.send({ embeds: [embed] });
 		} catch (error) {
 			console.error("Erreur API lors de l'enregistrement :", error.response?.data || error.message);
 		}
@@ -157,6 +191,8 @@ function pokeChat(client) {
 				await channelZonesAsForum(message);
 				await checkAndSpawnPokemon(message.guild);
 				await API.put(`/servers/${message.guild.id}`, { isInstal: true });
+			} else if (message.content === '!addBallEmojis') {
+				await addBallEmojis(message);
 			}
 		}
 

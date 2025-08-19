@@ -90,20 +90,19 @@ async function premiumAdEmbed() {
 	return { embeds: [embed], files: [attachment] };
 }
 
-
 async function premiumEmbed(isCmd = false) {
 	const attachment = new AttachmentBuilder('./assets/premium.png');
 	const embed = new EmbedBuilder()
 		.setTitle('💎 Devenez Premium ! 💎')
 		.setDescription(
-			` ${isCmd ? '' : 'Cette commande est réservée aux membres Premium. '
-			}En devenant Premium, vous soutenez le serveur et le bot tout en profitant de nombreux avantages exclusifs !\n\n` +
-			'**Avantages :**\n' +
-			'- Accès à des commandes exclusives.\n' +
-			'- Plus de contenus avec certaines commandes.\n' +
-			'- Pas de publicités sur vos commandes.\n' +
-			'- Commande /cadeau disponible toute les 4h au lieu de 12h.\n\n' +
-			'Et ce pour seulement **3,99€ en une fois** !\n\n'
+			`${isCmd ? '' : 'Cette commande est réservée aux membres Premium. '}` +
+			`Passez en Premium et profitez d’avantages exclusifs, valables **sur tous les serveurs où le bot est présent** ! 🚀\n\n` +
+			'**Avantages Premium :**\n' +
+			'- Accès à des commandes exclusives : `/chance-shiny`, `/chance-capture`, `/pokedex-list`, `/shinydex-list`, `/pokedex-inverse`, `/shinydex-inverse`.\n' +
+			'- Les commandes `/zone` et `/disponible` sont enrichies avec les **taux de spawn**.\n' +
+			'- Zéro publicité dans vos commandes.\n' +
+			'- Commande `/cadeau` disponible toutes les **4h** (au lieu de 12h).\n\n' +
+			`Le tout pour seulement **3,99€ en un seul paiement** !`
 		)
 		.setColor('#FFCC00')
 		.setThumbnail('attachment://premium.png');
@@ -118,6 +117,7 @@ async function premiumEmbed(isCmd = false) {
 
 	return { embeds: [embed], files: [attachment], components: [row] };
 }
+
 
 async function alsoPremiumEmbed() {
 	const attachment = new AttachmentBuilder('./assets/premium.png');
