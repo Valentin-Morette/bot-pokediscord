@@ -16,6 +16,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 	try {
 		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: correctNameZone(interaction.channel.name),
+			idServer: interaction.guild.id,
 		});
 		if (randomPokemon.data.length === 0) {
 			return await interaction.editReply({
@@ -87,6 +88,7 @@ async function spawnRandomPokemon(context) {
 
 		const { data: pokemons } = await API.post(`/pokemon/wild`, {
 			nameZone: zoneName,
+			idServer: context.guild.id,
 		});
 
 		if (!pokemons || pokemons.length === 0) {
