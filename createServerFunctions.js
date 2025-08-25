@@ -391,18 +391,14 @@ async function channelZones(message) {
 
 async function channelZonesAsForum(message) {
 	try {
-		// Vérifier d'abord si le bot a les permissions nécessaires
-		if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)) {
-			const errorMsg = "❌ **Erreur d'installation** : Le bot n'a pas la permission 'Gérer les canaux' nécessaire pour créer les forums.";
-			await message.reply(errorMsg);
-			console.error(`🚫 [ERREUR PERMISSIONS] Serveur "${message.guild.name}" (${message.guild.id}) - Bot sans permission ManageChannels`);
-			return false;
-		}
+		const needed = new PermissionsBitField([
+			PermissionFlagsBits.ManageChannels,
+			PermissionFlagsBits.CreatePublicThreads,
+			PermissionFlagsBits.SendMessagesInThreads,
+		]);
 
-		if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageGuild)) {
-			const errorMsg = "❌ **Erreur d'installation** : Le bot n'a pas la permission 'Gérer le serveur' nécessaire pour créer les forums.";
-			await message.reply(errorMsg);
-			console.error(`🚫 [ERREUR PERMISSIONS] Serveur "${message.guild.name}" (${message.guild.id}) - Bot sans permission ManageGuild`);
+		if (!message.guild.members.me.permissions.has(needed)) {
+			await message.reply("❌ Il me manque des permissions : ManageChannels / CreatePublicThreads / SendMessagesInThreads.");
 			return false;
 		}
 
