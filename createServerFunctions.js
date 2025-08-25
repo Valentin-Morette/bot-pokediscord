@@ -478,7 +478,7 @@ async function channelZonesAsForum(message) {
 				console.log(`✅ [INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Forum ${generationName} créé avec ${threadsCreated} threads`);
 
 			} catch (forumError) {
-				const errorMsg = `❌ **Erreur lors de la création du forum ${generationName}** : ${forumError.message}`;
+				const errorMsg = `❌ **Erreur lors de la création du forum ${generationName}** veuillez signaler le bug avec la commande /bug`;
 				await message.reply(errorMsg);
 				console.error(`🚫 [ERREUR FORUM] Serveur "${message.guild.name}" (${message.guild.id}) - Échec création forum ${generationName}:`, forumError.message);
 				return false;
@@ -490,7 +490,7 @@ async function channelZonesAsForum(message) {
 		return true;
 
 	} catch (error) {
-		const errorMsg = `❌ **Erreur critique lors de l'installation** : ${error.message}`;
+		const errorMsg = `❌ **Erreur critique lors de l'installation** veuillez signaler le bug avec la commande /bug`;
 		await message.reply(errorMsg);
 		console.error(`💥 [ERREUR CRITIQUE] Serveur "${message.guild.name}" (${message.guild.id}) - Échec installation:`, error.message);
 		console.error(`💥 [STACK TRACE] Serveur "${message.guild.name}" (${message.guild.id}):`, error.stack);

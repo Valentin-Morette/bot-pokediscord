@@ -187,22 +187,26 @@ function pokeChat(client) {
 		if (isUserAdmin(message.member)) {
 			if (message.content === '!install') {
 				try {
-					await message.reply("🚀 **Début de l'installation...**");
+					await message.reply("🚀 **Début de l'installation... ce processus peut prendre jusqu'à 15 minutes**");
 
-					const emojiResult = await addBallEmojis(message);
-					if (!emojiResult) {
-						await message.reply("⚠️ **Attention** : Certains emojis n'ont pas pu être créés. L'installation continue...");
-					}
-
-					await message.guild.emojis.fetch();
-
+					// Création de la catégorie PokeFarm, des forums et des posts
 					const forumResult = await channelZonesAsForum(message);
 					if (!forumResult) {
 						await message.reply("❌ **Installation interrompue** : Échec de la création des forums. Vérifiez les permissions du bot.");
 						return;
 					}
 
+					// Création des emojis
+					const emojiResult = await addBallEmojis(message);
+					if (!emojiResult) {
+						await message.reply("⚠️ **Attention** : Certains emojis n'ont pas pu être créés. L'installation continue...");
+					}
+					await message.guild.emojis.fetch();
+
+					// Création des spawns
 					await checkAndSpawnPokemon(message.guild);
+
+					// Mise à jour de la base de données
 					await API.put(`/servers/${message.guild.id}`, { isInstal: true });
 
 					await message.reply("🎉 **Installation terminée avec succès !** Le serveur est maintenant configuré pour PokeFarm.");
@@ -263,6 +267,14 @@ function pokeChat(client) {
 		if (interaction.isCommand()) {
 			if (interaction.commandName === 'help') {
 				return interaction.reply(await displayHelp(interaction));
+			}
+
+			if (interaction.commandName === 'bug') {
+				return interaction.reply(await saveBugIdea(interaction, 'bug'));
+			}
+
+			if (interaction.commandName === 'idee') {
+				return interaction.reply(await saveBugIdea(interaction, 'idea'));
 			}
 		}
 
@@ -404,14 +416,6 @@ function pokeChat(client) {
 				return interaction.reply(
 					await getZoneForPokemon(interaction.user.id, interaction.options.getString('nom'))
 				);
-			}
-
-			if (interaction.commandName === 'bug') {
-				return interaction.reply(await saveBugIdea(interaction, 'bug'));
-			}
-
-			if (interaction.commandName === 'idee') {
-				return interaction.reply(await saveBugIdea(interaction, 'idea'));
 			}
 
 			if (interaction.commandName === 'pokedex') {
