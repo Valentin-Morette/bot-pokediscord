@@ -273,11 +273,19 @@ function pokeChat(client) {
 			// Vérifie si la catégorie PokeFarm existe
 			const category = interaction.guild.channels.cache.find(c => c.name === 'PokeFarm');
 			if (!category) {
-				await interaction.reply({
-					content: "Cette commande ne peut être utilisée que dans la catégorie `PokeFarm`. Veuillez contacter un administrateur pour qu'il crée la catégorie avec la commande `!install`.",
-					ephemeral: true
-				});
-				return;
+				if (isUserAdmin(interaction.member)) {
+					await interaction.reply({
+						content: "La catégorie `PokeFarm` n'existe pas. Veuillez créer la catégorie avec la commande `!install`.",
+						ephemeral: true
+					});
+					return;
+				} else {
+					await interaction.reply({
+						content: "Cette commande ne peut être utilisée que dans la catégorie `PokeFarm`. Veuillez contacter un administrateur pour qu'il crée la catégorie avec la commande `!install`.",
+						ephemeral: true
+					});
+					return;
+				}
 			}
 
 			await interaction.reply({
