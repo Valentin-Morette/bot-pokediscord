@@ -186,13 +186,46 @@ function pokeChat(client) {
 
 		if (isUserAdmin(message.member)) {
 			if (message.content === '!install') {
-				await addBallEmojis(message);
-				await message.guild.emojis.fetch();
-				await channelZonesAsForum(message);
-				await checkAndSpawnPokemon(message.guild);
-				await API.put(`/servers/${message.guild.id}`, { isInstal: true });
+				try {
+					await message.reply("🚀 **Début de l'installation...**");
+
+					const emojiResult = await addBallEmojis(message);
+					if (!emojiResult) {
+						await message.reply("⚠️ **Attention** : Certains emojis n'ont pas pu être créés. L'installation continue...");
+					}
+
+					await message.guild.emojis.fetch();
+
+					const forumResult = await channelZonesAsForum(message);
+					if (!forumResult) {
+						await message.reply("❌ **Installation interrompue** : Échec de la création des forums. Vérifiez les permissions du bot.");
+						return;
+					}
+
+					await checkAndSpawnPokemon(message.guild);
+					await API.put(`/servers/${message.guild.id}`, { isInstal: true });
+
+					await message.reply("🎉 **Installation terminée avec succès !** Le serveur est maintenant configuré pour PokeFarm.");
+					console.log(`✅ [INSTALLATION FINALE] Serveur "${message.guild.name}" (${message.guild.id}) - Installation complète réussie`);
+
+				} catch (error) {
+					const errorMsg = `💥 **Erreur lors de l'installation** : ${error.message}`;
+					await message.reply(errorMsg);
+					console.error(`💥 [ERREUR INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur:`, error.message);
+				}
 			} else if (message.content === '!addBallEmojis') {
-				await addBallEmojis(message);
+				try {
+					await message.reply("🎨 **Création des emojis en cours...**");
+					const result = await addBallEmojis(message);
+					if (result) {
+						await message.reply("✅ **Emojis créés avec succès !**");
+					} else {
+						await message.reply("❌ **Échec de la création des emojis.** Vérifiez les permissions du bot.");
+					}
+				} catch (error) {
+					await message.reply(`💥 **Erreur lors de la création des emojis** : ${error.message}`);
+					console.error(`💥 [ERREUR EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur:`, error.message);
+				}
 			}
 		}
 
@@ -227,14 +260,33 @@ function pokeChat(client) {
 	client.on('interactionCreate', async (interaction) => {
 		if (!interaction.guild || !interaction.channel) return;
 
-		const parent = interaction.channel.parent.parent;
+		if (interaction.isCommand()) {
+			if (interaction.commandName === 'help') {
+				return interaction.reply(await displayHelp(interaction));
+			}
+		}
+
+		const channel = interaction.channel;
+		const parent = channel.parent;
+
 		if (!parent || parent.name !== "PokeFarm") {
+			// Vérifie si la catégorie PokeFarm existe
+			const category = interaction.guild.channels.cache.find(c => c.name === 'PokeFarm');
+			if (!category) {
+				await interaction.reply({
+					content: "Cette commande ne peut être utilisée que dans la catégorie `PokeFarm`. Veuillez contacter un administrateur pour qu'il crée la catégorie avec la commande `!install`.",
+					ephemeral: true
+				});
+				return;
+			}
+
 			await interaction.reply({
 				content: "Cette commande ne peut être utilisée que dans la catégorie `PokeFarm`.",
 				ephemeral: true
 			});
 			return;
 		}
+
 		// Button interaction
 		if (interaction.isButton()) {
 			let customId = interaction.customId;
@@ -344,10 +396,6 @@ function pokeChat(client) {
 				return interaction.reply(
 					await getZoneForPokemon(interaction.user.id, interaction.options.getString('nom'))
 				);
-			}
-
-			if (interaction.commandName === 'help') {
-				return interaction.reply(await displayHelp(interaction));
 			}
 
 			if (interaction.commandName === 'bug') {

@@ -50,14 +50,26 @@ async function sendArenaMessage(
 async function addBallEmojis(message) {
 	try {
 		const response = await API.get(`/pokeball`);
-		response.data.forEach(async (pokeball) => {
-			const emoji = await message.guild.emojis.create({
-				name: pokeball.name,
-				attachment: './assets/emojis/' + pokeball.name + '.png',
-			});
-		});
+		let emojisCreated = 0;
+
+		for (const pokeball of response.data) {
+			try {
+				await message.guild.emojis.create({
+					name: pokeball.name,
+					attachment: './assets/emojis/' + pokeball.name + '.png',
+				});
+				emojisCreated++;
+			} catch (emojiError) {
+				console.error(`🚫 [ERREUR EMOJI] Serveur "${message.guild.name}" (${message.guild.id}) - Échec création emoji ${pokeball.name}:`, emojiError.message);
+			}
+		}
+
+		console.log(`✅ [EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - ${emojisCreated}/${response.data.length} emojis créés`);
+		return emojisCreated > 0;
+
 	} catch (error) {
-		console.error(error);
+		console.error(`🚫 [ERREUR EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur API:`, error.message);
+		return false;
 	}
 }
 
@@ -378,71 +390,114 @@ async function channelZones(message) {
 }
 
 async function channelZonesAsForum(message) {
-	const categoryName = 'PokeFarm';
-
-	let category = message.guild.channels.cache.find(
-		ch => ch.type === ChannelType.GuildCategory && ch.name === categoryName
-	);
-
-	if (!category) {
-		category = await message.guild.channels.create({
-			name: categoryName,
-			type: ChannelType.GuildCategory,
-			reason: 'Regroupe tous les salons de la zone Pokémon',
-		});
-	}
-
-	const allGeneration = {
-		1: 'Kanto',
-		2: 'Johto',
-		3: 'Hoenn',
-		4: 'Sinnoh',
-	};
-
-	for (const [generationNumber, generationName] of Object.entries(allGeneration)) {
-		const forum = await message.guild.channels.create({
-			name: `🗺️・${generationName}`,
-			type: ChannelType.GuildForum,
-			parent: category.id,
-			topic: `Chaque post est une zone avec des Pokémon différents.\nCliquez sur les boutons sous les Pokémon pour tenter de les capturer.\nGérez vos Poké Balls et votre argent avec soin.\nUtilisez la commande /help pour voir toutes les commandes disponibles.`,
-			permissionOverwrites: [
-				{
-					id: message.guild.roles.everyone.id,
-					deny: [PermissionFlagsBits.SendMessages],
-					allow: [
-						PermissionFlagsBits.ViewChannel,
-						PermissionFlagsBits.ReadMessageHistory,
-						PermissionFlagsBits.SendMessagesInThreads,
-						PermissionFlagsBits.AddReactions,
-					],
-				},
-				{
-					id: message.client.user.id,
-					allow: [
-						PermissionFlagsBits.ViewChannel,
-						PermissionFlagsBits.ReadMessageHistory,
-						PermissionFlagsBits.SendMessages,
-						PermissionFlagsBits.SendMessagesInThreads,
-						PermissionFlagsBits.ManageThreads,
-						PermissionFlagsBits.ManageChannels,
-					],
-				}
-			],
-			reason: `Forum de discussion pour ${generationName}`,
-		});
-
-		// Créer les posts (threads) par le bot seulement
-		const response = await API.get(`/zone/${generationNumber}`);
-		for (const zone of response.data) {
-			await forum.threads.create({
-				name: '🌳・' + zone,
-				message: {
-					content: `Bienvenue dans la zone **${zone}** de la génération **${generationName}** !`,
-				},
-				autoArchiveDuration: 10080,
-			});
-			await wait(2500);
+	try {
+		// Vérifier d'abord si le bot a les permissions nécessaires
+		if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)) {
+			const errorMsg = "❌ **Erreur d'installation** : Le bot n'a pas la permission 'Gérer les canaux' nécessaire pour créer les forums.";
+			await message.reply(errorMsg);
+			console.error(`🚫 [ERREUR PERMISSIONS] Serveur "${message.guild.name}" (${message.guild.id}) - Bot sans permission ManageChannels`);
+			return false;
 		}
+
+		if (!message.guild.members.me.permissions.has(PermissionFlagsBits.ManageGuild)) {
+			const errorMsg = "❌ **Erreur d'installation** : Le bot n'a pas la permission 'Gérer le serveur' nécessaire pour créer les forums.";
+			await message.reply(errorMsg);
+			console.error(`🚫 [ERREUR PERMISSIONS] Serveur "${message.guild.name}" (${message.guild.id}) - Bot sans permission ManageGuild`);
+			return false;
+		}
+
+		const categoryName = 'PokeFarm';
+
+		let category = message.guild.channels.cache.find(
+			ch => ch.type === ChannelType.GuildCategory && ch.name === categoryName
+		);
+
+		if (!category) {
+			category = await message.guild.channels.create({
+				name: categoryName,
+				type: ChannelType.GuildCategory,
+				reason: 'Regroupe tous les salons de la zone Pokémon',
+			});
+			console.log(`✅ [INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Catégorie PokeFarm créée`);
+		}
+
+		const allGeneration = {
+			1: 'Kanto',
+			2: 'Johto',
+			3: 'Hoenn',
+			4: 'Sinnoh',
+		};
+
+		let forumsCreated = 0;
+		for (const [generationNumber, generationName] of Object.entries(allGeneration)) {
+			try {
+				const forum = await message.guild.channels.create({
+					name: `🗺️・${generationName}`,
+					type: ChannelType.GuildForum,
+					parent: category.id,
+					topic: `Chaque post est une zone avec des Pokémon différents.\nCliquez sur les boutons sous les Pokémon pour tenter de les capturer.\nGérez vos Poké Balls et votre argent avec soin.\nUtilisez la commande /help pour voir toutes les commandes disponibles.`,
+					permissionOverwrites: [
+						{
+							id: message.guild.roles.everyone.id,
+							deny: [PermissionFlagsBits.SendMessages],
+							allow: [
+								PermissionFlagsBits.ViewChannel,
+								PermissionFlagsBits.ReadMessageHistory,
+								PermissionFlagsBits.SendMessagesInThreads,
+								PermissionFlagsBits.AddReactions,
+							],
+						},
+						{
+							id: message.client.user.id,
+							allow: [
+								PermissionFlagsBits.ViewChannel,
+								PermissionFlagsBits.ReadMessageHistory,
+								PermissionFlagsBits.SendMessages,
+								PermissionFlagsBits.SendMessagesInThreads,
+								PermissionFlagsBits.ManageThreads,
+								PermissionFlagsBits.ManageChannels,
+							],
+						}
+					],
+					reason: `Forum de discussion pour ${generationName}`,
+				});
+
+				// Créer les posts (threads) par le bot seulement
+				const response = await API.get(`/zone/${generationNumber}`);
+				let threadsCreated = 0;
+				for (const zone of response.data) {
+					await forum.threads.create({
+						name: '🌳・' + zone,
+						message: {
+							content: `Bienvenue dans la zone **${zone}** de la génération **${generationName}** !`,
+						},
+						autoArchiveDuration: 10080,
+					});
+					threadsCreated++;
+					await wait(2500);
+				}
+
+				forumsCreated++;
+				console.log(`✅ [INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Forum ${generationName} créé avec ${threadsCreated} threads`);
+
+			} catch (forumError) {
+				const errorMsg = `❌ **Erreur lors de la création du forum ${generationName}** : ${forumError.message}`;
+				await message.reply(errorMsg);
+				console.error(`🚫 [ERREUR FORUM] Serveur "${message.guild.name}" (${message.guild.id}) - Échec création forum ${generationName}:`, forumError.message);
+				return false;
+			}
+		}
+
+		await message.reply(`✅ **Installation réussie !** ${forumsCreated}/4 forums créés avec succès dans la catégorie PokeFarm.`);
+		console.log(`🎉 [INSTALLATION COMPLÈTE] Serveur "${message.guild.name}" (${message.guild.id}) - ${forumsCreated} forums créés avec succès`);
+		return true;
+
+	} catch (error) {
+		const errorMsg = `❌ **Erreur critique lors de l'installation** : ${error.message}`;
+		await message.reply(errorMsg);
+		console.error(`💥 [ERREUR CRITIQUE] Serveur "${message.guild.name}" (${message.guild.id}) - Échec installation:`, error.message);
+		console.error(`💥 [STACK TRACE] Serveur "${message.guild.name}" (${message.guild.id}):`, error.stack);
+		return false;
 	}
 }
 
