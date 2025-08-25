@@ -8,6 +8,7 @@ import {
 	ButtonStyle,
 	ChannelType,
 	PermissionFlagsBits,
+	PermissionsBitField,
 } from 'discord.js';
 import { API, wait } from './globalFunctions.js';
 
