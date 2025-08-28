@@ -279,9 +279,25 @@ function pokeChat(client) {
 		}
 
 		const channel = interaction.channel;
-		const parent = channel.parent;
 
-		if (!parent || parent.name !== "PokeFarm") {
+		// Fonction pour remonter la hiérarchie et trouver la catégorie parente
+		function findParentCategory(channel) {
+			let currentChannel = channel;
+			while (currentChannel.parent) {
+				// Si on trouve une catégorie, on la retourne
+				if (currentChannel.parent.type === 4) { // Type 4 = CategoryChannel
+					return currentChannel.parent;
+				}
+				// Sinon on continue à remonter
+				currentChannel = currentChannel.parent;
+			}
+			return null;
+		}
+
+		const parentCategory = findParentCategory(channel);
+		console.log("Catégorie parente:", parentCategory ? parentCategory.name : "Aucune");
+
+		if (!parentCategory || parentCategory.name !== "PokeFarm") {
 			// Vérifie si la catégorie PokeFarm existe
 			const category = interaction.guild.channels.cache.find(c => c.name === 'PokeFarm');
 			if (!category) {
