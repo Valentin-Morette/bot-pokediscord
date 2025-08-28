@@ -53,7 +53,7 @@ import {
 	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { removeAccents, isUserAdmin, API } from './globalFunctions.js';
+import { removeAccents, isUserAdmin, findParentCategory, exportChannelHistory, API } from './globalFunctions.js';
 import { ChannelType, EmbedBuilder } from 'discord.js';
 
 function pokeChat(client) {
@@ -256,6 +256,28 @@ function pokeChat(client) {
 				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
 				await premiumMessage(message);
+			} else if (message.content === '!export') {
+				await message.reply('📥 Début de l\'export des patch notes...\n⏳ Cela peut prendre plusieurs minutes selon le nombre de messages.');
+
+				try {
+					const channel = message.channel;
+					const outputPath = './exports/patchnotes.json';
+
+					// Créer le dossier exports s'il n'existe pas
+					const fs = await import('fs/promises');
+					try {
+						await fs.mkdir('./exports', { recursive: true });
+					} catch (error) {
+						// Le dossier existe déjà
+					}
+
+					const messages = await exportChannelHistory(channel, outputPath);
+
+					await message.reply(`✅ Export des patch notes terminé !\n📊 ${messages.length} messages exportés\n💾 Fichier sauvegardé : \`patchnotes.json\`\n📁 Chemin : \`${outputPath}\``);
+				} catch (error) {
+					console.error('Erreur lors de l\'export:', error);
+					await message.reply(`❌ Erreur lors de l'export : ${error.message}`);
+				}
 			}
 			return;
 		}
@@ -278,27 +300,14 @@ function pokeChat(client) {
 			}
 		}
 
-		const channel = interaction.channel;
-
-		// Fonction pour remonter la hiérarchie et trouver la catégorie parente
-		function findParentCategory(channel) {
-			let currentChannel = channel;
-			while (currentChannel.parent) {
-				// Si on trouve une catégorie, on la retourne
-				if (currentChannel.parent.type === 4) { // Type 4 = CategoryChannel
-					return currentChannel.parent;
-				}
-				// Sinon on continue à remonter
-				currentChannel = currentChannel.parent;
-			}
-			return null;
+		if (!interaction.isCommand() && !interaction.isButton()) {
+			return;
 		}
 
-		const parentCategory = findParentCategory(channel);
-		console.log("Catégorie parente:", parentCategory ? parentCategory.name : "Aucune");
+		const channel = interaction.channel;
 
+		const parentCategory = findParentCategory(channel);
 		if (!parentCategory || parentCategory.name !== "PokeFarm") {
-			// Vérifie si la catégorie PokeFarm existe
 			const category = interaction.guild.channels.cache.find(c => c.name === 'PokeFarm');
 			if (!category) {
 				if (isUserAdmin(interaction.member)) {

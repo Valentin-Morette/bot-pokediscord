@@ -147,7 +147,7 @@ const commandsPokechat = [
 			{
 				name: 'description',
 				type: 3,
-				description: 'Description de l’idée',
+				description: 'Description de l\'idée',
 				required: true,
 			},
 		],
