@@ -117,88 +117,7 @@ function findParentCategory(channel) {
 	return null;
 }
 
-async function exportChannelHistory(channel, outputPath = null) {
-	try {
-		console.log(`📥 Début de l'export de l'historique du canal #${channel.name}...`);
 
-		let allMessages = [];
-		let lastId = null;
-		let messageCount = 0;
-
-		// Récupération de tous les messages
-		while (true) {
-			const options = { limit: 100 };
-			if (lastId) {
-				options.before = lastId;
-			}
-
-			const messages = await channel.messages.fetch(options);
-
-			if (messages.size === 0) {
-				break; // Plus de messages à récupérer
-			}
-
-			// Traitement des messages
-			messages.forEach(message => {
-				const messageData = {
-					id: message.id,
-					timestamp: message.createdTimestamp,
-					date: message.createdAt.toISOString(),
-					author: {
-						id: message.author.id,
-						username: message.author.username,
-						displayName: message.member?.displayName || message.author.username
-					},
-					content: message.content,
-					attachments: message.attachments.map(att => ({
-						name: att.name,
-						url: att.url,
-						size: att.size
-					})),
-					embeds: message.embeds.map(embed => ({
-						title: embed.title,
-						description: embed.description,
-						fields: embed.fields,
-						color: embed.color,
-						thumbnail: embed.thumbnail?.url,
-						image: embed.image?.url,
-						footer: embed.footer?.text
-					}))
-				};
-
-				allMessages.unshift(messageData); // Ajouter au début pour garder l'ordre chronologique
-			});
-
-			lastId = messages.last().id;
-			messageCount += messages.size;
-
-			console.log(`📊 ${messageCount} messages récupérés...`);
-
-			// Petite pause pour éviter de surcharger l'API Discord
-			await new Promise(resolve => setTimeout(resolve, 100));
-		}
-
-		console.log(`✅ Export terminé ! ${allMessages.length} messages récupérés.`);
-
-		// Si un chemin de sortie est spécifié, sauvegarder dans un fichier
-		if (outputPath) {
-			const fs = await import('fs/promises');
-			const data = {
-				exportDate: new Date().toISOString(),
-				messages: allMessages
-			};
-
-			await fs.writeFile(outputPath, JSON.stringify(data, null, 2), 'utf8');
-			console.log(`💾 Données sauvegardées dans ${outputPath}`);
-		}
-
-		return allMessages;
-
-	} catch (error) {
-		console.error('❌ Erreur lors de l\'export:', error);
-		throw error;
-	}
-}
 
 const API = axios.create({
 	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:3000',
@@ -206,6 +125,25 @@ const API = axios.create({
 		'X-API-KEY': process.env.API_KEY,
 	},
 });
+
+// Fonction pour logger les événements
+async function logEvent(type, category, message, idServer = null, idDiscord = null) {
+	try {
+		const logData = {
+			idServer,
+			idDiscord,
+			type,
+			category,
+			message,
+		};
+
+		await API.post('/logs', logData);
+	} catch (error) {
+		// Fallback vers console.log si l'API échoue
+		console.error('❌ Erreur lors du logging:', error.message);
+		console.log(`[${type.toUpperCase()}] [${category.toUpperCase()}] ${message}`);
+	}
+}
 
 export {
 	upFirstLetter,
@@ -218,6 +156,6 @@ export {
 	removeAccents,
 	isUserAdmin,
 	findParentCategory,
-	exportChannelHistory,
+	logEvent,
 	API,
 };

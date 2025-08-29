@@ -53,7 +53,7 @@ import {
 	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { removeAccents, isUserAdmin, findParentCategory, exportChannelHistory, API } from './globalFunctions.js';
+import { removeAccents, isUserAdmin, findParentCategory, logEvent, API } from './globalFunctions.js';
 import { ChannelType, EmbedBuilder } from 'discord.js';
 
 function pokeChat(client) {
@@ -209,13 +209,13 @@ function pokeChat(client) {
 					// Mise à jour de la base de données
 					await API.put(`/servers/${message.guild.id}`, { isInstal: true });
 
+					await logEvent('SUCCESS', 'installation', `Installation complète réussie`, message.guild.id, message.author.id);
 					await message.reply("🎉 **Installation terminée avec succès !** Le serveur est maintenant configuré pour PokeFarm.");
-					console.log(`✅ [INSTALLATION FINALE] Serveur "${message.guild.name}" (${message.guild.id}) - Installation complète réussie`);
 
 				} catch (error) {
 					const errorMsg = `💥 **Erreur lors de l'installation** : ${error.message}`;
+					await logEvent('ERROR', 'installation', `Erreur lors de l'installation: ${error.message}`, message.guild.id, message.author.id);
 					await message.reply(errorMsg);
-					console.error(`💥 [ERREUR INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur:`, error.message);
 				}
 			} else if (message.content === '!addBallEmojis') {
 				try {
@@ -227,8 +227,8 @@ function pokeChat(client) {
 						await message.reply("❌ **Échec de la création des emojis.** Vérifiez les permissions du bot.");
 					}
 				} catch (error) {
+					await logEvent('ERROR', 'emojis', `Erreur lors de la création des emojis: ${error.message}`, message.guild.id, message.author.id);
 					await message.reply(`💥 **Erreur lors de la création des emojis** : ${error.message}`);
-					console.error(`💥 [ERREUR EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur:`, error.message);
 				}
 			}
 		}
@@ -256,28 +256,6 @@ function pokeChat(client) {
 				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
 				await premiumMessage(message);
-			} else if (message.content === '!export') {
-				await message.reply('📥 Début de l\'export des patch notes...\n⏳ Cela peut prendre plusieurs minutes selon le nombre de messages.');
-
-				try {
-					const channel = message.channel;
-					const outputPath = './exports/patchnotes.json';
-
-					// Créer le dossier exports s'il n'existe pas
-					const fs = await import('fs/promises');
-					try {
-						await fs.mkdir('./exports', { recursive: true });
-					} catch (error) {
-						// Le dossier existe déjà
-					}
-
-					const messages = await exportChannelHistory(channel, outputPath);
-
-					await message.reply(`✅ Export des patch notes terminé !\n📊 ${messages.length} messages exportés\n💾 Fichier sauvegardé : \`patchnotes.json\`\n📁 Chemin : \`${outputPath}\``);
-				} catch (error) {
-					console.error('Erreur lors de l\'export:', error);
-					await message.reply(`❌ Erreur lors de l'export : ${error.message}`);
-				}
 			}
 			return;
 		}

@@ -10,7 +10,7 @@ import {
 	PermissionFlagsBits,
 	PermissionsBitField,
 } from 'discord.js';
-import { API, wait } from './globalFunctions.js';
+import { API, wait, logEvent } from './globalFunctions.js';
 
 async function sendArenaMessage(
 	message,
@@ -61,15 +61,14 @@ async function addBallEmojis(message) {
 				});
 				emojisCreated++;
 			} catch (emojiError) {
-				console.error(`🚫 [ERREUR EMOJI] Serveur "${message.guild.name}" (${message.guild.id}) - Échec création emoji ${pokeball.name}:`, emojiError.message);
+				await logEvent('ERROR', 'emojis', `Échec création emoji ${pokeball.name}: ${emojiError.message}`, message.guild.id, message.author.id);
 			}
 		}
-
-		console.log(`✅ [EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - ${emojisCreated}/${response.data.length} emojis créés`);
+		await logEvent('SUCCESS', 'emojis', `${emojisCreated}/${response.data.length} emojis créés`, message.guild.id, message.author.id);
 		return emojisCreated > 0;
 
 	} catch (error) {
-		console.error(`🚫 [ERREUR EMOJIS] Serveur "${message.guild.name}" (${message.guild.id}) - Erreur API:`, error.message);
+		await logEvent('ERROR', 'emojis', `Erreur API: ${error.message}`, message.guild.id, message.author.id);
 		return false;
 	}
 }
@@ -392,14 +391,19 @@ async function channelZones(message) {
 
 async function channelZonesAsForum(message) {
 	try {
+		await logEvent('INFO', 'installation', `Début de l'installation`, message.guild.id, message.author.id);
+
 		const needed = new PermissionsBitField([
 			PermissionFlagsBits.ManageChannels,
 			PermissionFlagsBits.CreatePublicThreads,
 			PermissionFlagsBits.SendMessagesInThreads,
+			PermissionFlagsBits.ManageThreads,
+			PermissionFlagsBits.SendMessages,
 		]);
 
 		if (!message.guild.members.me.permissions.has(needed)) {
-			await message.reply("❌ Il me manque des permissions : ManageChannels / CreatePublicThreads / SendMessagesInThreads.");
+			await message.reply("❌ Il me manque des permissions : ManageChannels / CreatePublicThreads / SendMessagesInThreads / ManageThreads / SendMessages");
+			await logEvent('ERROR', 'installation', `Permissions manquantes pour l'installation: ManageChannels, CreatePublicThreads, SendMessagesInThreads, ManageThreads, SendMessages`, message.guild.id, message.author.id);
 			return false;
 		}
 
@@ -415,7 +419,7 @@ async function channelZonesAsForum(message) {
 				type: ChannelType.GuildCategory,
 				reason: 'Regroupe tous les salons de la zone Pokémon',
 			});
-			console.log(`✅ [INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Catégorie PokeFarm créée`);
+			await logEvent('SUCCESS', 'installation', `Catégorie PokeFarm créée`, message.guild.id, message.author.id);
 		}
 
 		const allGeneration = {
@@ -475,25 +479,22 @@ async function channelZonesAsForum(message) {
 				}
 
 				forumsCreated++;
-				console.log(`✅ [INSTALLATION] Serveur "${message.guild.name}" (${message.guild.id}) - Forum ${generationName} créé avec ${threadsCreated} threads`);
+				await logEvent('SUCCESS', 'installation', `Forum ${generationName} créé avec ${threadsCreated} threads`, message.guild.id, message.author.id);
 
 			} catch (forumError) {
 				const errorMsg = `❌ **Erreur lors de la création du forum ${generationName}** veuillez signaler le bug avec la commande /bug`;
+				await logEvent('ERROR', 'installation', `Erreur lors de la création du forum ${generationName}: ${forumError.message}`, message.guild.id, message.author.id);
 				await message.reply(errorMsg);
-				console.error(`🚫 [ERREUR FORUM] Serveur "${message.guild.name}" (${message.guild.id}) - Échec création forum ${generationName}:`, forumError.message);
 				return false;
 			}
 		}
-
+		await logEvent('SUCCESS', 'installation', `${forumsCreated} forums créés avec succès`, message.guild.id, message.author.id);
 		await message.reply(`✅ **Installation réussie !** ${forumsCreated}/4 forums créés avec succès dans la catégorie PokeFarm.`);
-		console.log(`🎉 [INSTALLATION COMPLÈTE] Serveur "${message.guild.name}" (${message.guild.id}) - ${forumsCreated} forums créés avec succès`);
 		return true;
-
 	} catch (error) {
 		const errorMsg = `❌ **Erreur critique lors de l'installation** veuillez signaler le bug avec la commande /bug`;
+		await logEvent('CRITICAL', 'installation', `Échec critique de l'installation: ${error.message}`, message.guild.id, message.author.id);
 		await message.reply(errorMsg);
-		console.error(`💥 [ERREUR CRITIQUE] Serveur "${message.guild.name}" (${message.guild.id}) - Échec installation:`, error.message);
-		console.error(`💥 [STACK TRACE] Serveur "${message.guild.name}" (${message.guild.id}):`, error.stack);
 		return false;
 	}
 }
