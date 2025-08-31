@@ -39,7 +39,9 @@ import {
 	premiumUrl,
 	buyBalls,
 	displayHelp,
-	saveBugIdea
+	saveBugIdea,
+	sendInstallationMessage,
+	sendInstallationReminder
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -72,6 +74,22 @@ function pokeChat(client) {
 
 		cron.schedule('*/30 * * * *', async () => {
 			await reopenArchivedThreads(client);
+		});
+
+		// Cron pour les rappels d'installation - tous les jours à 18h00
+		cron.schedule('* 18 * * *', async () => {
+			await sendInstallationReminder(client);
+		});
+
+		// Cron pour reset des streaks Top.gg - tous les jours à minuit
+		cron.schedule('0 0 * * *', async () => {
+			try {
+				await logEvent('INFO', 'topgg', 'Reset des streaks Top.gg', null, null);
+				const response = await API.post('/topgg/reset-streaks');
+				await logEvent('SUCCESS', 'topgg', `Streaks Top.gg reset avec succès: ${response.data.resetCount} resetées sur ${response.data.totalTrainers} dresseurs en streak`, null, null);
+			} catch (error) {
+				await logEvent('ERROR', 'topgg', `Erreur lors du reset des streaks: ${error.message}`, null, null);
+			}
 		});
 
 		for (const [guildId, guild] of client.guilds.cache) {
@@ -110,49 +128,19 @@ function pokeChat(client) {
 
 	client.on('guildCreate', async (guild) => {
 		try {
+			const hasPokefarmCategory = guild.channels.cache.some((ch) => ch.name === 'PokeFarm');
 			await API.post(`/servers`, {
 				idServer: guild.id,
 				name: guild.name,
-				idOwner: guild.ownerId
+				idOwner: guild.ownerId,
+				hasPokefarmCategory: hasPokefarmCategory
 			});
 			await guild.members.fetch();
 			addTrainer(guild.members.cache.filter(m => !m.user.bot).map(m => m), guild.id);
 			const owner = await guild.members.fetch(guild.ownerId);
-			const embed = new EmbedBuilder()
-				.setColor('#3eb0ed')
-				.setTitle(`Merci d'avoir installé le bot sur ${guild.name} !`)
-				.setDescription(
-					"Pour terminer l'installation, utilisez la commande `!install` dans un salon de votre serveur (pas en réponse à ce message)."
-				)
-				.addFields(
-					{
-						name: 'Ce que fait !install',
-						value:
-							'- Crée la catégorie `PokeFarm` avec 4 forums (Kanto, Johto, Hoenn, Sinnoh)\n' +
-							'- Crée les posts de zones et prépare les spawns\n' +
-							"- Configure les permissions nécessaires",
-					},
-					{
-						name: 'Pré‑requis émojis',
-						value:
-							"- Assurez‑vous d'avoir au moins **4 emplacements d’émojis libres** (pokeball, superball, hyperball, masterball).\n" +
-							"- Si nécessaire, vous pourrez (ré)installer les émojis plus tard avec `!addBallEmojis`.",
-					},
-					{
-						name: 'Aide',
-						value: '- Tapez `/help` sur le serveur pour voir toutes les commandes.',
-					},
-					{
-						name: 'Informations complémentaires',
-						value: "- L'installation prend environ 15 minutes. Le bot fera des pauses lors de la création des forums.\n" +
-							"- L'ensemble de l'air de jeu est installé en bas de votre serveur. Le bot ne va donc pas désordonner votre serveur."
-					},
-				)
-				.setFooter({ text: 'Bon jeu !' })
-
-			await owner.send({ embeds: [embed] });
+			await sendInstallationMessage(guild, owner);
 		} catch (error) {
-			console.error("Erreur API lors de l'enregistrement :", error.response?.data || error.message);
+			await logEvent('ERROR', 'installation', `Erreur API lors de l'enregistrement du serveur: ${error.response?.data || error.message}`, guild.id, guild.ownerId);
 		}
 	});
 
@@ -160,7 +148,7 @@ function pokeChat(client) {
 		try {
 			await API.put(`/servers/${guild.id}`, { isDelete: true });
 		} catch (error) {
-			console.error("Erreur API lors de la suppression :", error.response?.data || error.message);
+			await logEvent('ERROR', 'installation', `Erreur API lors de la suppression du serveur: ${error.response?.data || error.message}`, guild.id, guild.ownerId);
 		}
 	});
 
@@ -175,7 +163,7 @@ function pokeChat(client) {
 			try {
 				await newChannel.setName('PokeFarm');
 			} catch (error) {
-				console.error(`❌ Impossible de renommer la catégorie "${newChannel.name}" :`, error);
+				await logEvent('ERROR', 'installation', `Impossible de renommer la catégorie "${newChannel.name}": ${error.message}`, newChannel.guild.id, newChannel.guild.ownerId);
 			}
 		}
 	});

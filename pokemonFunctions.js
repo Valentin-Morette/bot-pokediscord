@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder, ChannelType } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 import { getIsPremium } from './trainerFunctions.js';
-import { XEmbed, GamsGoEmbed, premiumEmbed, premiumAdEmbed, inviteEmbed } from './listEmbed.js';
+import { XEmbed, premiumEmbed, inviteEmbed } from './listEmbed.js';
 
 let commandCount = 0;
 let embedIndex = 0;

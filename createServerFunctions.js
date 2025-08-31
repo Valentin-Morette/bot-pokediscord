@@ -409,6 +409,9 @@ async function channelZonesAsForum(message) {
 
 		const categoryName = 'PokeFarm';
 
+		// Rafraîchir le cache des canaux
+		await message.guild.channels.fetch();
+
 		let category = message.guild.channels.cache.find(
 			ch => ch.type === ChannelType.GuildCategory && ch.name === categoryName
 		);

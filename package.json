@@ -22,6 +22,7 @@
 	"homepage": "https://github.com/Valentin-Morette/template_bot_discord#readme",
 	"dependencies": {
 		"@discordjs/rest": "^2.0.1",
+		"@top-gg/sdk": "^3.1.6",
 		"axios": "^1.4.0",
 		"body-parser": "^2.2.0",
 		"discord.js": "^14.13.0",

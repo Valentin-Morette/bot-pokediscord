@@ -325,7 +325,7 @@ async function dailyGift(interaction) {
 				.setThumbnail(`attachment://nogift.png`);
 			files.push(attachment);
 
-			if (!response.data.isPremium) {
+			if (!response.data.isPremium && !response.data.isStreakPremium) {
 				embed.setFooter({
 					text: '💎 Les cadeaux passent de 12h à 4h pour les membres Premium ! 💎',
 				});
@@ -465,7 +465,7 @@ async function getAffiliateCode(idTrainer) {
 async function getIsPremium(idTrainer) {
 	try {
 		const response = await API.get(`/trainer/` + idTrainer);
-		return response.data.isPremium;
+		return response.data.isPremium || response.data.isStreakPremium;
 	} catch (error) {
 		console.error(error);
 	}
@@ -951,6 +951,101 @@ async function kickMember(message) {
 	}
 }
 
+async function sendInstallationMessage(guild, owner) {
+	try {
+		const embed = new EmbedBuilder()
+			.setColor('#3eb0ed')
+			.setTitle(`Merci d'avoir installé le bot sur ${guild.name} !`)
+			.setDescription(
+				"Pour terminer l'installation, utilisez la commande `!install` dans un salon de votre serveur (pas en réponse à ce message)."
+			)
+			.addFields(
+				{
+					name: 'Ce que fait !install',
+					value:
+						'- Crée la catégorie `PokeFarm` avec 4 forums (Kanto, Johto, Hoenn, Sinnoh)\n' +
+						'- Crée les posts de zones et prépare les spawns\n' +
+						"- Configure les permissions nécessaires",
+				},
+				{
+					name: 'Pré‑requis émojis',
+					value:
+						"- Assurez‑vous d'avoir au moins **4 emplacements d'émojis libres** (pokeball, superball, hyperball, masterball).\n" +
+						"- Si nécessaire, vous pourrez (ré)installer les emojis plus tard avec `!addBallEmojis`.",
+				},
+				{
+					name: 'Aide',
+					value: '- Tapez `/help` sur le serveur pour voir toutes les commandes.',
+				},
+				{
+					name: 'Informations complémentaires',
+					value: "- L'installation prend environ 15 minutes. Le bot fera des pauses lors de la création des forums.\n" +
+						"- L'ensemble de l'air de jeu est installé en bas de votre serveur. Le bot ne va donc pas désordonner votre serveur."
+				},
+			)
+			.setFooter({ text: 'Bon jeu !' });
+
+		await owner.send({ embeds: [embed] });
+	} catch (error) {
+		await logEvent('ERROR', 'installation', `Erreur lors de l'envoi du message d'installation: ${error.message}`, guild.id, guild.ownerId);
+	}
+}
+
+async function sendInstallationReminder(client) {
+	try {
+		// Récupérer la liste des serveurs non installés
+		const response = await API.get('/servers/uninstal');
+		const uninstalledServers = response.data;
+
+		if (!uninstalledServers || uninstalledServers.length === 0) {
+			return;
+		}
+
+		let successCount = 0;
+		let errorCount = 0;
+
+		// Envoyer un message à chaque propriétaire
+		for (const server of uninstalledServers) {
+			try {
+				console.log(`🔄 Tentative d'envoi à ${server.ownerName} (${server.idOwner})...`);
+
+				// Récupérer l'utilisateur Discord
+				const user = await client.users.fetch(server.idOwner);
+
+				const embed = new EmbedBuilder()
+					.setColor('#ff6b35')
+					.setTitle('🤖 Rappel d\'installation PokéFarm')
+					.setDescription(
+						`Bonjour **${server.ownerName}** !\n\n` +
+						`Il y a quelque temps, vous avez ajouté le bot PokéFarm sur votre serveur **${server.name}**, ` +
+						`mais l'installation n'a pas encore été finalisée.\n\n` +
+						`**Pour activer complètement le bot et commencer à jouer :**`
+					)
+					.addFields(
+						{
+							name: 'Installation facile',
+							value: "Utilisez la commande `!install` dans un salon de votre serveur pour terminer l\'installation. Vous n'avez rien d'autre à faire. Cela va créer une catégorie dédiée avec 4 forums (Kanto, Johto, Hoenn, Sinnoh) en bas de votre serveur.",
+						},
+					)
+					.setFooter({ text: 'Merci de votre confiance !' })
+					.setTimestamp();
+
+				await user.send({ embeds: [embed] });
+				successCount++;
+
+				// Délai pour éviter le rate limiting
+				await new Promise(resolve => setTimeout(resolve, 1000));
+
+			} catch (error) {
+				errorCount++;
+				await logEvent('ERROR', 'reminder', `Erreur lors de l'envoi du rappel à ${server.ownerName} (${server.idOwner}): ${error.message}`, server.idServer, server.idOwner);
+			}
+		}
+	} catch (error) {
+		await logEvent('ERROR', 'reminder', `Erreur lors de l'envoi des rappels d'installation: ${error.message}`, server.idServer, server.idOwner);
+	}
+}
+
 export {
 	addTrainer,
 	dailyGift,
@@ -979,5 +1074,7 @@ export {
 	premiumUrl,
 	buyBalls,
 	displayHelp,
-	saveBugIdea
+	saveBugIdea,
+	sendInstallationMessage,
+	sendInstallationReminder
 };
