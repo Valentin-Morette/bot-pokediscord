@@ -41,7 +41,8 @@ import {
 	displayHelp,
 	saveBugIdea,
 	sendInstallationMessage,
-	sendInstallationReminder
+	sendInstallationReminder,
+	sendTopggVoteReminder
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -92,6 +93,11 @@ function pokeChat(client) {
 			}
 		});
 
+		// Cron pour rappel de vote Top.gg - tous les jours à 20h00
+		cron.schedule('20 20 * * *', async () => {
+			await sendTopggVoteReminder(client);
+		});
+
 		for (const [guildId, guild] of client.guilds.cache) {
 			try {
 				await guild.emojis.fetch();
@@ -101,8 +107,6 @@ function pokeChat(client) {
 		}
 
 		setInterval(async () => {
-			console.log('🔄 Vérification des threads pour les nouveaux spawns de Pokémon...');
-
 			for (const [, guild] of client.guilds.cache) {
 				await checkAndSpawnPokemon(guild);
 			}

@@ -11,7 +11,8 @@ import {
 	createListEmbed,
 	API,
 	formatRemainingTime,
-	isUserAdmin
+	isUserAdmin,
+	logEvent
 } from './globalFunctions.js';
 import { balls } from './variables.js';
 import { findRandomPokemon } from './pokemonFunctions.js';
@@ -1046,6 +1047,55 @@ async function sendInstallationReminder(client) {
 	}
 }
 
+async function sendTopggVoteReminder(client) {
+	try {
+		await logEvent('INFO', 'topgg', 'Début du rappel de vote Top.gg', null, null);
+		const response = await API.get('/topgg/streaks');
+		if (response.data.status === 'success' && response.data.streaks && response.data.streaks.length > 0) {
+			let successCount = 0;
+			let errorCount = 0;
+
+			for (const streak of response.data.streaks) {
+				try {
+					const user = await client.users.fetch(streak.idDiscord);
+					const embed = new EmbedBuilder()
+						.setColor('#FF6B6B')
+						.setTitle('⚠️ Rappel de vote pour PokéFarm sur Top.gg')
+						.setDescription(`Salut **${streak.name}** ! 👋
+
+Tu as actuellement une streak de **${streak.streak} jours** et tu n'as pas encore voté aujourd'hui ! 
+
+⚠️ **Attention** : Si tu ne votes pas avant minuit, tu vas perdre ta précieuse streak ! 
+
+🎁 **Bonnes nouvelles** : En votant, tu gagnes un **Pokémon aléatoire** ! 
+
+${streak.streak >= 7 ? '💎 **Félicitations !** Tu as déjà les avantages premium grâce à ta streak de 7+ jours !' : `💎 **Objectif** : Plus que ${7 - streak.streak} jour${7 - streak.streak > 1 ? 's' : ''} pour débloquer les avantages premium !`}
+
+🔗 **[Clique ici pour voter](https://top.gg/bot/1142325515575889971)** et maintenir ta streak !`)
+						.setFooter({ text: 'Merci de ton soutien !' })
+						.setTimestamp();
+
+					await user.send({ embeds: [embed] });
+					successCount++;
+
+					// Petite pause pour éviter le rate limiting
+					await new Promise(resolve => setTimeout(resolve, 1000));
+
+				} catch (error) {
+					errorCount++;
+					await logEvent('ERROR', 'topgg', `Erreur lors de l'envoi du message à ${streak.name} (${streak.idDiscord}): ${error.message}`, null, streak.idDiscord);
+				}
+			}
+
+			await logEvent('SUCCESS', 'topgg', `Rappels de vote envoyés: ${successCount} succès, ${errorCount} erreurs sur ${response.data.streaks.length} dresseurs`, null, null);
+		} else {
+			await logEvent('INFO', 'topgg', 'Aucun dresseur en streak à contacter aujourd\'hui', null, null);
+		}
+	} catch (error) {
+		await logEvent('ERROR', 'topgg', `Erreur lors du rappel de vote: ${error.message}`, null, null);
+	}
+}
+
 export {
 	addTrainer,
 	dailyGift,
@@ -1076,5 +1126,6 @@ export {
 	displayHelp,
 	saveBugIdea,
 	sendInstallationMessage,
-	sendInstallationReminder
+	sendInstallationReminder,
+	sendTopggVoteReminder
 };
