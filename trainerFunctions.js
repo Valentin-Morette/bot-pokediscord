@@ -1120,7 +1120,7 @@ async function cleanupInactiveUsers(client) {
 				totalServers++;
 				totalUsers += guild.members.cache.filter(m => !m.user.bot).size;
 
-				console.log(`✅ Serveur ${guild.name}: ${guild.members.cache.filter(m => !m.user.bot).size} utilisateurs actifs`);
+				console.log(`✅ Serveur ${guild.name} (Owner: ${guild.ownerId ? guild.ownerId : 'Inconnu'}): ${guild.members.cache.filter(m => !m.user.bot).size} utilisateurs actifs`);
 
 			} catch (error) {
 				await logEvent('ERROR', 'cleanup', `Erreur lors du fetch des membres pour ${guild.name} (${guildId}): ${error.message}`, guildId, null);
