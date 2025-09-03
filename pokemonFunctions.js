@@ -50,7 +50,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 1 === 0) {
+		if (commandCount % 35 === 0) {
 			if (!(await getIsPremium(interaction.user.id))) {
 				const { embeds: extraEmbeds, files: extraFiles } =
 					await embedFunctions[embedIndex % embedFunctions.length](color);
