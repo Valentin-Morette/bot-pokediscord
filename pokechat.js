@@ -42,7 +42,8 @@ import {
 	saveBugIdea,
 	sendInstallationMessage,
 	sendInstallationReminder,
-	sendTopggVoteReminder
+	sendTopggVoteReminder,
+	cleanupInactiveUsers
 } from './trainerFunctions.js';
 import {
 	spawnRandomPokemon,
@@ -96,6 +97,21 @@ function pokeChat(client) {
 		// Cron pour rappel de vote Top.gg - tous les jours à 20h00
 		cron.schedule('0 20 * * *', async () => {
 			await sendTopggVoteReminder(client);
+		});
+
+		// Cron pour nettoyage des utilisateurs inactifs - tous les jours à 4h00
+		cron.schedule('0 4 * * *', async () => {
+			try {
+				await logEvent('INFO', 'cleanup', 'Début du nettoyage automatique des utilisateurs inactifs', null, null);
+				const result = await cleanupInactiveUsers(client);
+				if (result.success) {
+					await logEvent('SUCCESS', 'cleanup', `Nettoyage automatique terminé: ${result.removedUsers} utilisateurs supprimés sur ${result.activeUsers} actifs (${result.totalServers} serveurs)`, null, null);
+				} else {
+					await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage automatique: ${result.error}`, null, null);
+				}
+			} catch (error) {
+				await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage automatique: ${error.message}`, null, null);
+			}
 		});
 
 		for (const [guildId, guild] of client.guilds.cache) {
@@ -248,6 +264,14 @@ function pokeChat(client) {
 				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
 				await premiumMessage(message);
+			} else if (message.content === '!cleanupUsers') {
+				await message.reply('🧹 Début du nettoyage des utilisateurs inactifs...');
+				const result = await cleanupInactiveUsers(client);
+				if (result.success) {
+					await message.reply(`✅ Nettoyage terminé !\n📊 **Résultats :**\n• ${result.activeUsers} utilisateurs actifs\n• ${result.removedUsers} utilisateurs supprimés\n• ${result.totalServers} serveurs analysés`);
+				} else {
+					await message.reply(`❌ Erreur lors du nettoyage : ${result.error}`);
+				}
 			}
 			return;
 		}

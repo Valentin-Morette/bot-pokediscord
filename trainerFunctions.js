@@ -1096,6 +1096,62 @@ ${streak.streak >= 7 ? '💎 **Félicitations !** Tu as déjà les avantages pre
 	}
 }
 
+async function cleanupInactiveUsers(client) {
+	try {
+		await logEvent('INFO', 'cleanup', 'Début du nettoyage des utilisateurs inactifs', null, null);
+
+		const allActiveUsers = new Set();
+		let totalServers = 0;
+		let totalUsers = 0;
+
+		// Récupérer tous les utilisateurs actifs sur tous les serveurs
+		for (const [guildId, guild] of client.guilds.cache) {
+			try {
+				// Fetch tous les membres du serveur
+				await guild.members.fetch();
+
+				// Ajouter tous les utilisateurs non-bot à la liste
+				guild.members.cache.forEach(member => {
+					if (!member.user.bot) {
+						allActiveUsers.add(member.id);
+					}
+				});
+
+				totalServers++;
+				totalUsers += guild.members.cache.filter(m => !m.user.bot).size;
+
+				console.log(`✅ Serveur ${guild.name}: ${guild.members.cache.filter(m => !m.user.bot).size} utilisateurs actifs`);
+
+			} catch (error) {
+				await logEvent('ERROR', 'cleanup', `Erreur lors du fetch des membres pour ${guild.name} (${guildId}): ${error.message}`, guildId, null);
+			}
+		}
+
+		// Convertir le Set en Array pour l'API
+		const activeUserIds = Array.from(allActiveUsers);
+
+		// Envoyer à l'API pour nettoyage
+		const response = await API.post('/trainer/cleanup-inactive', {
+			activeUserIds: activeUserIds
+		});
+
+		await logEvent('SUCCESS', 'cleanup', `Nettoyage terminé: ${activeUserIds.length} actifs (${totalUsers} total sur ${totalServers} serveurs)`, null, null);
+
+		return {
+			success: true,
+			activeUsers: activeUserIds.length,
+			totalServers: totalServers
+		};
+
+	} catch (error) {
+		await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage: ${error.message}`, null, null);
+		return {
+			success: false,
+			error: error.message
+		};
+	}
+}
+
 export {
 	addTrainer,
 	dailyGift,
@@ -1127,5 +1183,6 @@ export {
 	saveBugIdea,
 	sendInstallationMessage,
 	sendInstallationReminder,
-	sendTopggVoteReminder
+	sendTopggVoteReminder,
+	cleanupInactiveUsers
 };
