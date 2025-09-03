@@ -102,7 +102,8 @@ async function premiumEmbed(isCmd = false) {
 			'- Les commandes `/zone` et `/disponible` sont enrichies avec les **taux de spawn**.\n' +
 			'- Zéro publicité dans vos commandes.\n' +
 			'- Commande `/cadeau` disponible toutes les **4h** (au lieu de 12h).\n\n' +
-			`Le tout pour seulement **3,99€ en un seul paiement** !`
+			`Le tout pour seulement **3,99€ en un seul paiement** !\n\n` +
+			`💡 **Alternative gratuite :** Maintenez une streak de 7 jours de vote sur [Top.gg](https://top.gg/bot/1142325515575889971) pour obtenir les mêmes avantages !`
 		)
 		.setColor('#FFCC00')
 		.setThumbnail('attachment://premium.png');
@@ -149,6 +150,29 @@ async function inviteEmbed(color) {
 	return { embeds: [embed], files: [] };
 }
 
+async function voteTopggEmbed(color) {
+	const embed = new EmbedBuilder()
+		.setTitle('🌟 Votez pour PokéFarm sur Top.gg ! 🌟')
+		.setDescription(`
+			🎁 Récompenses immédiates :
+			• Un **Pokémon aléatoire** offert à chaque vote !
+
+			⏰ Votez toutes les 12h pour maximiser vos gains
+
+			💎 **Streak de 7 jours = Avantages Premium !**
+			• Maintenez votre streak en votant quotidiennement
+			• Débloquez les avantages premium automatiquement
+			• Continuez à profiter des bonus même après 7 jours
+			• **Alternative gratuite** au Premium payant !
+
+			🔗 **[Voter maintenant](https://top.gg/bot/1142325515575889971)**`)
+		.setColor(color)
+		.setThumbnail('https://avatars.githubusercontent.com/u/34552786?s=280&v=4')
+		.setTimestamp();
+
+	return { embeds: [embed], files: [] };
+}
 
 
-export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed, premiumAdEmbed, inviteEmbed };
+
+export { buyMeACoffeeEmbed, instantGamingEmbed, XEmbed, GamsGoEmbed, premiumEmbed, alsoPremiumEmbed, premiumAdEmbed, inviteEmbed, voteTopggEmbed };

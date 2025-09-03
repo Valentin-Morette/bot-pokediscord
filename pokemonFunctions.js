@@ -1,12 +1,12 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder, ChannelType } from 'discord.js';
 import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
 import { getIsPremium } from './trainerFunctions.js';
-import { XEmbed, premiumEmbed, inviteEmbed } from './listEmbed.js';
+import { XEmbed, premiumEmbed, inviteEmbed, voteTopggEmbed } from './listEmbed.js';
 
 let commandCount = 0;
 let embedIndex = 0;
 
-const embedFunctions = [XEmbed, inviteEmbed];
+const embedFunctions = [XEmbed, inviteEmbed, voteTopggEmbed];
 
 async function findRandomPokemon(interaction, followUp = false) {
 	commandCount++;
@@ -50,7 +50,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 40 === 0) {
+		if (commandCount % 1 === 0) {
 			if (!(await getIsPremium(interaction.user.id))) {
 				const { embeds: extraEmbeds, files: extraFiles } =
 					await embedFunctions[embedIndex % embedFunctions.length](color);

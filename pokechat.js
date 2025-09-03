@@ -57,7 +57,7 @@ import {
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, findParentCategory, logEvent, API } from './globalFunctions.js';
-import { ChannelType, EmbedBuilder } from 'discord.js';
+import { ChannelType } from 'discord.js';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
@@ -94,7 +94,7 @@ function pokeChat(client) {
 		});
 
 		// Cron pour rappel de vote Top.gg - tous les jours à 20h00
-		cron.schedule('20 20 * * *', async () => {
+		cron.schedule('0 20 * * *', async () => {
 			await sendTopggVoteReminder(client);
 		});
 
