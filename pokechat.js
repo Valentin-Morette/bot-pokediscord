@@ -105,7 +105,7 @@ function pokeChat(client) {
 				await logEvent('INFO', 'cleanup', 'Début du nettoyage automatique des utilisateurs inactifs', null, null);
 				const result = await cleanupInactiveUsers(client);
 				if (result.success) {
-					await logEvent('SUCCESS', 'cleanup', `Nettoyage automatique terminé: ${result.removedUsers} utilisateurs supprimés sur ${result.activeUsers} actifs (${result.totalServers} serveurs)`, null, null);
+					await logEvent('SUCCESS', 'cleanup', `${result.activeUsers} actifs (${result.totalServers} serveurs)`, null, null);
 				} else {
 					await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage automatique: ${result.error}`, null, null);
 				}
@@ -276,10 +276,8 @@ function pokeChat(client) {
 					try {
 						totalServers++;
 
-						// Vérifier si le serveur existe en base
 						const hasPokefarmCategory = guild.channels.cache.some((ch) => ch.name === 'PokeFarm');
 
-						// Enregistrer le serveur (même s'il existe déjà, ça mettra à jour les infos)
 						await API.post(`/servers`, {
 							idServer: guild.id,
 							name: guild.name,
@@ -294,7 +292,6 @@ function pokeChat(client) {
 						if (members.length > 0) {
 							await addTrainer(members, guild.id);
 							totalMembers += members.length;
-							console.log(`✅ Serveur ${guild.name}: ${members.length} membres ajoutés`);
 						}
 
 						newServers++;
@@ -302,7 +299,6 @@ function pokeChat(client) {
 					} catch (error) {
 						errorServers++;
 						await logEvent('ERROR', 'updateDataServer', `Erreur pour le serveur ${guild.name} (${guildId}): ${error.message}`, guildId, guild.ownerId);
-						console.error(`❌ Erreur serveur ${guild.name}:`, error.message);
 					}
 				}
 
@@ -312,7 +308,7 @@ function pokeChat(client) {
 				await message.reply('🧹 Début du nettoyage des utilisateurs inactifs...');
 				const result = await cleanupInactiveUsers(client);
 				if (result.success) {
-					await message.reply(`✅ Nettoyage terminé !\n📊 **Résultats :**\n• ${result.activeUsers} utilisateurs actifs\n• ${result.removedUsers} utilisateurs supprimés\n• ${result.totalServers} serveurs analysés`);
+					await message.reply(`✅ Nettoyage terminé !\n📊 **Résultats :**\n• ${result.activeUsers} utilisateurs actifs\n• ${result.totalServers} serveurs analysés`);
 				} else {
 					await message.reply(`❌ Erreur lors du nettoyage : ${result.error}`);
 				}
@@ -338,7 +334,7 @@ function pokeChat(client) {
 			}
 		}
 
-		if (!interaction.isCommand() && !interaction.isButton()) {
+		if (!interaction.isCommand() && !interaction.isButton() && !interaction.isAutocomplete()) {
 			return;
 		}
 
