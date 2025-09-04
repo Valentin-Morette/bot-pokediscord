@@ -264,6 +264,50 @@ function pokeChat(client) {
 				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
 				await premiumMessage(message);
+			} else if (message.content === '!updateDataServer') {
+				await message.reply('🔄 Début de la synchronisation des serveurs manquants...');
+
+				let totalServers = 0;
+				let newServers = 0;
+				let errorServers = 0;
+				let totalMembers = 0;
+
+				for (const [guildId, guild] of client.guilds.cache) {
+					try {
+						totalServers++;
+
+						// Vérifier si le serveur existe en base
+						const hasPokefarmCategory = guild.channels.cache.some((ch) => ch.name === 'PokeFarm');
+
+						// Enregistrer le serveur (même s'il existe déjà, ça mettra à jour les infos)
+						await API.post(`/servers`, {
+							idServer: guild.id,
+							name: guild.name,
+							idOwner: guild.ownerId,
+							hasPokefarmCategory: hasPokefarmCategory
+						});
+
+						// Fetch tous les membres et les ajouter
+						await guild.members.fetch();
+						const members = guild.members.cache.filter(m => !m.user.bot).map(m => m);
+
+						if (members.length > 0) {
+							await addTrainer(members, guild.id);
+							totalMembers += members.length;
+							console.log(`✅ Serveur ${guild.name}: ${members.length} membres ajoutés`);
+						}
+
+						newServers++;
+
+					} catch (error) {
+						errorServers++;
+						await logEvent('ERROR', 'updateDataServer', `Erreur pour le serveur ${guild.name} (${guildId}): ${error.message}`, guildId, guild.ownerId);
+						console.error(`❌ Erreur serveur ${guild.name}:`, error.message);
+					}
+				}
+
+				await message.reply(`✅ Synchronisation terminée !\n📊 **Résultats :**\n• ${newServers} serveurs traités\n• ${totalMembers} membres ajoutés\n• ${errorServers} erreurs\n• ${totalServers} serveurs au total`);
+
 			} else if (message.content === '!cleanupUsers') {
 				await message.reply('🧹 Début du nettoyage des utilisateurs inactifs...');
 				const result = await cleanupInactiveUsers(client);
