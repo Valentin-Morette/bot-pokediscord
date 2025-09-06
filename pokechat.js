@@ -42,6 +42,7 @@ import {
 	saveBugIdea,
 	sendInstallationMessage,
 	sendInstallationReminder,
+	sendInactiveUsersReminder,
 	sendTopggVoteReminder,
 	cleanupInactiveUsers
 } from './trainerFunctions.js';
@@ -94,6 +95,11 @@ function pokeChat(client) {
 			} catch (error) {
 				await logEvent('ERROR', 'topgg', `Erreur lors du reset des streaks: ${error.message}`, null, null);
 			}
+		});
+
+		// Cron pour rappel aux utilisateurs inactifs - tous les jours à 19h30
+		cron.schedule('30 19 * * *', async () => {
+			await sendInactiveUsersReminder(client);
 		});
 
 		// Cron pour rappel de vote Top.gg - tous les jours à 20h00

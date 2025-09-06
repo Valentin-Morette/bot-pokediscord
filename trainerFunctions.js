@@ -1049,6 +1049,81 @@ async function sendInstallationReminder(client) {
 	}
 }
 
+async function sendInactiveUsersReminder(client) {
+	try {
+		await logEvent('INFO', 'inactive', 'Début du rappel aux utilisateurs inactifs', null, null);
+
+		// Récupérer la liste des utilisateurs inactifs
+		const response = await API.get('/trainer/inactive-users');
+
+		if (response.data.status !== 'success' || !response.data.users || response.data.users.length === 0) {
+			await logEvent('INFO', 'inactive', 'Aucun utilisateur inactif trouvé', null, null);
+			return;
+		}
+
+		const inactiveUsers = response.data.users;
+		let successCount = 0;
+		let errorCount = 0;
+
+		await logEvent('INFO', 'inactive', `Traitement de ${inactiveUsers.length} utilisateurs inactifs`, null, null);
+
+		// Envoyer un message à chaque utilisateur inactif
+		for (const user of inactiveUsers) {
+			try {
+				console.log(`🔄 Tentative d'envoi à ${user.name} (${user.idDiscord})...`);
+
+				// Récupérer l'utilisateur Discord
+				const discordUser = await client.users.fetch(user.idDiscord);
+
+				const embed = new EmbedBuilder()
+					.setColor('#4CAF50')
+					.setTitle('PokéFarm - Découvrez le jeu !')
+					.setDescription(
+						`Salut **${user.name}** ! 👋\n\n` +
+						`Je vois que tu es sur le serveur **${user.serverName}** qui utilise PokéFarm, ` +
+						`mais tu n'as pas encore eu l'occasion de jouer !\n\n` +
+						`**PokéFarm, c'est quoi ?**`
+					)
+					.addFields(
+						{
+							name: '🎯 Le concept',
+							value: "Un jeu Pokémon Discord où tu peux capturer, faire évoluer et vendre tes Pokémon ! L'objectif étant de completer l'ensemble de tes Pokédex et Shinydex.",
+						},
+						{
+							name: '🚀 Comment commencer',
+							value: `Sur le serveur **${user.serverName}**, rend toi dans la catégorie \`PokeFarm\` et clique sur le forum qui correspond à une région pour commencer à capturer les Pokémon !`,
+						},
+						{
+							name: '🏠 Ton propre serveur',
+							value: 'Si tu aimes le concept, tu peux installer PokéFarm sur ton propre serveur Discord!',
+						},
+						{
+							name: '💡 Commandes utiles',
+							value: '`/help` - Pour voir toutes les commandes disponibles',
+						}
+					)
+					.setFooter({ text: 'Bon jeu !' })
+					.setTimestamp();
+
+				await discordUser.send({ embeds: [embed] });
+				successCount++;
+
+				// Délai pour éviter le rate limiting
+				await new Promise(resolve => setTimeout(resolve, 1000));
+
+			} catch (error) {
+				errorCount++;
+				await logEvent('ERROR', 'inactive', `Erreur lors de l'envoi du rappel à ${user.name} (${user.idDiscord}): ${error.message}`, user.firstServerId, user.idDiscord);
+			}
+		}
+
+		await logEvent('SUCCESS', 'inactive', `Rappels aux utilisateurs inactifs envoyés: ${successCount} succès, ${errorCount} erreurs sur ${inactiveUsers.length} utilisateurs`, null, null);
+
+	} catch (error) {
+		await logEvent('ERROR', 'inactive', `Erreur lors de l'envoi des rappels aux utilisateurs inactifs: ${error.message}`, null, null);
+	}
+}
+
 async function sendTopggVoteReminder(client) {
 	try {
 		await logEvent('INFO', 'topgg', 'Début du rappel de vote Top.gg', null, null);
@@ -1190,5 +1265,7 @@ export {
 	sendInstallationMessage,
 	sendInstallationReminder,
 	sendTopggVoteReminder,
-	cleanupInactiveUsers
+	cleanupInactiveUsers,
+	sendInactiveUsersReminder,
+
 };
