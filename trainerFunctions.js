@@ -1111,6 +1111,8 @@ async function sendInactiveUsersReminder(client) {
 				// Délai pour éviter le rate limiting
 				await new Promise(resolve => setTimeout(resolve, 1000));
 
+				await logEvent('SUCCESS', 'inactive', `Rappel d'utilisation envoyé à ${user.name} (${user.idDiscord})`, user.firstServerId, user.idDiscord);
+
 			} catch (error) {
 				errorCount++;
 				await logEvent('ERROR', 'inactive', `Erreur lors de l'envoi du rappel à ${user.name} (${user.idDiscord}): ${error.message}`, user.firstServerId, user.idDiscord);
