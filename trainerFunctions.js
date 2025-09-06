@@ -1034,6 +1034,8 @@ async function sendInstallationReminder(client) {
 				await user.send({ embeds: [embed] });
 				successCount++;
 
+				await logEvent('SUCCESS', 'reminder', `Rappel d'installation envoyé à ${server.ownerName} (${server.idOwner})`, server.idServer, server.idOwner);
+
 				// Délai pour éviter le rate limiting
 				await new Promise(resolve => setTimeout(resolve, 1000));
 

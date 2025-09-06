@@ -60,6 +60,8 @@ import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, findParentCategory, logEvent, API } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
 
+process.env.TZ = 'Europe/Paris';
+
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
 
@@ -79,7 +81,7 @@ function pokeChat(client) {
 		});
 
 		// Cron pour les rappels d'installation - tous les jours à 18h00
-		cron.schedule('* 18 * * *', async () => {
+		cron.schedule('0 18 * * *', async () => {
 			await sendInstallationReminder(client);
 		});
 
