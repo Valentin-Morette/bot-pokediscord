@@ -379,16 +379,6 @@ async function arenaMessagesGen4(message) {
 	);
 }
 
-async function channelZones(message) {
-	const response = await API.get(`/zone/4`);
-	response.data.forEach(async (zone) => {
-		const channel = await message.guild.channels.create({
-			name: '🌳・' + zone,
-			type: ChannelType.GuildText,
-		});
-	});
-}
-
 async function channelZonesAsForum(message) {
 	try {
 		await logEvent('INFO', 'installation', `Début de l'installation`, message.guild.id, message.author.id);
@@ -534,8 +524,6 @@ function slashCommande(commands) {
 
 	(async () => {
 		try {
-			console.log('Starting slash commands registration.');
-
 			// await rest.put(Routes.applicationGuildCommands(process.env.IDAPPLICATION, process.env.IDSERVER), {
 			// 	body: commands,
 			// });
@@ -543,8 +531,6 @@ function slashCommande(commands) {
 			await rest.put(Routes.applicationCommands(process.env.IDAPPLICATION), {
 				body: commands,
 			});
-
-			console.log('Slash commands registered successfully!');
 		} catch (error) {
 			console.error(error);
 		}
@@ -561,7 +547,6 @@ export {
 	arenaMessagesGen2,
 	arenaMessagesGen3,
 	arenaMessagesGen4,
-	channelZones,
 	channelZonesAsForum,
 	premiumMessage,
 	buildCommandEmbed,

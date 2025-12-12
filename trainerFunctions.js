@@ -543,36 +543,6 @@ async function buyBall(idTrainer, idBall, quantity, nameBall) {
 	}
 }
 
-async function getBadge(message, nbPokemon, nbPokemonDiff, nameBadge, roleBadge, generation) {
-	let idTrainer = message.member.id;
-	let pokemonType =
-		nameBadge === 'Maître Pokémon Shiny' || nameBadge === 'Maître Pokémon Shiny Gen 2'
-			? 'shiny'
-			: 'regular';
-	try {
-		const response = await API.get(
-			`/pokemon/trainer/` + idTrainer + '/' + generation + '/' + pokemonType
-		);
-		if (response.data.sumPokemon < nbPokemon) {
-			return `Vous n'avez pas assez de Pokémon pour obtenir le badge ${nameBadge}.`;
-		}
-		if (response.data.countPokemon < nbPokemonDiff) {
-			return `Vous n'avez pas assez de Pokémon différents pour obtenir le badge ${nameBadge}.`;
-		}
-		let badgeRole = message.guild.roles.cache.find((role) => role.name === roleBadge);
-
-		if (badgeRole) {
-			if (message.member.roles.cache.has(badgeRole.id)) {
-				return `Vous avez déjà le badge ${nameBadge}.`;
-			}
-			message.member.roles.add(badgeRole).catch(console.error);
-			return `Vous avez reçu le badge ${nameBadge} !`;
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
 async function handleCatch(interaction, idPokeball) {
 	const idPokemonWild = interaction.customId.split('|')[1];
 	const idTrainer = interaction.user.id;
@@ -992,189 +962,6 @@ async function sendInstallationMessage(guild, owner) {
 	}
 }
 
-async function sendInstallationReminder(client) {
-	try {
-		// Récupérer la liste des serveurs non installés
-		const response = await API.get('/servers/uninstal');
-		const uninstalledServers = response.data;
-
-		if (!uninstalledServers || uninstalledServers.length === 0) {
-			return;
-		}
-
-		let successCount = 0;
-		let errorCount = 0;
-
-		// Envoyer un message à chaque propriétaire
-		for (const server of uninstalledServers) {
-			try {
-				console.log(`🔄 Tentative d'envoi à ${server.ownerName} (${server.idOwner})...`);
-
-				// Récupérer l'utilisateur Discord
-				const user = await client.users.fetch(server.idOwner);
-
-				const embed = new EmbedBuilder()
-					.setColor('#ff6b35')
-					.setTitle('🤖 Rappel d\'installation PokéFarm')
-					.setDescription(
-						`Bonjour **${server.ownerName}** !\n\n` +
-						`Il y a quelque temps, vous avez ajouté le bot PokéFarm sur votre serveur **${server.name}**, ` +
-						`mais l'installation n'a pas encore été finalisée.\n\n` +
-						`**Pour activer complètement le bot et commencer à jouer :**`
-					)
-					.addFields(
-						{
-							name: 'Installation facile',
-							value: "Utilisez la commande `!install` dans un salon de votre serveur pour terminer l\'installation. Vous n'avez rien d'autre à faire. Cela va créer une catégorie dédiée avec 4 forums (Kanto, Johto, Hoenn, Sinnoh) en bas de votre serveur.",
-						},
-					)
-					.setFooter({ text: 'Merci de votre confiance !' })
-					.setTimestamp();
-
-				await user.send({ embeds: [embed] });
-				successCount++;
-
-				await logEvent('SUCCESS', 'reminder', `Rappel d'installation envoyé à ${server.ownerName} (${server.idOwner})`, server.idServer, server.idOwner);
-
-				// Délai pour éviter le rate limiting
-				await new Promise(resolve => setTimeout(resolve, 1000));
-
-			} catch (error) {
-				errorCount++;
-				await logEvent('ERROR', 'reminder', `Erreur lors de l'envoi du rappel à ${server.ownerName} (${server.idOwner}): ${error.message}`, server.idServer, server.idOwner);
-			}
-		}
-	} catch (error) {
-		await logEvent('ERROR', 'reminder', `Erreur lors de l'envoi des rappels d'installation: ${error.message}`, server.idServer, server.idOwner);
-	}
-}
-
-async function sendInactiveUsersReminder(client) {
-	try {
-		await logEvent('INFO', 'inactive', 'Début du rappel aux utilisateurs inactifs', null, null);
-
-		// Récupérer la liste des utilisateurs inactifs
-		const response = await API.get('/trainer/inactive-users');
-
-		if (response.data.status !== 'success' || !response.data.users || response.data.users.length === 0) {
-			await logEvent('INFO', 'inactive', 'Aucun utilisateur inactif trouvé', null, null);
-			return;
-		}
-
-		const inactiveUsers = response.data.users;
-		let successCount = 0;
-		let errorCount = 0;
-
-		await logEvent('INFO', 'inactive', `Traitement de ${inactiveUsers.length} utilisateurs inactifs`, null, null);
-
-		// Envoyer un message à chaque utilisateur inactif
-		for (const user of inactiveUsers) {
-			try {
-				console.log(`🔄 Tentative d'envoi à ${user.name} (${user.idDiscord})...`);
-
-				// Récupérer l'utilisateur Discord
-				const discordUser = await client.users.fetch(user.idDiscord);
-
-				const embed = new EmbedBuilder()
-					.setColor('#4CAF50')
-					.setTitle('PokéFarm - Découvrez le jeu !')
-					.setDescription(
-						`Salut **${user.name}** ! 👋\n\n` +
-						`Je vois que tu es sur le serveur **${user.serverName}** qui utilise PokéFarm, ` +
-						`mais tu n'as pas encore eu l'occasion de jouer !\n\n` +
-						`**PokéFarm, c'est quoi ?**`
-					)
-					.addFields(
-						{
-							name: '🎯 Le concept',
-							value: "Un jeu Pokémon Discord où tu peux capturer, faire évoluer et vendre tes Pokémon ! L'objectif étant de completer l'ensemble de tes Pokédex et Shinydex.",
-						},
-						{
-							name: '🚀 Comment commencer',
-							value: `Sur le serveur **${user.serverName}**, rend toi dans la catégorie \`PokeFarm\` et clique sur le forum qui correspond à une région pour commencer à capturer les Pokémon !`,
-						},
-						{
-							name: '🏠 Ton propre serveur',
-							value: 'Si tu aimes le concept, tu peux installer PokéFarm sur ton propre serveur Discord!',
-						},
-						{
-							name: '💡 Commandes utiles',
-							value: '`/help` - Pour voir toutes les commandes disponibles',
-						}
-					)
-					.setFooter({ text: 'Bon jeu !' })
-					.setTimestamp();
-
-				await discordUser.send({ embeds: [embed] });
-				successCount++;
-
-				// Délai pour éviter le rate limiting
-				await new Promise(resolve => setTimeout(resolve, 1000));
-
-				await logEvent('SUCCESS', 'inactive', `Rappel d'utilisation envoyé à ${user.name} (${user.idDiscord})`, user.firstServerId, user.idDiscord);
-
-			} catch (error) {
-				errorCount++;
-				await logEvent('ERROR', 'inactive', `Erreur lors de l'envoi du rappel à ${user.name} (${user.idDiscord}): ${error.message}`, user.firstServerId, user.idDiscord);
-			}
-		}
-
-		await logEvent('SUCCESS', 'inactive', `Rappels aux utilisateurs inactifs envoyés: ${successCount} succès, ${errorCount} erreurs sur ${inactiveUsers.length} utilisateurs`, null, null);
-
-	} catch (error) {
-		await logEvent('ERROR', 'inactive', `Erreur lors de l'envoi des rappels aux utilisateurs inactifs: ${error.message}`, null, null);
-	}
-}
-
-async function sendTopggVoteReminder(client) {
-	try {
-		await logEvent('INFO', 'topgg', 'Début du rappel de vote Top.gg', null, null);
-		const response = await API.get('/topgg/streaks');
-		if (response.data.status === 'success' && response.data.streaks && response.data.streaks.length > 0) {
-			let successCount = 0;
-			let errorCount = 0;
-
-			for (const streak of response.data.streaks) {
-				try {
-					const user = await client.users.fetch(streak.idDiscord);
-					const embed = new EmbedBuilder()
-						.setColor('#FF6B6B')
-						.setTitle('⚠️ Rappel de vote pour PokéFarm sur Top.gg')
-						.setDescription(`Salut **${streak.name}** ! 👋
-
-Tu as actuellement une streak de **${streak.streak} jours** et tu n'as pas encore voté aujourd'hui ! 
-
-⚠️ **Attention** : Si tu ne votes pas avant minuit, tu vas perdre ta précieuse streak ! 
-
-🎁 **Bonnes nouvelles** : En votant, tu gagnes un **Pokémon aléatoire** ! 
-
-${streak.streak >= 7 ? '💎 **Félicitations !** Tu as déjà les avantages premium grâce à ta streak de 7+ jours !' : `💎 **Objectif** : Plus que ${7 - streak.streak} jour${7 - streak.streak > 1 ? 's' : ''} pour débloquer les avantages premium !`}
-
-🔗 **[Clique ici pour voter](https://top.gg/bot/1142325515575889971)** et maintenir ta streak !`)
-						.setFooter({ text: 'Merci de ton soutien !' })
-						.setTimestamp();
-
-					await user.send({ embeds: [embed] });
-					successCount++;
-
-					// Petite pause pour éviter le rate limiting
-					await new Promise(resolve => setTimeout(resolve, 1000));
-
-				} catch (error) {
-					errorCount++;
-					await logEvent('ERROR', 'topgg', `Erreur lors de l'envoi du message à ${streak.name} (${streak.idDiscord}): ${error.message}`, null, streak.idDiscord);
-				}
-			}
-
-			await logEvent('SUCCESS', 'topgg', `Rappels de vote envoyés: ${successCount} succès, ${errorCount} erreurs sur ${response.data.streaks.length} dresseurs`, null, null);
-		} else {
-			await logEvent('INFO', 'topgg', 'Aucun dresseur en streak à contacter aujourd\'hui', null, null);
-		}
-	} catch (error) {
-		await logEvent('ERROR', 'topgg', `Erreur lors du rappel de vote: ${error.message}`, null, null);
-	}
-}
-
 async function cleanupInactiveUsers(client) {
 	try {
 		await logEvent('INFO', 'cleanup', 'Début du nettoyage des utilisateurs inactifs', null, null);
@@ -1245,7 +1032,6 @@ export {
 	getAffiliateCode,
 	useAffiliateCode,
 	buyBall,
-	getBadge,
 	sellPokemon,
 	handleCatch,
 	purposeSwapPokemon,
@@ -1265,9 +1051,5 @@ export {
 	displayHelp,
 	saveBugIdea,
 	sendInstallationMessage,
-	sendInstallationReminder,
-	sendTopggVoteReminder,
 	cleanupInactiveUsers,
-	sendInactiveUsersReminder,
-
 };

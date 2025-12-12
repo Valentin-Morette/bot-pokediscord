@@ -1,13 +1,8 @@
 import {
 	slashCommande,
 	addBallEmojis,
-	arenaMessagesGen1,
-	arenaMessagesGen2,
-	arenaMessagesGen3,
-	arenaMessagesGen4,
 	commandesMessage,
 	globalShopMessage,
-	channelZones,
 	channelZonesAsForum,
 	premiumMessage,
 	reopenArchivedThreads
@@ -23,7 +18,6 @@ import {
 	getAffiliateCode,
 	useAffiliateCode,
 	buyBall,
-	getBadge,
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
@@ -41,9 +35,6 @@ import {
 	displayHelp,
 	saveBugIdea,
 	sendInstallationMessage,
-	sendInstallationReminder,
-	sendInactiveUsersReminder,
-	sendTopggVoteReminder,
 	cleanupInactiveUsers
 } from './trainerFunctions.js';
 import {
@@ -81,11 +72,6 @@ function pokeChat(client) {
 			await reopenArchivedThreads(client);
 		});
 
-		// Cron pour les rappels d'installation - tous les jours à 18h00
-		cron.schedule('0 18 * * *', async () => {
-			await sendInstallationReminder(client);
-		});
-
 		// Cron pour reset des streaks Top.gg - tous les jours à minuit
 		cron.schedule('0 0 * * *', async () => {
 			try {
@@ -95,16 +81,6 @@ function pokeChat(client) {
 			} catch (error) {
 				await logEvent('ERROR', 'topgg', `Erreur lors du reset des streaks: ${error.message}`, null, null);
 			}
-		});
-
-		// Cron pour rappel aux utilisateurs inactifs - tous les jours à 19h30
-		cron.schedule('30 19 * * *', async () => {
-			await sendInactiveUsersReminder(client);
-		});
-
-		// Cron pour rappel de vote Top.gg - tous les jours à 20h00
-		cron.schedule('0 20 * * *', async () => {
-			await sendTopggVoteReminder(client);
 		});
 
 		// Cron pour nettoyage des utilisateurs inactifs - tous les jours à 4h00
@@ -252,22 +228,12 @@ function pokeChat(client) {
 		if (message.author.id === process.env.MYDISCORDID) {
 			if (message.content === '!addBallEmojis') {
 				await addBallEmojis(message);
-			} else if (message.content === '!arenaMessagesGen1') {
-				await arenaMessagesGen1(message);
-			} else if (message.content === '!arenaMessagesGen2') {
-				await arenaMessagesGen2(message);
-			} else if (message.content === '!arenaMessagesGen3') {
-				await arenaMessagesGen3(message);
-			} else if (message.content === '!arenaMessagesGen4') {
-				await arenaMessagesGen4(message);
 			} else if (message.content === '!updateCmdMessage') {
 				await commandesMessage(message);
 			} else if (message.content.startsWith('!updateShopMessage')) {
 				await globalShopMessage(message);
 			} else if (message.content.startsWith('!kick')) {
 				await kickMember(message);
-			} else if (message.content === '!channelZones') {
-				await channelZones(message);
 			} else if (message.content === '!channelZonesAsForum') {
 				await channelZonesAsForum(message);
 			} else if (message.content === '!premiumMessage') {
@@ -396,12 +362,6 @@ function pokeChat(client) {
 						numberBall,
 						nameBall
 					),
-					ephemeral: true,
-				});
-			} else if (customId.startsWith('badge')) {
-				const [_, nbPokemon, nbPokemonDiff, badgeName, newRole, generation] = customId.split('|');
-				interaction.reply({
-					content: await getBadge(interaction, nbPokemon, nbPokemonDiff, badgeName, newRole, generation),
 					ephemeral: true,
 				});
 			} else if (customId.startsWith('trade')) {
