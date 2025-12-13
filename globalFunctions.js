@@ -145,6 +145,49 @@ async function logEvent(type, category, message, idServer = null, idDiscord = nu
 	}
 }
 
+// Fonction pour envoyer des messages dans le channel console du serveur privé
+async function sendToConsoleChannel(client, type, title, description, additionalData = {}) {
+	try {
+		const CONSOLE_SERVER_ID = '1167801032366112768';
+		const CONSOLE_CHANNEL_NAME = '💻・𝐂𝐨𝐧𝐬𝐨𝐥𝐞';
+
+		const guild = client.guilds.cache.get(CONSOLE_SERVER_ID);
+		if (!guild) {
+			console.error(`❌ Serveur console introuvable (ID: ${CONSOLE_SERVER_ID})`);
+			return false;
+		}
+
+		const channel = guild.channels.cache.find(ch => ch.name === CONSOLE_CHANNEL_NAME);
+		if (!channel) {
+			console.error(`❌ Channel console introuvable (Nom: ${CONSOLE_CHANNEL_NAME})`);
+			return false;
+		}
+
+		const embed = new EmbedBuilder()
+			.setColor(type === 'bug' ? '#FF0000' : '#3498db')
+			.setTitle(title)
+			.setDescription(description)
+			.setTimestamp();
+
+		// Ajouter des champs supplémentaires si fournis
+		if (additionalData.userId) {
+			embed.addFields({ name: '👤 Utilisateur', value: `<@${additionalData.userId}> (${additionalData.userId})`, inline: true });
+		}
+		if (additionalData.serverId) {
+			embed.addFields({ name: '🏠 Serveur', value: additionalData.serverId, inline: true });
+		}
+		if (additionalData.userName) {
+			embed.addFields({ name: '📝 Nom d\'utilisateur', value: additionalData.userName, inline: false });
+		}
+
+		await channel.send({ embeds: [embed] });
+		return true;
+	} catch (error) {
+		console.error('❌ Erreur lors de l\'envoi au channel console:', error.message);
+		return false;
+	}
+}
+
 export {
 	upFirstLetter,
 	wait,
@@ -157,5 +200,6 @@ export {
 	isUserAdmin,
 	findParentCategory,
 	logEvent,
+	sendToConsoleChannel,
 	API,
 };
