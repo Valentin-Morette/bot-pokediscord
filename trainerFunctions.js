@@ -264,7 +264,7 @@ async function saveBugIdea(interaction, type) {
 					interaction.options.getString('description'),
 					{
 						userId: interaction.user.id,
-						serverId: interaction.guild?.id || 'Serveur inconnu',
+						serverId: interaction.guild?.id,
 						userName: interaction.user.tag
 					}
 				);

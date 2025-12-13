@@ -170,14 +170,21 @@ async function sendToConsoleChannel(client, type, title, description, additional
 			.setTimestamp();
 
 		// Ajouter des champs supplémentaires si fournis
-		if (additionalData.userId) {
-			embed.addFields({ name: '👤 Utilisateur', value: `<@${additionalData.userId}> (${additionalData.userId})`, inline: true });
+		if (additionalData.userId && additionalData.userName) {
+			embed.addFields({ name: '👤 Utilisateur', value: `${additionalData.userName} (${additionalData.userId})`, inline: true });
 		}
 		if (additionalData.serverId) {
-			embed.addFields({ name: '🏠 Serveur', value: additionalData.serverId, inline: true });
-		}
-		if (additionalData.userName) {
-			embed.addFields({ name: '📝 Nom d\'utilisateur', value: additionalData.userName, inline: false });
+			// Récupérer le nom du serveur depuis le client
+			let serverName = additionalData.serverId;
+			try {
+				const sourceGuild = client.guilds.cache.get(additionalData.serverId);
+				if (sourceGuild) {
+					serverName = sourceGuild.name;
+				}
+			} catch (error) {
+				// Si on ne peut pas récupérer le nom, on garde l'ID
+			}
+			embed.addFields({ name: '🏠 Serveur', value: serverName, inline: true });
 		}
 
 		await channel.send({ embeds: [embed] });
