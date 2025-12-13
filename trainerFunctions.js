@@ -269,24 +269,23 @@ async function saveBugIdea(interaction, type) {
 	};
 	let response = await API.post(`/bugs-ideas`, data);
 	if (response.data.status === 'success') {
-		// Envoyer dans le channel console uniquement pour les bugs
-		if (type === 'bug') {
-			try {
-				await sendToConsoleChannel(
-					interaction.client,
-					'bug',
-					'🐛 Nouveau bug signalé',
-					interaction.options.getString('description'),
-					{
-						userId: interaction.user.id,
-						serverId: interaction.guild?.id,
-						userName: interaction.user.tag
-					}
-				);
-			} catch (error) {
-				// On continue même si l'envoi au channel console échoue
-				console.error('Erreur lors de l\'envoi au channel console:', error);
-			}
+		// Envoyer dans le channel console pour les bugs et les idées
+		try {
+			const title = type === 'bug' ? '🐛 Nouveau bug signalé' : '💡 Nouvelle idée proposée';
+			await sendToConsoleChannel(
+				interaction.client,
+				type,
+				title,
+				interaction.options.getString('description'),
+				{
+					userId: interaction.user.id,
+					serverId: interaction.guild?.id,
+					userName: interaction.user.tag
+				}
+			);
+		} catch (error) {
+			// On continue même si l'envoi au channel console échoue
+			console.error('Erreur lors de l\'envoi au channel console:', error);
 		}
 		return `Merci pour votre ${type === 'bug' ? 'rapport de bug' : 'idée'} ! Nous l'avons bien reçu et nous allons l'examiner.`;
 	} else if (response.data.status === 'alreadySent') {
