@@ -34,6 +34,7 @@ import {
 	buyBalls,
 	displayHelp,
 	saveBugIdea,
+	displayVoteLink,
 	sendInstallationMessage,
 	cleanupInactiveUsers
 } from './trainerFunctions.js';
@@ -305,6 +306,10 @@ function pokeChat(client) {
 
 			if (interaction.commandName === 'idee') {
 				return interaction.reply(await saveBugIdea(interaction, 'idea'));
+			}
+
+			if (interaction.commandName === 'vote') {
+				return interaction.reply(await displayVoteLink());
 			}
 		}
 

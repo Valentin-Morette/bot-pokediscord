@@ -246,6 +246,21 @@ async function displayHelp(interaction) {
 	return { embeds: [commandEmbed], ephemeral: false };
 }
 
+async function displayVoteLink() {
+	const embed = new EmbedBuilder()
+		.setColor('#5865F2')
+		.setTitle('🗳️ Votez pour PokéFarm sur Top.gg !')
+		.setDescription(
+			'Merci de soutenir le bot en votant pour lui sur Top.gg. Votre vote nous aide à être plus visibles !\n\n' +
+			'💎 **Récompense spéciale :**\n' +
+			'Votez tous les jours pendant **7 jours d\'affilée** et obtenez le **Premium gratuitement** ! 🎁\n\n' +
+			'👉 [Cliquez ici pour voter](https://top.gg/bot/1142325515575889971)'
+		)
+		.setTimestamp();
+
+	return { embeds: [embed] };
+}
+
 async function saveBugIdea(interaction, type) {
 	const data = {
 		idTrainer: interaction.user.id,
@@ -1070,6 +1085,7 @@ export {
 	buyBalls,
 	displayHelp,
 	saveBugIdea,
+	displayVoteLink,
 	sendInstallationMessage,
 	cleanupInactiveUsers,
 };

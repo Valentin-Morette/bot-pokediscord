@@ -166,10 +166,9 @@ async function sendToConsoleChannel(client, type, title, description, additional
 		const embed = new EmbedBuilder()
 			.setColor(type === 'bug' ? '#FF0000' : '#3498db')
 			.setTitle(title)
-			.setDescription(description)
 			.setTimestamp();
 
-		// Ajouter des champs supplémentaires si fournis
+		// Ajouter les champs utilisateur et serveur en premier
 		if (additionalData.userId && additionalData.userName) {
 			embed.addFields({ name: '👤 Utilisateur', value: `${additionalData.userName} (${additionalData.userId})`, inline: true });
 		}
@@ -185,6 +184,11 @@ async function sendToConsoleChannel(client, type, title, description, additional
 				// Si on ne peut pas récupérer le nom, on garde l'ID
 			}
 			embed.addFields({ name: '🏠 Serveur', value: serverName, inline: true });
+		}
+
+		// Ajouter le message après les informations utilisateur/serveur
+		if (description) {
+			embed.addFields({ name: '📝 Message', value: description, inline: false });
 		}
 
 		await channel.send({ embeds: [embed] });

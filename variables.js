@@ -153,6 +153,10 @@ const commandsPokechat = [
 		],
 	},
 	{
+		name: 'vote',
+		description: 'Votez pour le bot sur Top.gg',
+	},
+	{
 		name: 'evolution-shiny',
 		description: 'Fait évoluer un Pokémon shiny',
 		options: [
