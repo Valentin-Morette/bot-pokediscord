@@ -70,7 +70,7 @@ function pokeChat(client) {
 
 		await reopenArchivedThreads(client);
 
-		cron.schedule('*/30 * * * *', async () => {
+		cron.schedule('0 2 * * *', async () => {
 			await reopenArchivedThreads(client);
 		});
 

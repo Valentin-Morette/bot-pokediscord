@@ -495,10 +495,6 @@ async function channelZonesAsForum(message) {
 
 async function reopenArchivedThreads(client) {
 	// Parcourir TOUS les serveurs où le bot est présent
-	const totalServers = client.guilds.cache.size;
-	await logEvent('INFO', 'reopenArchivedThreads', `Début de la réouverture des threads sur ${totalServers} serveur(s)`, null, null);
-
-	let processedServers = 0;
 	for (const [guildId, guild] of client.guilds.cache) {
 		try {
 			await guild.channels.fetch();
@@ -510,15 +506,11 @@ async function reopenArchivedThreads(client) {
 
 			if (forums.size === 0) {
 				// Pas de forums pour ce serveur, on continue avec le suivant
-				await logEvent('INFO', 'reopenArchivedThreads', `Serveur ${guild.name} ignoré (pas de forums Pokémon)`, guild.id, null);
 				continue;
 			}
 
-			processedServers++;
-
 			for (const forum of forums.values()) {
 				try {
-					await logEvent('INFO', 'reopenArchivedThreads', `Réouverture des threads archivés du forum ${forum.name}`, guild.id, null);
 					let hasMore = true;
 					let before = undefined;
 
@@ -539,9 +531,7 @@ async function reopenArchivedThreads(client) {
 							if (!thread.locked) {
 								try {
 									await thread.setArchived(false);
-									await logEvent('SUCCESS', 'reopenArchivedThreads', `Thread rouvert : ${thread.name}`, guild.id, null);
 								} catch (threadErr) {
-									await logEvent('ERROR', 'reopenArchivedThreads', `Erreur lors de la réouverture du thread ${thread.name} : ${threadErr.message}`, guild.id, null);
 								}
 							}
 						}
@@ -561,11 +551,8 @@ async function reopenArchivedThreads(client) {
 			}
 		} catch (err) {
 			await logEvent('ERROR', 'reopenArchivedThreads', `Erreur avec le serveur ${guild.name} (${guildId}) : ${err.message}`, guildId, null);
-			// On continue même en cas d'erreur pour traiter les autres serveurs
 		}
 	}
-
-	await logEvent('INFO', 'reopenArchivedThreads', `Réouverture terminée : ${processedServers} serveur(s) traité(s) sur ${totalServers}`, null, null);
 }
 
 // Fonction pour réouvrir un thread archivé si nécessaire
