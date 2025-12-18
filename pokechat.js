@@ -86,17 +86,7 @@ function pokeChat(client) {
 
 		// Cron pour nettoyage des utilisateurs inactifs - tous les jours à 4h00
 		cron.schedule('0 4 * * *', async () => {
-			try {
-				await logEvent('INFO', 'cleanup', 'Début du nettoyage automatique des utilisateurs inactifs', null, null);
-				const result = await cleanupInactiveUsers(client);
-				if (result.success) {
-					await logEvent('SUCCESS', 'cleanup', `${result.activeUsers} actifs (${result.totalServers} serveurs)`, null, null);
-				} else {
-					await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage automatique: ${result.error}`, null, null);
-				}
-			} catch (error) {
-				await logEvent('ERROR', 'cleanup', `Erreur lors du nettoyage automatique: ${error.message}`, null, null);
-			}
+			await cleanupInactiveUsers(client);
 		});
 
 		for (const [guildId, guild] of client.guilds.cache) {

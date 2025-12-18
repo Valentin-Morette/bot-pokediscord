@@ -998,8 +998,7 @@ async function sendInstallationMessage(guild, owner) {
 
 async function cleanupInactiveUsers(client) {
 	try {
-		await logEvent('INFO', 'cleanup', 'Début du nettoyage des utilisateurs inactifs', null, null);
-
+		await logEvent('INFO', 'cleanup', 'Début du nettoyage automatique des utilisateurs inactifs', null, null);
 		const allActiveUsers = new Set();
 		let totalServers = 0;
 		let totalUsers = 0;
@@ -1019,13 +1018,6 @@ async function cleanupInactiveUsers(client) {
 
 				totalServers++;
 				totalUsers += guild.members.cache.filter(m => !m.user.bot).size;
-
-				// Récupérer le pseudo de l'owner
-				const owner = guild.members.cache.get(guild.ownerId);
-				const ownerName = owner ? owner.user.username : 'Inconnu';
-
-				console.log(`✅ Serveur ${guild.name} (Owner: ${ownerName}): ${guild.members.cache.filter(m => !m.user.bot).size} utilisateurs actifs`);
-
 			} catch (error) {
 				await logEvent('ERROR', 'cleanup', `Erreur lors du fetch des membres pour ${guild.name} (${guildId}): ${error.message}`, guildId, null);
 			}

@@ -112,6 +112,7 @@ function buildCommandEmbed() {
 			'- `/idee` : pour faire une suggestion.\n' +
 			'- `/code-affiliation` : pour voir votre code d’affiliation.\n' +
 			'- `/utiliser-code-affiliation [Code d’affiliation]` : pour utiliser un code d’affiliation. (Vous recevrez 10 000 pokédollars)\n' +
+			'- `/vote` : pour voir le lien de vote pour le bot sur Top.gg.\n' +
 			'- `/premium` : pour devenir membre premium du serveur.\n\n' +
 			'**💎 Premium 💎**\n' +
 			'- `/pokedex-liste` : pour voir le résumé de tous les Pokédex.\n' +
@@ -505,15 +506,45 @@ async function reopenArchivedThreads(client) {
 
 	for (const forum of forums.values()) {
 		try {
-			const archived = await forum.threads.fetchArchived();
-			for (const thread of archived.threads.values()) {
-				if (!thread.locked) {
-					await thread.setArchived(false);
-					console.log(`♻️ Thread rouvert : ${thread.name}`);
+			await logEvent('INFO', 'reopenArchivedThreads', `Réouverture des threads archivés du forum ${forum.name}`, guild.id, null);
+			let hasMore = true;
+			let before = undefined;
+
+			while (hasMore) {
+				const options = { limit: 100 };
+				if (before) {
+					options.before = before;
+				}
+
+				const archived = await forum.threads.fetchArchived(options);
+
+				if (archived.threads.size === 0) {
+					hasMore = false;
+					break;
+				}
+
+				for (const thread of archived.threads.values()) {
+					if (!thread.locked) {
+						try {
+							await thread.setArchived(false);
+							await logEvent('SUCCESS', 'reopenArchivedThreads', `Thread rouvert : ${thread.name}`, guild.id, null);
+						} catch (threadErr) {
+							await logEvent('ERROR', 'reopenArchivedThreads', `Erreur lors de la réouverture du thread ${thread.name} : ${threadErr.message}`, guild.id, null);
+						}
+					}
+				}
+
+				// Si on a récupéré moins de threads que la limite, c'est qu'il n'y en a plus
+				if (archived.threads.size < 100) {
+					hasMore = false;
+				} else {
+					// Récupérer le dernier thread pour l'utiliser comme point de départ suivant
+					const lastThread = Array.from(archived.threads.values()).pop();
+					before = lastThread.id;
 				}
 			}
 		} catch (err) {
-			console.error(`❌ Erreur dans le forum ${forum.name} :`, err.message);
+			await logEvent('ERROR', 'reopenArchivedThreads', `Erreur dans le forum ${forum.name} : ${err.message}`, guild.id, null);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonStyle, EmbedBuilder, ButtonBuilder, ChannelType } from 'discord.js';
-import { upFirstLetter, createListEmbed, API, correctNameZone } from './globalFunctions.js';
+import { upFirstLetter, createListEmbed, API, correctNameZone, logEvent } from './globalFunctions.js';
 import { getIsPremium } from './trainerFunctions.js';
 import { XEmbed, premiumEmbed, inviteEmbed, voteTopggEmbed } from './listEmbed.js';
 
@@ -86,22 +86,17 @@ async function spawnRandomPokemon(context) {
 	try {
 		const zoneName = correctNameZone(channel.name);
 
-		const { data: pokemons } = await API.post(`/pokemon/wild`, {
+		const randomPokemon = await API.post(`/pokemon/wild`, {
 			nameZone: zoneName,
 			idServer: context.guild.id,
 		});
 
-		if (!pokemons || pokemons.length === 0) {
-			const message = "Il n'y a pas de Pokémon sauvage dans cette zone.";
-			if (isInteraction) {
-				if (!context.replied && !context.deferred) await context.deferReply();
-				return context.editReply({ content: message, ephemeral: true });
-			} else {
-				return channel.send(message);
-			}
+		if (!randomPokemon.data || (Array.isArray(randomPokemon.data) && randomPokemon.data.length === 0)) {
+			// Pas de Pokémon disponible, on ne fait rien (pas de message d'erreur pour éviter le spam)
+			return;
 		}
 
-		const pokemon = pokemons;
+		const pokemon = randomPokemon.data;
 		const balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		const row = new ActionRowBuilder();
 		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
@@ -148,13 +143,20 @@ async function spawnRandomPokemon(context) {
 			return channel.send(responseOptions);
 		}
 	} catch (error) {
-		console.error("❌ Erreur lors du spawn de Pokémon :", error);
+		const idServer = context.guild?.id || null;
+		const errorMessage = error.response?.data?.message || error.message || 'Erreur inconnue';
+		const zoneName = correctNameZone(channel.name);
+
+		await logEvent('ERROR', 'spawn', `Erreur lors du spawn de Pokémon (zone: ${zoneName}): ${errorMessage}`, idServer, null);
+
+		// Pour les spawns automatiques (non-interaction), on ne spamme pas de message d'erreur
+		// On log seulement l'erreur pour éviter les boucles infinies de messages d'erreur
 		if (isInteraction) {
 			if (!context.replied && !context.deferred) await context.deferReply();
 			return context.editReply("Erreur lors de la recherche du Pokémon.");
-		} else {
-			return channel.send("Erreur lors de la recherche du Pokémon.");
 		}
+		// Pour les spawns automatiques, on retourne silencieusement pour éviter le spam
+		return;
 	}
 }
 
