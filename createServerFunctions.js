@@ -494,57 +494,66 @@ async function channelZonesAsForum(message) {
 }
 
 async function reopenArchivedThreads(client) {
-	const guild = client.guilds.cache.get(process.env.IDSERVER);
-	if (!guild) return console.log("❌ Serveur introuvable");
-
-	await guild.channels.fetch();
-	const forumNames = ['🗺️・kanto', "🗺️・johto", "🗺️・hoenn", "🗺️・sinnoh"];
-
-	const forums = guild.channels.cache.filter(
-		(ch) => ch.type === ChannelType.GuildForum && forumNames.includes(ch.name)
-	);
-
-	for (const forum of forums.values()) {
+	// Parcourir TOUS les serveurs où le bot est présent
+	for (const [guildId, guild] of client.guilds.cache) {
 		try {
-			await logEvent('INFO', 'reopenArchivedThreads', `Réouverture des threads archivés du forum ${forum.name}`, guild.id, null);
-			let hasMore = true;
-			let before = undefined;
+			await guild.channels.fetch();
+			const forumNames = ['🗺️・kanto', "🗺️・johto", "🗺️・hoenn", "🗺️・sinnoh"];
 
-			while (hasMore) {
-				const options = { limit: 100 };
-				if (before) {
-					options.before = before;
-				}
+			const forums = guild.channels.cache.filter(
+				(ch) => ch.type === ChannelType.GuildForum && forumNames.includes(ch.name)
+			);
 
-				const archived = await forum.threads.fetchArchived(options);
+			if (forums.size === 0) {
+				// Pas de forums pour ce serveur, on continue avec le suivant
+				continue;
+			}
 
-				if (archived.threads.size === 0) {
-					hasMore = false;
-					break;
-				}
+			for (const forum of forums.values()) {
+				try {
+					await logEvent('INFO', 'reopenArchivedThreads', `Réouverture des threads archivés du forum ${forum.name}`, guild.id, null);
+					let hasMore = true;
+					let before = undefined;
 
-				for (const thread of archived.threads.values()) {
-					if (!thread.locked) {
-						try {
-							await thread.setArchived(false);
-							await logEvent('SUCCESS', 'reopenArchivedThreads', `Thread rouvert : ${thread.name}`, guild.id, null);
-						} catch (threadErr) {
-							await logEvent('ERROR', 'reopenArchivedThreads', `Erreur lors de la réouverture du thread ${thread.name} : ${threadErr.message}`, guild.id, null);
+					while (hasMore) {
+						const options = { limit: 100 };
+						if (before) {
+							options.before = before;
+						}
+
+						const archived = await forum.threads.fetchArchived(options);
+
+						if (archived.threads.size === 0) {
+							hasMore = false;
+							break;
+						}
+
+						for (const thread of archived.threads.values()) {
+							if (!thread.locked) {
+								try {
+									await thread.setArchived(false);
+									await logEvent('SUCCESS', 'reopenArchivedThreads', `Thread rouvert : ${thread.name}`, guild.id, null);
+								} catch (threadErr) {
+									await logEvent('ERROR', 'reopenArchivedThreads', `Erreur lors de la réouverture du thread ${thread.name} : ${threadErr.message}`, guild.id, null);
+								}
+							}
+						}
+
+						// Si on a récupéré moins de threads que la limite, c'est qu'il n'y en a plus
+						if (archived.threads.size < 100) {
+							hasMore = false;
+						} else {
+							// Récupérer le dernier thread pour l'utiliser comme point de départ suivant
+							const lastThread = Array.from(archived.threads.values()).pop();
+							before = lastThread.id;
 						}
 					}
-				}
-
-				// Si on a récupéré moins de threads que la limite, c'est qu'il n'y en a plus
-				if (archived.threads.size < 100) {
-					hasMore = false;
-				} else {
-					// Récupérer le dernier thread pour l'utiliser comme point de départ suivant
-					const lastThread = Array.from(archived.threads.values()).pop();
-					before = lastThread.id;
+				} catch (err) {
+					await logEvent('ERROR', 'reopenArchivedThreads', `Erreur dans le forum ${forum.name} : ${err.message}`, guild.id, null);
 				}
 			}
 		} catch (err) {
-			await logEvent('ERROR', 'reopenArchivedThreads', `Erreur dans le forum ${forum.name} : ${err.message}`, guild.id, null);
+			await logEvent('ERROR', 'reopenArchivedThreads', `Erreur avec le serveur ${guild.name} (${guildId}) : ${err.message}`, guildId, null);
 		}
 	}
 }
