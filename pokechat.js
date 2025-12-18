@@ -5,7 +5,8 @@ import {
 	globalShopMessage,
 	channelZonesAsForum,
 	premiumMessage,
-	reopenArchivedThreads
+	reopenArchivedThreads,
+	ensureThreadUnarchived
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -337,6 +338,9 @@ function pokeChat(client) {
 
 		// Button interaction
 		if (interaction.isButton()) {
+			// Réouvrir le thread s'il est archivé (nécessaire pour les interactions sur messages anciens)
+			await ensureThreadUnarchived(interaction.channel);
+
 			let customId = interaction.customId;
 			if (customId.startsWith('pokeball')) {
 				handleCatch(interaction, 1);

@@ -549,6 +549,17 @@ async function reopenArchivedThreads(client) {
 	}
 }
 
+// Fonction pour réouvrir un thread archivé si nécessaire
+async function ensureThreadUnarchived(channel) {
+	if (channel && channel.isThread() && channel.archived && !channel.locked) {
+		try {
+			await channel.setArchived(false);
+			await logEvent('INFO', 'threadReopen', `Thread réouvert automatiquement : ${channel.name}`, channel.guild?.id || null, null);
+		} catch (error) {
+			await logEvent('ERROR', 'threadReopen', `Erreur lors de la réouverture automatique du thread ${channel.name} : ${error.message}`, channel.guild?.id || null, null);
+		}
+	}
+}
 
 function slashCommande(commands) {
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
@@ -581,5 +592,6 @@ export {
 	channelZonesAsForum,
 	premiumMessage,
 	buildCommandEmbed,
-	reopenArchivedThreads
+	reopenArchivedThreads,
+	ensureThreadUnarchived
 };
