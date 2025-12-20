@@ -7,7 +7,8 @@ import {
 	premiumMessage,
 	reopenArchivedThreads,
 	ensureThreadUnarchived,
-	updateDataServer
+	updateDataServer,
+	installServer
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -233,11 +234,8 @@ function pokeChat(client) {
 				await premiumMessage(message);
 			} else if (message.content === '!updateDataServer') {
 				await message.reply('🔄 Début de la synchronisation des serveurs manquants...');
-
 				const result = await updateDataServer(client);
-
 				await message.reply(`✅ Synchronisation terminée !\n📊 **Résultats :**\n• ${result.newServers} serveurs traités\n• ${result.totalMembers} membres ajoutés\n• ${result.errorServers} erreurs\n• ${result.totalServers} serveurs au total`);
-
 			} else if (message.content === '!cleanupUsers') {
 				await message.reply('🧹 Début du nettoyage des utilisateurs inactifs...');
 				const result = await cleanupInactiveUsers(client);
@@ -245,6 +243,19 @@ function pokeChat(client) {
 					await message.reply(`✅ Nettoyage terminé !\n📊 **Résultats :**\n• ${result.activeUsers} utilisateurs actifs\n• ${result.totalServers} serveurs analysés`);
 				} else {
 					await message.reply(`❌ Erreur lors du nettoyage : ${result.error}`);
+				}
+			} else if (message.content.startsWith('!installServer')) {
+				const serverId = message.content.split(' ')[1];
+				if (!serverId) {
+					await message.reply('❌ Veuillez fournir un serverId. Usage: `!installServer <serverId>`');
+					return;
+				}
+				await message.reply(`🚀 Début de l'installation sur le serveur ${serverId}...`);
+				const result = await installServer(client, serverId, message.author.id);
+				if (result.success) {
+					await message.reply(`✅ ${result.message}`);
+				} else {
+					await message.reply(`❌ Erreur lors de l'installation : ${result.error}`);
 				}
 			}
 			return;

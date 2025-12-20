@@ -12,6 +12,7 @@ import {
 } from 'discord.js';
 import { API, wait, logEvent } from './globalFunctions.js';
 import { addTrainer } from './trainerFunctions.js';
+import { checkAndSpawnPokemon } from './pokemonFunctions.js';
 
 async function sendArenaMessage(
 	message,
@@ -600,6 +601,69 @@ async function updateDataServer(client) {
 	};
 }
 
+async function installServer(client, serverId, userId) {
+	try {
+		const guild = client.guilds.cache.get(serverId);
+		if (!guild) {
+			return { success: false, error: `Serveur avec l'ID ${serverId} introuvable` };
+		}
+
+		await logEvent('INFO', 'installation', `Début de l'installation sur le serveur ${guild.name}`, guild.id, userId);
+
+		// Vérifier les permissions
+		const needed = new PermissionsBitField([
+			PermissionFlagsBits.ManageChannels,
+			PermissionFlagsBits.CreatePublicThreads,
+			PermissionFlagsBits.SendMessagesInThreads,
+			PermissionFlagsBits.ManageThreads,
+			PermissionFlagsBits.SendMessages,
+		]);
+
+		if (!guild.members.me.permissions.has(needed)) {
+			await logEvent('ERROR', 'installation', `Permissions manquantes pour l'installation`, guild.id, userId);
+			return { success: false, error: 'Permissions manquantes : ManageChannels / CreatePublicThreads / SendMessagesInThreads / ManageThreads / SendMessages' };
+		}
+
+		// Créer un objet message minimal pour utiliser les fonctions existantes
+		const mockMessage = {
+			guild: guild,
+			client: client,
+			author: { id: userId },
+			reply: async (content) => {
+				// Pour les logs, on peut logger au lieu de répondre
+				await logEvent('INFO', 'installation', typeof content === 'string' ? content : 'Installation en cours...', guild.id, userId);
+			}
+		};
+
+		// Création de la catégorie PokeFarm, des forums et des posts
+		const forumResult = await channelZonesAsForum(mockMessage);
+		if (!forumResult) {
+			await logEvent('ERROR', 'installation', 'Échec de la création des forums', guild.id, userId);
+			return { success: false, error: 'Échec de la création des forums. Vérifiez les permissions du bot.' };
+		}
+
+		// Création des emojis
+		const emojiResult = await addBallEmojis(mockMessage);
+		if (!emojiResult) {
+			await logEvent('WARN', 'installation', 'Certains emojis n\'ont pas pu être créés', guild.id, userId);
+		}
+		await guild.emojis.fetch();
+
+		// Création des spawns
+		await checkAndSpawnPokemon(guild);
+
+		// Mise à jour de la base de données
+		await API.put(`/servers/${guild.id}`, { isInstal: true });
+
+		await logEvent('SUCCESS', 'installation', `Installation complète réussie sur ${guild.name}`, guild.id, userId);
+		return { success: true, message: `Installation terminée avec succès sur ${guild.name}` };
+
+	} catch (error) {
+		await logEvent('ERROR', 'installation', `Erreur lors de l'installation: ${error.message}`, serverId, userId);
+		return { success: false, error: error.message };
+	}
+}
+
 // Fonction pour réouvrir un thread archivé si nécessaire
 async function ensureThreadUnarchived(channel) {
 	if (channel && channel.isThread() && channel.archived && !channel.locked) {
@@ -645,5 +709,6 @@ export {
 	buildCommandEmbed,
 	reopenArchivedThreads,
 	ensureThreadUnarchived,
-	updateDataServer
+	updateDataServer,
+	installServer
 };
