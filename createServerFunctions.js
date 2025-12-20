@@ -11,6 +11,7 @@ import {
 	PermissionsBitField,
 } from 'discord.js';
 import { API, wait, logEvent } from './globalFunctions.js';
+import { addTrainer } from './trainerFunctions.js';
 
 async function sendArenaMessage(
 	message,
@@ -555,6 +556,50 @@ async function reopenArchivedThreads(client) {
 	}
 }
 
+async function updateDataServer(client) {
+	let totalServers = 0;
+	let newServers = 0;
+	let errorServers = 0;
+	let totalMembers = 0;
+
+	for (const [guildId, guild] of client.guilds.cache) {
+		try {
+			totalServers++;
+
+			const hasPokefarmCategory = guild.channels.cache.some((ch) => ch.name === 'PokeFarm');
+
+			await API.post(`/servers`, {
+				idServer: guild.id,
+				name: guild.name,
+				idOwner: guild.ownerId,
+				hasPokefarmCategory: hasPokefarmCategory
+			});
+
+			// Fetch tous les membres et les ajouter
+			await guild.members.fetch();
+			const members = guild.members.cache.filter(m => !m.user.bot).map(m => m);
+
+			if (members.length > 0) {
+				await addTrainer(members, guild.id);
+				totalMembers += members.length;
+			}
+
+			newServers++;
+
+		} catch (error) {
+			errorServers++;
+			await logEvent('ERROR', 'updateDataServer', `Erreur pour le serveur ${guild.name} (${guildId}): ${error.message}`, guildId, guild.ownerId);
+		}
+	}
+
+	return {
+		totalServers,
+		newServers,
+		errorServers,
+		totalMembers
+	};
+}
+
 // Fonction pour réouvrir un thread archivé si nécessaire
 async function ensureThreadUnarchived(channel) {
 	if (channel && channel.isThread() && channel.archived && !channel.locked) {
@@ -599,5 +644,6 @@ export {
 	premiumMessage,
 	buildCommandEmbed,
 	reopenArchivedThreads,
-	ensureThreadUnarchived
+	ensureThreadUnarchived,
+	updateDataServer
 };
