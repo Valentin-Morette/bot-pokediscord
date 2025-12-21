@@ -53,16 +53,17 @@ import {
 	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { removeAccents, isUserAdmin, findParentCategory, logEvent, API } from './globalFunctions.js';
+import { removeAccents, isUserAdmin, findParentCategory, logEvent, API, sendToConsoleChannel } from './globalFunctions.js';
 import { ChannelType } from 'discord.js';
 
 process.env.TZ = 'Europe/Paris';
 
 function pokeChat(client) {
 	slashCommande(commandsPokechat);
-
 	client.on('ready', async () => {
 		console.log('Pokechat Ready!');
+
+		// Cron pour redémarrer le bot - tous les jours à 3h00
 		cron.schedule('0 0 3 * * *', () => {
 			client.destroy();
 			setTimeout(() => {
@@ -70,8 +71,7 @@ function pokeChat(client) {
 			}, 5000);
 		});
 
-		await reopenArchivedThreads(client);
-
+		// Cron pour réouvrir les threads archivés - tous les jours à 2h00
 		cron.schedule('0 2 * * *', async () => {
 			await reopenArchivedThreads(client);
 		});
@@ -100,6 +100,8 @@ function pokeChat(client) {
 			}
 		}
 
+		await reopenArchivedThreads(client);
+
 		setInterval(async () => {
 			for (const [, guild] of client.guilds.cache) {
 				await checkAndSpawnPokemon(guild);
@@ -107,6 +109,7 @@ function pokeChat(client) {
 		}, 30 * 60 * 1000);
 	});
 
+	// Event qui se déclenche lorsqu'un membre rejoint un serveur
 	client.on('guildMemberAdd', (member) => {
 		addTrainer(member, member.guild.id);
 		// Only serv perso
@@ -124,6 +127,7 @@ function pokeChat(client) {
 		}
 	});
 
+	// Event qui se déclenche lorsqu'un serveur ajoute le bot
 	client.on('guildCreate', async (guild) => {
 		try {
 			const hasPokefarmCategory = guild.channels.cache.some((ch) => ch.name === 'PokeFarm');
@@ -137,19 +141,46 @@ function pokeChat(client) {
 			addTrainer(guild.members.cache.filter(m => !m.user.bot).map(m => m), guild.id);
 			const owner = await guild.members.fetch(guild.ownerId);
 			await sendInstallationMessage(guild, owner);
+
+			// Envoyer une notification dans le channel console
+			await sendToConsoleChannel(
+				client,
+				'info',
+				'🆕 Nouveau serveur',
+				`Le bot a été ajouté sur le serveur **${guild.name}**`,
+				{
+					serverId: guild.id,
+					userId: guild.ownerId,
+					userName: owner?.user?.tag || 'Inconnu'
+				}
+			);
 		} catch (error) {
 			await logEvent('ERROR', 'installation', `Erreur API lors de l'enregistrement du serveur: ${error.response?.data || error.message}`, guild.id, guild.ownerId);
 		}
 	});
 
+	// Event qui se déclenche lorsqu'un serveur supprime le bot
 	client.on('guildDelete', async (guild) => {
 		try {
 			await API.put(`/servers/${guild.id}`, { isDelete: true });
+
+			// Envoyer une notification dans le channel console
+			await sendToConsoleChannel(
+				client,
+				'info',
+				'❌ Serveur supprimé',
+				`Le bot a été retiré du serveur **${guild.name}**`,
+				{
+					serverId: guild.id,
+					userId: guild.ownerId
+				}
+			);
 		} catch (error) {
 			await logEvent('ERROR', 'installation', `Erreur API lors de la suppression du serveur: ${error.response?.data || error.message}`, guild.id, guild.ownerId);
 		}
 	});
 
+	// Event qui se déclenche lorsqu'un canal est renommé
 	client.on('channelUpdate', async (oldChannel, newChannel) => {
 		// Vérifie que c'est bien une catégorie renommée
 		if (
@@ -167,6 +198,7 @@ function pokeChat(client) {
 	});
 
 
+	// Event qui se déclenche lorsqu'un message est envoyé
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 
@@ -262,26 +294,9 @@ function pokeChat(client) {
 		}
 	});
 
+	// Event qui se déclenche lorsqu'une interaction est créée (commande, bouton, autocomplete)
 	client.on('interactionCreate', async (interaction) => {
 		if (!interaction.guild || !interaction.channel) return;
-
-		if (interaction.isCommand()) {
-			if (interaction.commandName === 'help') {
-				return interaction.reply(await displayHelp(interaction));
-			}
-
-			if (interaction.commandName === 'bug') {
-				return interaction.reply(await saveBugIdea(interaction, 'bug'));
-			}
-
-			if (interaction.commandName === 'idee') {
-				return interaction.reply(await saveBugIdea(interaction, 'idea'));
-			}
-
-			if (interaction.commandName === 'vote') {
-				return interaction.reply(await displayVoteLink());
-			}
-		}
 
 		if (!interaction.isCommand() && !interaction.isButton() && !interaction.isAutocomplete()) {
 			return;
@@ -317,7 +332,6 @@ function pokeChat(client) {
 
 		// Button interaction
 		if (interaction.isButton()) {
-			// Réouvrir le thread s'il est archivé (nécessaire pour les interactions sur messages anciens)
 			await ensureThreadUnarchived(interaction.channel);
 
 			let customId = interaction.customId;
@@ -390,6 +404,22 @@ function pokeChat(client) {
 					ephemeral: true,
 				});
 				return;
+			}
+
+			if (interaction.commandName === 'help') {
+				return interaction.reply(await displayHelp(interaction));
+			}
+
+			if (interaction.commandName === 'bug') {
+				return interaction.reply(await saveBugIdea(interaction, 'bug'));
+			}
+
+			if (interaction.commandName === 'idee') {
+				return interaction.reply(await saveBugIdea(interaction, 'idea'));
+			}
+
+			if (interaction.commandName === 'vote') {
+				return interaction.reply(await displayVoteLink());
 			}
 
 			if (interaction.commandName === 'cherche') {
