@@ -54,7 +54,7 @@ import {
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
 import { removeAccents, isUserAdmin, findParentCategory, logEvent, API, sendToConsoleChannel } from './globalFunctions.js';
-import { ChannelType } from 'discord.js';
+import { ChannelType, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 process.env.TZ = 'Europe/Paris';
 
@@ -295,17 +295,8 @@ function pokeChat(client) {
 
 	// Event qui se déclenche lorsqu'une interaction est créée (commande, bouton, autocomplete)
 	client.on('interactionCreate', async (interaction) => {
-		console.log('ici 2');
-		// Permettre les interactions de boutons dans les DMs (pour sell_vote_)
-		// if (!interaction.channel) return;
 
-		console.log('ici 3');
-		console.log(interaction.isButton());
-		console.log(interaction.guild);
-
-		// Pour les boutons dans les DMs, on gère directement
-		if (interaction.isButton() && !interaction.guild) {
-			console.log('ici');
+		if (interaction.isButton()) { // Boutons dans les DMs
 			let customId = interaction.customId;
 			if (customId.startsWith('sell_vote_')) {
 				// Format: sell_vote_${pokemonName}_${userId}_${isShiny ? 1 : 0}
@@ -314,38 +305,38 @@ function pokeChat(client) {
 					const pokemonName = args[2];
 					const userId = args[3];
 					const isShiny = args[4] === '1';
-					console.log(pokemonName, userId, isShiny);
-					// Vérifier que l'utilisateur qui clique est bien le propriétaire
-					if (interaction.user.id !== userId) {
-						interaction.reply({
-							content: "Vous ne pouvez pas vendre le Pokémon d'un autre joueur.",
-							ephemeral: true,
-						});
-						return;
-					}
 
-					// Vendre le pokemon
+					// Désactiver le bouton
+					const disabledButton = new ButtonBuilder()
+						.setCustomId(customId)
+						.setLabel('Vendre')
+						.setStyle(ButtonStyle.Primary)
+						.setDisabled(true);
+
+					const row = new ActionRowBuilder().addComponents(disabledButton);
+
+					// Mettre à jour le message avec le bouton désactivé
+					await interaction.update({
+						components: [row],
+					});
+
+					// Vendre le pokemon et répondre
 					const result = await sellPokemon(interaction.user.id, pokemonName, 1, isShiny, false);
-					interaction.reply({
+					await interaction.followUp({
 						content: result,
 						ephemeral: true,
 					});
 				}
 				return;
 			}
-			// Autres boutons dans les DMs non gérés
 			return;
 		}
 
-		// Pour les interactions dans les serveurs, vérifier la catégorie
-		if (!interaction.guild) return;
-
-		if (!interaction.isCommand() && !interaction.isButton() && !interaction.isAutocomplete()) {
+		if ((!interaction.guild || !interaction.channel) && !interaction.isCommand() && !interaction.isButton() && !interaction.isAutocomplete()) {
 			return;
 		}
 
 		const channel = interaction.channel;
-
 		const parentCategory = findParentCategory(channel);
 		if (!parentCategory || parentCategory.name !== "PokeFarm") {
 			const category = interaction.guild.channels.cache.find(c => c.name === 'PokeFarm');
