@@ -136,7 +136,7 @@ async function sellPokemon(idTrainer, namePokemon, quantity, isShiny, max = fals
 			max: max,
 		});
 		if (sellPokemon.data.status === 'noPokemon') {
-			return "Vous n'avez pas " + sellPokemon.data.quantity + ' ' + namePokemon + '.';
+			return "Vous n'avez pas " + sellPokemon.data.quantity + ' ' + namePokemon + hasStar(isShiny) + '.';
 		} else if (sellPokemon.data.status === 'sell') {
 			return (
 				'Vous avez vendu ' +
