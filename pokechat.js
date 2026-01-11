@@ -409,7 +409,7 @@ function pokeChat(client) {
 					}
 
 					// Récupérer le nom du pokemon à partir de son id et le vendre
-					const result = await sellPokemon(interaction.user.id, pokemonName, isShiny);
+					const result = await sellPokemon(interaction.user.id, pokemonName, 1, isShiny, false);
 					interaction.reply({
 						content: result,
 						ephemeral: true,
