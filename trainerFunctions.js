@@ -1059,7 +1059,6 @@ export {
 	useAffiliateCode,
 	buyBall,
 	sellPokemon,
-	sellPokemonById,
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,
