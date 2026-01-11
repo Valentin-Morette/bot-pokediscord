@@ -297,7 +297,11 @@ function pokeChat(client) {
 	client.on('interactionCreate', async (interaction) => {
 		console.log('ici 2');
 		// Permettre les interactions de boutons dans les DMs (pour sell_vote_)
-		if (!interaction.channel) return;
+		// if (!interaction.channel) return;
+
+		console.log('ici 3');
+		console.log(interaction.isButton());
+		console.log(interaction.guild);
 
 		// Pour les boutons dans les DMs, on gère directement
 		if (interaction.isButton() && !interaction.guild) {
