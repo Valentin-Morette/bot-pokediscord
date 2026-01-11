@@ -295,11 +295,13 @@ function pokeChat(client) {
 
 	// Event qui se déclenche lorsqu'une interaction est créée (commande, bouton, autocomplete)
 	client.on('interactionCreate', async (interaction) => {
+		console.log('ici 2');
 		// Permettre les interactions de boutons dans les DMs (pour sell_vote_)
 		if (!interaction.channel) return;
 
 		// Pour les boutons dans les DMs, on gère directement
 		if (interaction.isButton() && !interaction.guild) {
+			console.log('ici');
 			let customId = interaction.customId;
 			if (customId.startsWith('sell_vote_')) {
 				// Format: sell_vote_${pokemonName}_${userId}_${isShiny ? 1 : 0}
@@ -308,7 +310,7 @@ function pokeChat(client) {
 					const pokemonName = args[2];
 					const userId = args[3];
 					const isShiny = args[4] === '1';
-
+					console.log(pokemonName, userId, isShiny);
 					// Vérifier que l'utilisateur qui clique est bien le propriétaire
 					if (interaction.user.id !== userId) {
 						interaction.reply({
