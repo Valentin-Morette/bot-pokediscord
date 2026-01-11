@@ -1031,7 +1031,7 @@ async function cleanupInactiveUsers(client) {
 			activeUserIds: activeUserIds
 		});
 
-		await logEvent('SUCCESS', 'cleanup', `Nettoyage terminé: ${activeUserIds.length} actifs (${totalUsers} total sur ${totalServers} serveurs)`, null, null);
+		await logEvent('SUCCESS', 'cleanup', `Nettoyage terminé: ${activeUserIds.length} actifs sur ${totalServers} serveurs`, null, null);
 
 		return {
 			success: true,
@@ -1059,6 +1059,7 @@ export {
 	useAffiliateCode,
 	buyBall,
 	sellPokemon,
+	sellPokemonById,
 	handleCatch,
 	purposeSwapPokemon,
 	acceptSwapPokemon,

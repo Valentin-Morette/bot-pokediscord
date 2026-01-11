@@ -384,8 +384,6 @@ async function arenaMessagesGen4(message) {
 
 async function channelZonesAsForum(message) {
 	try {
-		await logEvent('INFO', 'installation', `Début de l'installation`, message.guild.id, message.author.id);
-
 		const needed = new PermissionsBitField([
 			PermissionFlagsBits.ManageChannels,
 			PermissionFlagsBits.CreatePublicThreads,

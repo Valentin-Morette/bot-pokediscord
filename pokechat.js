@@ -79,7 +79,6 @@ function pokeChat(client) {
 		// Cron pour reset des streaks Top.gg - tous les jours à minuit
 		cron.schedule('0 0 * * *', async () => {
 			try {
-				await logEvent('INFO', 'topgg', 'Reset des streaks Top.gg', null, null);
 				const response = await API.post('/topgg/reset-streaks');
 				await logEvent('SUCCESS', 'topgg', `Streaks Top.gg reset avec succès: ${response.data.resetCount} resetées sur ${response.data.totalTrainers} dresseurs en streak`, null, null);
 			} catch (error) {
@@ -389,6 +388,30 @@ function pokeChat(client) {
 				if (url != null) {
 					interaction.reply({
 						content: `Pour acheter des ${ballName}, veuillez visiter ce lien : [Lien Boutique](${url})`,
+						ephemeral: true,
+					});
+				}
+			} else if (customId.startsWith('sell_vote_')) {
+				// Format: sell_vote_${pokemonName}_${userId}_${isShiny ? 1 : 0}
+				const args = customId.split('_');
+				if (args.length >= 5) {
+					const pokemonName = args[2];
+					const userId = args[3];
+					const isShiny = args[4] === '1';
+
+					// Vérifier que l'utilisateur qui clique est bien le propriétaire
+					if (interaction.user.id !== userId) {
+						interaction.reply({
+							content: "Vous ne pouvez pas vendre le Pokémon d'un autre joueur.",
+							ephemeral: true,
+						});
+						return;
+					}
+
+					// Récupérer le nom du pokemon à partir de son id et le vendre
+					const result = await sellPokemon(interaction.user.id, pokemonName, isShiny);
+					interaction.reply({
+						content: result,
 						ephemeral: true,
 					});
 				}
