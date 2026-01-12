@@ -296,7 +296,8 @@ function pokeChat(client) {
 	// Event qui se déclenche lorsqu'une interaction est créée (commande, bouton, autocomplete)
 	client.on('interactionCreate', async (interaction) => {
 
-		if (interaction.isButton()) { // Boutons dans les DMs
+		// Boutons dans les DMs
+		if (interaction.isButton()) {
 			let customId = interaction.customId;
 			if (customId.startsWith('sell_vote_')) {
 				// Format: sell_vote_${pokemonName}_${userId}_${isShiny ? 1 : 0}
@@ -327,15 +328,14 @@ function pokeChat(client) {
 						ephemeral: true,
 					});
 				}
-				return;
 			}
-			return;
 		}
 
 		if ((!interaction.guild || !interaction.channel) && !interaction.isCommand() && !interaction.isButton() && !interaction.isAutocomplete()) {
 			return;
 		}
 
+		// Limite utilisation de la commande dans la catégorie PokeFarm
 		const channel = interaction.channel;
 		const parentCategory = findParentCategory(channel);
 		if (!parentCategory || parentCategory.name !== "PokeFarm") {
