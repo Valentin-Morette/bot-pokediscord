@@ -670,7 +670,6 @@ async function handleCatch(interaction, idPokeball) {
 	if (response.status !== 'noCatch' && response.status !== 'noBall') {
 		await findRandomPokemon(interaction, true);
 	} else if (response.status === 'noBall') {
-		// ton cooldown shop inchangé…
 		const now = Date.now();
 		const cooldownAmount = 10000;
 		if (shopCooldowns.get(interaction.user.id) > now) return;

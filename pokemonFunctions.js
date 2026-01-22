@@ -3,13 +3,14 @@ import { upFirstLetter, createListEmbed, API, correctNameZone, logEvent } from '
 import { getIsPremium } from './trainerFunctions.js';
 import { XEmbed, premiumEmbed, inviteEmbed, voteTopggEmbed } from './listEmbed.js';
 
-let commandCount = 0;
+const BALLS = ['pokeball', 'superball', 'hyperball', 'masterball'];
+const FALLBACK_EMOJI_BY_BALL = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
+
 let embedIndex = 0;
 
 const embedFunctions = [XEmbed, inviteEmbed, voteTopggEmbed];
 
 async function findRandomPokemon(interaction, followUp = false) {
-	commandCount++;
 	if (!interaction.replied && !interaction.deferred) {
 		await interaction.deferReply();
 	}
@@ -25,15 +26,14 @@ async function findRandomPokemon(interaction, followUp = false) {
 			});
 		}
 		let pokemon = randomPokemon.data;
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		let row = new ActionRowBuilder();
-		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
-		balls.forEach((ball) => {
-			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
+		const emojiByName = new Map(interaction.guild.emojis.cache.map(e => [e.name, e.id]));
+		BALLS.forEach((ball) => {
+			const customEmoji = emojiByName.get(ball);
 			const button = new ButtonBuilder()
 				.setCustomId(ball + '|' + pokemon.idPokemonWild)
 				.setStyle(ButtonStyle.Secondary)
-				.setEmoji(customEmoji ? customEmoji.id : fallbackEmojiByBall[ball]);
+				.setEmoji(customEmoji ?? FALLBACK_EMOJI_BY_BALL[ball]);
 
 			row.addComponents(button);
 		});
@@ -50,7 +50,7 @@ async function findRandomPokemon(interaction, followUp = false) {
 			components: [row],
 		};
 
-		if (commandCount % 35 === 0) {
+		if (Math.random() < 1 / 35) {
 			if (!(await getIsPremium(interaction.user.id))) {
 				const { embeds: extraEmbeds, files: extraFiles } =
 					await embedFunctions[embedIndex % embedFunctions.length](color);
@@ -97,16 +97,14 @@ async function spawnRandomPokemon(context) {
 		}
 
 		const pokemon = randomPokemon.data;
-		const balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		const row = new ActionRowBuilder();
-		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
 
-		balls.forEach((ball) => {
+		BALLS.forEach((ball) => {
 			const emoji = channel.guild.emojis.cache.find((e) => e.name === ball);
 			const btn = new ButtonBuilder()
 				.setCustomId(`${ball}|${pokemon.idPokemonWild}`)
 				.setStyle(ButtonStyle.Secondary)
-				.setEmoji(emoji ? emoji.id : fallbackEmojiByBall[ball]);
+				.setEmoji(emoji ? emoji.id : FALLBACK_EMOJI_BY_BALL[ball]);
 			row.addComponents(btn);
 		});
 
@@ -122,19 +120,6 @@ async function spawnRandomPokemon(context) {
 			embeds: [embed],
 			components: [row],
 		};
-
-		if (++commandCount % 40 === 0 && isInteraction) {
-			if (!(await getIsPremium(context.user.id))) {
-				const { embed: extraEmbed, attachment } =
-					embedFunctions[embedIndex % embedFunctions.length](embed.data.color);
-				responseOptions.embeds.push(extraEmbed);
-				if (attachment) {
-					responseOptions.files = responseOptions.files || [];
-					responseOptions.files.push(attachment);
-				}
-				embedIndex++;
-			}
-		}
 
 		if (isInteraction) {
 			if (!context.replied && !context.deferred) await context.deferReply();
@@ -173,15 +158,13 @@ async function spawnPokemonWithRune(interaction) {
 			return `Vous n'avez pas de rune de ${upFirstLetter(pokemonName)}.`;
 		}
 		let pokemonSpawn = pokemon.data;
-		let balls = ['pokeball', 'superball', 'hyperball', 'masterball'];
 		let row = new ActionRowBuilder();
-		const fallbackEmojiByBall = { pokeball: '🔴', superball: '🔵', hyperball: '⚫', masterball: '🟣' };
-		balls.forEach((ball) => {
+		BALLS.forEach((ball) => {
 			const customEmoji = interaction.guild.emojis.cache.find((emoji) => emoji.name === ball);
 			const button = new ButtonBuilder()
 				.setCustomId(ball + '|' + pokemonSpawn.idPokemonWild)
 				.setStyle(ButtonStyle.Secondary)
-				.setEmoji(customEmoji ? customEmoji.id : fallbackEmojiByBall[ball]);
+				.setEmoji(customEmoji ? customEmoji.id : FALLBACK_EMOJI_BY_BALL[ball]);
 
 			row.addComponents(button);
 		});

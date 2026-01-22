@@ -370,12 +370,16 @@ function pokeChat(client) {
 			let customId = interaction.customId;
 			if (customId.startsWith('pokeball')) {
 				handleCatch(interaction, 1);
+				return;
 			} else if (customId.startsWith('hyperball')) {
 				handleCatch(interaction, 3);
+				return;
 			} else if (customId.startsWith('superball')) {
 				handleCatch(interaction, 2);
+				return;
 			} else if (customId.startsWith('masterball')) {
 				handleCatch(interaction, 4);
+				return;
 			} else if (customId.startsWith('buy')) {
 				const args = customId.split('|');
 				let numberBall = args[1];
