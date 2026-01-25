@@ -674,6 +674,62 @@ async function ensureThreadUnarchived(channel) {
 	}
 }
 
+async function bulkServerTrainer(client) {
+	try {
+		const rows = [];
+		let totalServers = 0;
+		let totalMembers = 0;
+
+		// Parcourir tous les serveurs où le bot est présent
+		for (const [guildId, guild] of client.guilds.cache) {
+			try {
+				totalServers++;
+
+				// Récupérer tous les membres du serveur
+				await guild.members.fetch();
+
+				// Filtrer les membres non-bots
+				const members = guild.members.cache.filter(m => !m.user.bot);
+
+				// Créer les entrées pour ce serveur
+				members.forEach(member => {
+					rows.push({
+						idServer: guild.id,
+						idTrainer: member.user.id
+					});
+					totalMembers++;
+				});
+
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		// Envoyer le tableau à l'endpoint bulk
+		if (rows.length > 0) {
+			await API.post('/server-trainer/bulk', { rows });
+
+			return {
+				success: true,
+				totalRows: rows.length,
+				totalServers: totalServers,
+				totalMembers: totalMembers
+			};
+		} else {
+			return {
+				success: false,
+				error: 'Aucune association à créer'
+			};
+		}
+
+	} catch (error) {
+		return {
+			success: false,
+			error: error.message
+		};
+	}
+}
+
 function slashCommande(commands) {
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
@@ -708,5 +764,6 @@ export {
 	reopenArchivedThreads,
 	ensureThreadUnarchived,
 	updateDataServer,
-	installServer
+	installServer,
+	bulkServerTrainer
 };

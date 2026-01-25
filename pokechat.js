@@ -8,7 +8,8 @@ import {
 	reopenArchivedThreads,
 	ensureThreadUnarchived,
 	updateDataServer,
-	installServer
+	installServer,
+	bulkServerTrainer
 } from './createServerFunctions.js';
 import cron from 'node-cron';
 import {
@@ -123,6 +124,22 @@ function pokeChat(client) {
 			if (welcomeChannel) {
 				welcomeChannel.send(welcomeTrainer(member));
 			}
+		}
+	});
+
+	// Event qui se déclenche lorsqu'un membre quitte un serveur
+	client.on('guildMemberRemove', async (member) => {
+		try {
+			if (member.user.bot) {
+				return;
+			}
+
+			await API.put('/server-trainer/leave', {
+				idTrainer: member.user.id,
+				idServer: member.guild.id
+			});
+		} catch (error) {
+			await logEvent('ERROR', 'guildMemberRemove', `Erreur lors de l'appel API pour le départ de ${member.user.tag} (${member.user.id}): ${error.response?.data || error.message}`, member.guild.id, member.user.id);
 		}
 	});
 
@@ -287,6 +304,14 @@ function pokeChat(client) {
 					await message.reply(`✅ ${result.message}`);
 				} else {
 					await message.reply(`❌ Erreur lors de l'installation : ${result.error}`);
+				}
+			} else if (message.content === '!server_trainer') {
+				await message.reply('🔄 Début de la synchronisation bulk des serveurs-trainers...');
+				const result = await bulkServerTrainer(client);
+				if (result.success) {
+					await message.reply(`✅ Synchronisation bulk terminée !\n📊 **Résultats :**\n• ${result.totalRows} associations créées\n• ${result.totalServers} serveurs traités\n• ${result.totalMembers} membres synchronisés`);
+				} else {
+					await message.reply(`❌ Erreur lors de la synchronisation bulk : ${result.error}`);
 				}
 			}
 			return;
