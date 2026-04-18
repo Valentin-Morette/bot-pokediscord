@@ -308,6 +308,7 @@ function pokeChat(client) {
 			} else if (message.content === '!server_trainer') {
 				await message.reply('🔄 Début de la synchronisation bulk des serveurs-trainers...');
 				const result = await bulkServerTrainer(client);
+				console.log(result);
 				if (result.success) {
 					await message.reply(`✅ Synchronisation bulk terminée !\n📊 **Résultats :**\n• ${result.totalRows} associations créées\n• ${result.totalServers} serveurs traités\n• ${result.totalMembers} membres synchronisés`);
 				} else {

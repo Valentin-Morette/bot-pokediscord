@@ -55,6 +55,9 @@ async function addTrainer(members, guildId = process.env.IDSERVER) {
 
 		if (memberArray.length === 1) {
 			const member = memberArray[0];
+			if (member.user.bot) {
+				return;
+			}
 			await API.post(`/trainer`, {
 				trainer: {
 					idDiscord: member.id,
