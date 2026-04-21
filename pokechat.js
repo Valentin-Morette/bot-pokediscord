@@ -54,7 +54,15 @@ import {
 	checkAndSpawnPokemon
 } from './pokemonFunctions.js';
 import { commandsPokechat, balls, pokemons } from './variables.js';
-import { removeAccents, isUserAdmin, findParentCategory, logEvent, API, sendToConsoleChannel } from './globalFunctions.js';
+import {
+	removeAccents,
+	isUserAdmin,
+	findParentCategory,
+	logEvent,
+	API,
+	sendToConsoleChannel
+} from './globalFunctions.js';
+import { extractFirstNameFromMessage } from './usersFunctions.js';
 import { ChannelType, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js';
 
 process.env.TZ = 'Europe/Paris';
@@ -218,6 +226,14 @@ function pokeChat(client) {
 	client.on('messageCreate', async (message) => {
 		if (message.author.bot) return;
 
+		// Prénom détecté uniquement via des formulations explicites (voir usersFunctions.js)
+		const nameMatch = extractFirstNameFromMessage(message.content);
+		if (nameMatch) {
+			await API.put(`/users/${message.author.id}`, {
+				data: { firstName: nameMatch }
+			});
+		}
+
 		if (isUserAdmin(message.member)) {
 			if (message.content === '!install') {
 				try {
@@ -308,7 +324,6 @@ function pokeChat(client) {
 			} else if (message.content === '!server_trainer') {
 				await message.reply('🔄 Début de la synchronisation bulk des serveurs-trainers...');
 				const result = await bulkServerTrainer(client);
-				console.log(result);
 				if (result.success) {
 					await message.reply(`✅ Synchronisation bulk terminée !\n📊 **Résultats :**\n• ${result.totalRows} associations créées\n• ${result.totalServers} serveurs traités\n• ${result.totalMembers} membres synchronisés`);
 				} else {

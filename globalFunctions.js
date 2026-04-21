@@ -117,8 +117,6 @@ function findParentCategory(channel) {
 	return null;
 }
 
-
-
 const API = axios.create({
 	baseURL: process.env.VITE_BACKEND_URL ?? 'http://localhost:3000',
 	headers: {
