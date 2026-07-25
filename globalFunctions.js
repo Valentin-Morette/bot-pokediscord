@@ -189,7 +189,17 @@ async function sendToConsoleChannel(client, type, title, description, additional
 			embed.addFields({ name: '📝 Message', value: description, inline: false });
 		}
 
-		await channel.send({ embeds: [embed] });
+		const messagePayload = { embeds: [embed] };
+
+		if (additionalData.serverId) {
+			const consultButton = new ButtonBuilder()
+				.setLabel('Consulter')
+				.setStyle(ButtonStyle.Link)
+				.setURL(`https://interne.pokefarm.fr/servers?search=${additionalData.serverId}`);
+			messagePayload.components = [new ActionRowBuilder().addComponents(consultButton)];
+		}
+
+		await channel.send(messagePayload);
 		return true;
 	} catch (error) {
 		console.error('❌ Erreur lors de l\'envoi au channel console:', error.message);
